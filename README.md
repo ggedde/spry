@@ -42,8 +42,8 @@ $config->response_codes = [
 
 	/* Auth */
 	2200 => ['en' => 'Authentication Passed Successfully'],
-	5200 => ['en' => 'Error: Invalid Username and Password'],
-	5201 => ['en' => 'Error: Account is Not Valid'],
+	4200 => ['en' => 'Unknown: Unkown response for Authentication'],
+	5200 => ['en' => 'Error: Username and Password are Incorrect'],
   ...
 ];
 
@@ -51,6 +51,25 @@ $config->response_codes = [
 // $config->pre_auth_filter = 'YOUR_CONTROLLER::pre_auth_filter';
 // $config->post_auth_filter = 'YOUR_CONTROLLER::post_auth_filter';
 ```
+
+## Response Codes / Multiple Lingual
+Response Codes are configured in "config.php".
+Here is the format:
+5200 = [5][200]
+
+The first digit Represents the response type 5=Error, 4=Unknown, 2=Success
+The next digits represents the Controller Methods.  You Can do whatever you want with these.
+
+When using the code you will only need to place '200' in the 'parent::results()' method.  The Method will handle the rest for you.
+
+Example Usage:
+```
+	return parent::results(200, $response);
+```
+If $response is successfull then the method will return 2200. If $response is null or fatal error, then it will return 4200. If $response it not empty, but contains response['error'] the the method will return 5200.
+
+### Multlingual Response Codes
+The Response Codes are set up to be multi-lingual.  For this to work your App needs to send the "lang" param to your API.  The default is "en".  You can still pass custom messages in your API, but custom messages don't support Multi-Lingual.  That is why it is best for you to use the Response Codes as intended.
 
 ## Creating Controllers
 controllers/YOUR_CONTROLLER.php
