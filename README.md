@@ -1,5 +1,5 @@
 # SpryAPI
-Simple and Quick PHP API Framework
+A lightweight PHP API Framework
 
 Current Release: 1.0.0
 
