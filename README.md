@@ -80,6 +80,10 @@ $config->routes = [
 ```
 
 ## Creating Auth Filters
+
+** It is Recommended that you use Network (Hardware/Firewall) to protect your App first.  Only use App Filtering if required and needed for billing/code support only.
+Network filtering is faster and requires less resources on hour app.
+
 config.php
 ```
 $config->pre_auth_filter = 'YOUR_CONTROLLER::pre_auth_filter';
