@@ -3,6 +3,14 @@ Fast PHP API Framework
 
 Current Release: 1.0.0
 
+REQUIRES:
+* PHP 5.4
+
+Included Extensions:
+* Medoo Database Class - http://medoo.in/
+* Field Validation Class - https://github.com/blackbelt/php-validation
+
+
 ## How to Use
 index.php
 ```
@@ -159,5 +167,23 @@ index2.php
 ```
 require 'v2.0.0/app.php';
 API::run();
+```
+
+## Adding Extensions
+To add your own extension just upload the Class file in /extensions/ folder.  The file needs to be a class where the class name matchs the file.php name.  Then just call the class and the autoloader will do the rest.
+
+/extensions/my_extension.php
+```
+class MY_EXTENSION {
+	
+}
+```
+in your controller
+```
+$my = new MY_EXTENSION();
+```
+Or if Singleton
+```
+MY_EXTENSION::some_method();
 ```
 
