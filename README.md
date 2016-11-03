@@ -159,6 +159,15 @@ class YOUR_CONTROLLER extends API {
 }
 ```
 
+## Caching
+Currently there is no built in support for caching.
+
+However, you can use the "pre_auth_filter" and "post_auth_filter" to run your own caching methods.  You can use  parent::get_path(), parent::params(), parent::account_id() to determine how to cache or retreive cache data.
+
+### App Rendering support
+On Successfull responses the API will hash the body parameter and return [body_hash].  You can use this to determine if the data has changed since the last request.  If the hashes don't match then re-render your apps view.
+
+
 ## Managing Multiple Versions
 
 When your API requires updates that might break the way current users are using then you would want to create another endpoint.  The easiest way is to just copy the v1.0.0 folder to v2.0.0, etc.  Then make a new endpoint and point to that folder.
