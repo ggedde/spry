@@ -1,5 +1,5 @@
 # SpryAPI
-Fast PHP API Framework
+Fast PHP API Framework  
 Current Release: 1.0.0
 
 ## How to Use
