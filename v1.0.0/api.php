@@ -586,13 +586,17 @@ class API {
 
 			$obj = new $class;
 
-			if(method_exists($obj, $method))
+			if($obj)
 			{
-				return ['obj' => $obj, 'method' => $method];
+				if(method_exists($obj, $method))
+				{
+					return ['obj' => $obj, 'method' => $method];
+				}
+				self::stop_error(5105, null, $controller_name); // Method Not Found
 			}
 		}
 
-		self::stop_error(5103); // Controller Not Found
+		self::stop_error(5103, null, $controller_name); // Controller Not Found
 	}
 
 
@@ -631,15 +635,8 @@ class API {
  	 * @final
 	 */
 
-	final static protected function results($response_code=0, $data=null, $message='')
+	final static protected function results($response_code=0, $data=null, $messages=[])
 	{
-		$messages = [];
-
-		if(!empty($message))
-		{
-			$messages[] = $message;
-		}
-
 		if(strlen(strval($response_code)) > 3)
 		{
 			return self::build_response($response_code, $data, $messages);
@@ -675,12 +672,15 @@ class API {
 	{
 		$response = self::response_codes($response_code);
 
-		$response['sql'] = self::$db->last_query();
-
 		if($data !== null)
 		{
 			$response['body_hash'] = md5(serialize($data));
 			$response['body'] = $data;
+		}
+
+		if(!empty($messages) && !is_array($messages))
+		{
+			$messages = [$messages];
 		}
 
 		if(!empty($messages))
