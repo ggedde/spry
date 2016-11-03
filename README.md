@@ -1,5 +1,6 @@
 # SpryAPI
 Fast PHP API Framework
+Current Release: 1.0.0
 
 ## How to Use
 index.php
@@ -7,8 +8,8 @@ index.php
 require 'v1.0.0/app.php';
 API::run();
 ```
-  
-  
+
+
 ## How to Configure
 config.php
 ```
@@ -63,7 +64,7 @@ class YOUR_CONTROLLER extends API
 	}
 }
 ```
-## Adding Controller Methods to Routes  
+## Adding Controller Methods to Routes
 config.php
 ```
 $config->routes = [
