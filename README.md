@@ -63,7 +63,7 @@ class YOUR_CONTROLLER extends API
 	}
 }
 ```
-# Adding Controller Methods to Routes  
+## Adding Controller Methods to Routes  
 config.php
 ```
 $config->routes = [
