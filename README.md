@@ -51,7 +51,7 @@ controllers/YOUR_CONTROLLER.php
 ```
 class YOUR_CONTROLLER extends API
 {
-  public function get_all()
+	public function get_all()
 	{
 		$where = [
 			'AND' => [
@@ -60,11 +60,10 @@ class YOUR_CONTROLLER extends API
 		];
 
 		return parent::results(301, parent::db()->select('table_name_here', '*', $where));
-  }
+	}
 }
 ```
-Then add to your Routes
-config.php
+Then add to your Routes in "config.php"
 ```
 $config->routes = [
 	'/auth/get' => 'AUTH::get',
