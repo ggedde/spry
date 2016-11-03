@@ -43,11 +43,11 @@ class API {
 
 		self::$db = new DB(self::$config->db);
 
-		self::check_auth($path);
+		self::check_auth(self::$path);
 
 		self::set_routes();
 
-		$route = self::get_route($path);
+		$route = self::get_route(self::$path);
 
 		if(!empty(self::$config->post_auth_filter))
 		{
