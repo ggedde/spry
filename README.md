@@ -1,5 +1,6 @@
 # SpryAPI
-Fast PHP API Framework  
+Fast PHP API Framework
+
 Current Release: 1.0.0
 
 ## How to Use
@@ -10,7 +11,7 @@ API::run();
 ```
 
 
-## How to Configure
+## Configuration
 config.php
 ```
 // Salt for Security.
