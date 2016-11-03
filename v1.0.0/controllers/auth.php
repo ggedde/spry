@@ -77,4 +77,5 @@ class AUTH extends API {
 
 		return 0;
 	}
+
 }

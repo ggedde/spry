@@ -5,6 +5,7 @@ class API {
 	static private $routes = [];
 	static private $params = [];
 	static private $db;
+	static private $path;
 	static private $validator;
 	static private $account_id=0;
 	static private $config;
@@ -29,7 +30,7 @@ class API {
 
 		self::$config = $config;
 
-		$path = self::get_path();
+		self::$path = self::get_path();
 
 		spl_autoload_register(array(__CLASS__, 'autoloader'));
 
@@ -200,13 +201,18 @@ class API {
  	 *
  	 * @param string $path
  	 *
- 	 * @access 'private'
+ 	 * @access 'protected'
  	 * @return array
  	 * @final
 	 */
 
-	final static private function get_route($path)
+	final static protected function get_route($path=null)
 	{
+		if(!$path)
+		{
+			$path = self::$path;
+		}
+
 		$path = self::clean_path($path);
 
 		if(!empty($path) && !empty(self::$routes[$path]))
@@ -535,12 +541,12 @@ class API {
 	/**
 	 * Gets the URL Path of the current API Call.
  	 *
- 	 * @access 'private'
+ 	 * @access 'protected'
  	 * @return string
  	 * @final
 	 */
 
-	final static private function get_path()
+	final static protected function get_path()
 	{
 		$path = explode('?', strtolower($_SERVER['REQUEST_URI']), 2);
 		return self::clean_path($path[0]);

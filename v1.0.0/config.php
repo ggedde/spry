@@ -77,7 +77,7 @@ $config->response_codes = [
 
 ];
 
-$config->pre_auth_filter = 'AUTH::pre_auth_filter';
-$config->post_auth_filter = 'AUTH::post_auth_filter';
+// $config->pre_auth_filter = 'YOUR_CONTROLLER::pre_auth_filter';
+// $config->post_auth_filter = 'YOUR_CONTROLLER::post_auth_filter';
 
 
