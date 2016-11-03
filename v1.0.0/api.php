@@ -29,19 +29,29 @@ class API {
 
 		self::$config = $config;
 
-		self::limit_overall_requests();
 		$path = self::get_path();
+
 		spl_autoload_register(array(__CLASS__, 'autoloader'));
 
-		self::$db = new DB(self::$config->db);
-
 		self::$params = self::fetch_params();
+
+		if(!empty(self::$config->pre_auth_filter))
+		{
+			self::get_response(self::get_controller(self::$config->pre_auth_filter));
+		}
+
+		self::$db = new DB(self::$config->db);
 
 		self::check_auth($path);
 
 		self::set_routes();
 
 		$route = self::get_route($path);
+
+		if(!empty(self::$config->post_auth_filter))
+		{
+			self::get_response(self::get_controller(self::$config->post_auth_filter));
+		}
 
 		$controller = self::get_controller($route['controller']);
 
@@ -314,22 +324,6 @@ class API {
 		{
 			require_once $extension_file;
 		}
-	}
-
-
-
-	/**
-	 * Method for controlling requests.
-  	 *
- 	 * @access 'private'
- 	 * @return void
- 	 * @final
-	 */
-
-	final static private function limit_overall_requests()
-	{
-		# TODO
-		# This might just need to be done by a firewall?
 	}
 
 
