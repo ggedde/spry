@@ -4,6 +4,16 @@
 // You should use a long and Strong key.
 $config->salt = 'asdfghjklkjhgfdsasdfghjklpoiuytrewqazxcvbnm';
 
+// Set Error Log file Location
+// THIS SHOULD BE DISABLED IN PRODUCTION (OR AT LEAST SET SOMEWHERE IN A PRIVATE FOLDER)
+// $config->log_file = dirname(__FILE__).'/error.log';
+
+// Set Error Types
+if(!empty($config->log_file))
+{
+	ini_set('error_reporting', E_ALL);
+}
+
 // Database
 $config->db = [
 	'database_type' => 'mysql',

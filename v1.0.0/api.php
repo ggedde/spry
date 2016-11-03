@@ -21,8 +21,6 @@ class API {
 	static private $account_id=0;
 	static private $config;
 
-
-
 	/**
 	 * Initiates the API Call.
  	 *
@@ -33,13 +31,15 @@ class API {
 
 	final static public function run()
 	{
-		set_error_handler(array(__CLASS__, 'error_handler'));
-		register_shutdown_function(array(__CLASS__, 'shut_down_function'));
-
 		$config = new stdClass();
 		require_once('config.php');
-
 		self::$config = $config;
+
+		if(!empty(self::$config->log_file))
+		{
+			set_error_handler(array(__CLASS__, 'error_handler'));
+			register_shutdown_function(array(__CLASS__, 'shut_down_function'));
+		}
 
 		self::$path = self::get_path();
 
@@ -295,7 +295,14 @@ class API {
 			}
 
 			$data = $errstr.$errfile.' [Line: '.(!empty($errline) ? $errline : '?')."]\n".$backtrace;
-			file_put_contents(dirname(__DIR__) . '/log/error.log', $data, FILE_APPEND);
+
+			// Try and Make directory if id doesn't exist
+			if(!is_dir(dirname(self::$config->log_file)))
+			{
+				mkdir(dirname(self::$config->log_file));
+			}
+
+			file_put_contents(self::$config->log_file, $data, FILE_APPEND);
 		}
 	}
 
