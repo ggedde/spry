@@ -53,7 +53,7 @@ class YOUR_CONTROLLER extends API
 {
   public function get_all()
 	{
-    $where = [
+		$where = [
 			'AND' => [
 				'account_id' => parent::account_id(),
 			],
@@ -69,6 +69,6 @@ config.php
 $config->routes = [
 	'/auth/get' => 'AUTH::get',
 	'/account/get' => 'ACCOUNT::get',
-  '/your_controller/get_all' => 'YOUR_CONTROLLER::get_all',
+	'/your_controller/get_all' => 'YOUR_CONTROLLER::get_all',
 ];
 ```
