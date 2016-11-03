@@ -63,7 +63,8 @@ class YOUR_CONTROLLER extends API
 	}
 }
 ```
-Then add to your Routes in "config.php"
+# Adding Controller Methods to Routes  
+config.php
 ```
 $config->routes = [
 	'/auth/get' => 'AUTH::get',
