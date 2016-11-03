@@ -46,6 +46,10 @@ $config->response_codes = [
 	5201 => ['en' => 'Error: Account is Not Valid'],
   ...
 ];
+
+// Auth Filters
+// $config->pre_auth_filter = 'YOUR_CONTROLLER::pre_auth_filter';
+// $config->post_auth_filter = 'YOUR_CONTROLLER::post_auth_filter';
 ```
 
 ## Creating Controllers
@@ -74,3 +78,52 @@ $config->routes = [
 	'/your_controller/get_all' => 'YOUR_CONTROLLER::get_all',
 ];
 ```
+
+## Creating Auth Filters
+config.php
+```
+$config->pre_auth_filter = 'YOUR_CONTROLLER::pre_auth_filter';
+$config->post_auth_filter = 'YOUR_CONTROLLER::post_auth_filter';
+```
+Then Create a controller and add the methods.
+
+Note that "pre_auth_filter" will run prior to user authentication and prior to any database connections.
+
+This is the fastest method and blocking requests here will help prevent load on your server, but it does not have all the data that you might require.
+
+
+"post_auth_filter" has access to the user that authenticated with parent::account_id() and has access to the database with parent::db()
+
+Example:
+```
+class YOUR_CONTROLLER extends API {
+	public function pre_auth_filter()
+	{
+		$path = parent::get_path();
+		$params = parent::params();
+		$ip = $_SERVER['REMOTE_ADDR'];
+
+		// DO something
+		parent::stop_error(9999, null, 'Error: Bla Bla Bla');
+	}
+
+	public function post_auth_filter()
+	{
+		$path = parent::get_path();
+		$params = parent::params();
+		$account_id = parent::account_id();
+		$ip = $_SERVER['REMOTE_ADDR'];
+
+		// Check DB for Limits
+		$limits = parent::db()->select('limit_table', '*', ['acount_id' => $account_id]);
+
+
+		if(count($limits > 500))
+		{
+			// DO something
+			parent::stop_error(9999, null, 'Error: You Have Reached your Limit');
+		}
+	}
+}
+```
+
