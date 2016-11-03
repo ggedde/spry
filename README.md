@@ -64,6 +64,7 @@ When using the code you will only need to place '200' in the 'parent::results()'
 
 Example Usage:
 ```
+	$response = parent::db()->get('accounts', '*');
 	return parent::results(200, $response);
 ```
 If $response is successfull then the method will return 2200. If $response is null or fatal error, then it will return 4200. If $response it not empty, but contains response['error'] the the method will return 5200.
