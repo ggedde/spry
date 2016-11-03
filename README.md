@@ -131,3 +131,12 @@ class YOUR_CONTROLLER extends API {
 }
 ```
 
+## Managing Multiple Versions
+
+When your API requires updates that might break the way current users are using then you would want to create another endpoint.  The easiest way is to just copy the v1.0.0 folder to v2.0.0, etc.  Then make a new endpoint and point to that folder.
+index2.php
+```
+require 'v2.0.0/app.php';
+API::run();
+```
+
