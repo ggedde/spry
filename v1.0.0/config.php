@@ -47,7 +47,9 @@ $config->response_codes = [
 	5101 => ['en' => 'Error: No Parameters Found.'],
 	5102 => ['en' => 'Error: Request Not Found.'],
 	5103 => ['en' => 'Error: Controller Not Found.'],
+	5105 => ['en' => 'Error: Controllers Method Not Found.'],
 	5104 => ['en' => 'Error: Returned Data is not in JSON format.'],
+	5106 => ['en' => 'Error: Controller Method is not Callable. Make sure it is Public.'],
 
 	/* Auth */
 	2200 => ['en' => 'Authentication Passed Successfully'],
