@@ -434,10 +434,8 @@ class API {
 	{
 		if($path !== '/auth/get/')
 		{
-			$auth = new AUTH;
-
 			$access_key = self::params('access_key');
-			$account_id = $auth->get_account_id();
+			$account_id = AUTH::get_account_id();
 
 			if($access_key && $account_id)
 			{
