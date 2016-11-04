@@ -19,6 +19,7 @@ class API {
 	static private $path;
 	static private $validator;
 	static private $account_id=0;
+	static private $access_key='';
 	static private $config;
 
 	/**
@@ -435,8 +436,12 @@ class API {
 		{
 			$auth = new AUTH;
 
-			if($account_id = $auth->get_account_id())
+			$access_key = self::params('access_key');
+			$account_id = $auth->get_account_id();
+
+			if($access_key && $account_id)
 			{
+				self::$access_key = $access_key;
 				self::$account_id = $account_id;
 				return true;
 			}
@@ -461,6 +466,20 @@ class API {
 	final static protected function account_id()
 	{
 		return self::$account_id;
+	}
+	
+	
+	/**
+	 * Returns the Access Key from the API Call.
+ 	 *
+ 	 * @access 'protected'
+ 	 * @return string
+ 	 * @final
+	 */
+
+	final static protected function access_key()
+	{
+		return self::$access_key;
 	}
 
 
