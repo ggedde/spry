@@ -732,6 +732,11 @@ class API {
 
 	final static private function get_response($controller=array())
 	{
+		if(!is_callable(array($controller['obj'], $controller['method'])))
+		{
+			self::stop_error(5106, null, $controller['method']);
+		}
+		
 		return call_user_func(array($controller['obj'], $controller['method']));
 	}
 
