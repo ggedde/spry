@@ -2,6 +2,9 @@
 
 class ACCOUNT extends API
 {
+	private static $table = 'accounts';
+	
+	
 	/**
 	 * Returns the Account by Access_key
 	 *
@@ -12,7 +15,7 @@ class ACCOUNT extends API
  	 * @return array
 	 */
 
-	public function get()
+	public static function get()
 	{
 		$where = [
 			'AND' => [
@@ -30,7 +33,7 @@ class ACCOUNT extends API
 			'created_on'
 		];
 
-		return parent::results(400, parent::db()->get('accounts', $fields, $where));
+		return parent::results(400, parent::db()->get(self::$table, $fields, $where));
 	}
 
 }
