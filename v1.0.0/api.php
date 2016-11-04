@@ -51,8 +51,11 @@ class API {
 		{
 			self::get_response(self::get_controller(self::$config->pre_auth_filter));
 		}
-
-		self::$db = new DB(self::$config->db);
+		
+		if(!empty(self::$config->db))
+		{
+			self::$db = new DB(self::$config->db);
+		}
 
 		self::check_auth(self::$path);
 
@@ -666,7 +669,7 @@ class API {
 			return self::build_response($response_code, $data, $messages);
 		}
 
-		if(empty($data) && $data !== null && !self::$db->has_error())
+		if(empty($data) && $data !== null && (empty(self::$db) || !self::$db->has_error()))
 		{
 			return self::build_response('4' . $response_code, $data, $messages);
 		}
