@@ -2,7 +2,8 @@
 
 class EXAMPLE extends API
 {
-	private $table = 'examples_table';
+	private static $table = 'examples_table';
+	
 
 	/**
 	 * Inserts an Item
@@ -13,7 +14,7 @@ class EXAMPLE extends API
  	 * @return array
 	 */
 
-	public function insert()
+	public static function insert()
 	{
 		// Required Fields
 		$name = parent::validator()->required()->minLength(1)->validate('name');
@@ -23,7 +24,7 @@ class EXAMPLE extends API
 			'name' => $name
 		];
 
-		return parent::results(302, parent::db()->insert($this->table, $data));
+		return parent::results(302, parent::db()->insert(self::$table, $data));
 	}
 
 	/**
@@ -36,7 +37,7 @@ class EXAMPLE extends API
  	 * @return array
 	 */
 
-	public function update()
+	public static function update()
 	{
 		// Required Fields
 		$id = parent::validator()->required()->integer()->min(1)->validate('id');
@@ -53,7 +54,7 @@ class EXAMPLE extends API
 			]
 		];
 
-		return parent::results(303, parent::db()->update($this->table, $data, $where));
+		return parent::results(303, parent::db()->update(self::$table, $data, $where));
 
 	}
 
@@ -69,7 +70,7 @@ class EXAMPLE extends API
  	 * @return array
 	 */
 
-	public function get()
+	public static function get()
 	{
 		// Required Fields
 		$id = parent::validator()->required()->integer()->min(1)->validate('id');
@@ -81,7 +82,7 @@ class EXAMPLE extends API
 			]
 		];
 
-		return parent::results(300, parent::db()->get($this->table, '*', $where));
+		return parent::results(300, parent::db()->get(self::$table, '*', $where));
 	}
 
 
@@ -95,7 +96,7 @@ class EXAMPLE extends API
  	 * @return array
 	 */
 
-	public function get_all()
+	public static function get_all()
 	{
 		$where = [
 			'AND' => [
@@ -105,7 +106,7 @@ class EXAMPLE extends API
 			'GROUP' => 'id'
 		];
 
-		return parent::results(301, parent::db()->select($this->table, '*', $where));
+		return parent::results(301, parent::db()->select(self::$table, '*', $where));
 	}
 
 
@@ -120,7 +121,7 @@ class EXAMPLE extends API
  	 * @return array
 	 */
 
-	public function delete()
+	public static function delete()
 	{
 		$id = parent::validator()->required()->integer()->min(1)->validate('id');
 
@@ -131,7 +132,7 @@ class EXAMPLE extends API
 			]
 		];
 
-		return parent::results(304, parent::db()->delete($this->table, $where));
+		return parent::results(304, parent::db()->delete(self::$table, $where));
 	}
 
 }
