@@ -13,7 +13,7 @@ class AUTH extends API {
  	 * @return array
 	 */
 
-	public function get()
+	static public function get()
 	{
 		$username = parent::validator()->required()->minLength(1)->validate('username');
 		$password = parent::validator()->required()->minLength(1)->validate('password');
@@ -54,7 +54,7 @@ class AUTH extends API {
  	 * @return int
 	 */
 
-	public function get_account_id()
+	static public function get_account_id()
 	{
 		if($access_key = parent::params('access_key'))
 		{
