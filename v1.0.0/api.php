@@ -13,14 +13,14 @@
 
 class API {
 
-	static private $routes = [];
-	static private $params = [];
-	static private $db;
-	static private $path;
-	static private $validator;
-	static private $account_id=0;
-	static private $access_key='';
-	static private $config;
+	private static $routes = [];
+	private static $params = [];
+	private static $db;
+	private static $path;
+	private static $validator;
+	private static $account_id=0;
+	private static $access_key='';
+	private static $config;
 
 	/**
 	 * Initiates the API Call.
@@ -30,7 +30,7 @@ class API {
  	 * @final
 	 */
 
-	final static public function run()
+	final public static function run()
 	{
 		$config = new stdClass();
 		require_once('config.php');
@@ -87,7 +87,7 @@ class API {
  	 * @final
 	 */
 
-	final static private function set_routes()
+	final private static function set_routes()
 	{
 		foreach (self::$config->routes as $route_url => $route_class)
 		{
@@ -105,7 +105,7 @@ class API {
  	 * @final
 	 */
 
-	final static private function response_type($code='')
+	final private static function response_type($code='')
 	{
 		if(!empty($code) && is_numeric($code))
 		{
@@ -139,7 +139,7 @@ class API {
  	 * @final
 	 */
 
-	final static private function response_codes($code='')
+	final private static function response_codes($code='')
 	{
 		$lang = 'en';
 		$type = 4;
@@ -203,7 +203,7 @@ class API {
  	 * @final
 	 */
 
-	final static private function add_route($path, $controller)
+	final private static function add_route($path, $controller)
 	{
 		$path = self::clean_path($path);
 		self::$routes[$path] = $controller;
@@ -221,7 +221,7 @@ class API {
  	 * @final
 	 */
 
-	final static protected function get_route($path=null)
+	final protected static function get_route($path=null)
 	{
 		if(!$path)
 		{
@@ -253,7 +253,7 @@ class API {
  	 * @final
 	 */
 
-	final static protected function error_handler($errno, $errstr, $errfile, $errline)
+	final protected static function error_handler($errno, $errstr, $errfile, $errline)
 	{
 		if(!empty($errstr))
 		{
@@ -320,7 +320,7 @@ class API {
  	 * @final
 	 */
 
-	final static protected function shut_down_function()
+	final protected static function shut_down_function()
 	{
 	    $error = error_get_last();
 	    if ($error['type'] === E_ERROR)
@@ -339,7 +339,7 @@ class API {
  	 * @final
 	 */
 
-	final static protected function autoloader($class)
+	final protected static function autoloader($class)
 	{
 		$controller_file = __DIR__.'/controllers/'.strtolower($class).'.php';
 		$extension_file = __DIR__.'/extensions/'.strtolower($class).'.php';
@@ -364,7 +364,7 @@ class API {
  	 * @final
 	 */
 
-	final static protected function db()
+	final protected static function db()
 	{
 		return self::$db;
 	}
@@ -379,7 +379,7 @@ class API {
  	 * @final
 	 */
 
-	final static protected function validator($params=array())
+	final protected static function validator($params=array())
 	{
 		if(empty($params))
 		{
@@ -411,7 +411,7 @@ class API {
  	 * @final
 	 */
 
-	final static protected function stop_error($response_code=0, $data=null, $messages=[])
+	final protected static function stop_error($response_code=0, $data=null, $messages=[])
 	{
 		$response = self::build_response($response_code, $data, $messages);
 		self::send_output($response);
@@ -430,7 +430,7 @@ class API {
  	 * @final
 	 */
 
-	final static private function check_auth($path)
+	final private static function check_auth($path)
 	{
 		if($path !== '/auth/get/')
 		{
@@ -461,7 +461,7 @@ class API {
  	 * @final
 	 */
 
-	final static protected function account_id()
+	final protected static function account_id()
 	{
 		return self::$account_id;
 	}
@@ -475,7 +475,7 @@ class API {
  	 * @final
 	 */
 
-	final static protected function access_key()
+	final protected static function access_key()
 	{
 		return self::$access_key;
 	}
@@ -489,7 +489,7 @@ class API {
  	 * @final
 	 */
 
-	final static protected function config()
+	final protected static function config()
 	{
 		return self::$config;
 	}
@@ -506,7 +506,7 @@ class API {
  	 * @final
 	 */
 
-	final static private function fetch_params($param='')
+	final private static function fetch_params($param='')
 	{
 		if($data = trim(file_get_contents('php://input')))
 		{
@@ -559,7 +559,7 @@ class API {
  	 * @final
 	 */
 
-	final static protected function params($param='')
+	final protected static function params($param='')
 	{
 		if($param)
 		{
@@ -584,7 +584,7 @@ class API {
  	 * @final
 	 */
 
-	final static protected function get_path()
+	final protected static function get_path()
 	{
 		$path = explode('?', strtolower($_SERVER['REQUEST_URI']), 2);
 		return self::clean_path($path[0]);
@@ -600,7 +600,7 @@ class API {
  	 * @final
 	 */
 
-	final static private function clean_path($path)
+	final private static function clean_path($path)
 	{
 		if(substr($path, -1) === '/')
 		{
@@ -622,7 +622,7 @@ class API {
  	 * @final
 	 */
 
-	final static private function get_controller($controller_name='')
+	final private static function get_controller($controller_name='')
 	{
 		if(!empty($controller_name))
 		{
@@ -654,7 +654,7 @@ class API {
  	 * @return string
 	 */
 
-	final static protected function hash($value)
+	final protected static function hash($value)
 	{
 		$salt = '';
 
@@ -679,7 +679,7 @@ class API {
  	 * @final
 	 */
 
-	final static protected function results($response_code=0, $data=null, $messages=[])
+	final protected static function results($response_code=0, $data=null, $messages=[])
 	{
 		if(strlen(strval($response_code)) > 3)
 		{
@@ -712,7 +712,7 @@ class API {
  	 * @final
 	 */
 
-	final static private function build_response($response_code=0, $data=null, $messages=[])
+	final private static function build_response($response_code=0, $data=null, $messages=[])
 	{
 		$response = self::response_codes($response_code);
 
@@ -747,7 +747,7 @@ class API {
  	 * @final
 	 */
 
-	final static private function get_response($controller=array())
+	final private static function get_response($controller=array())
 	{
 		if(!is_callable(array($controller['obj'], $controller['method'])))
 		{
@@ -770,7 +770,7 @@ class API {
  	 * @final
 	 */
 
-	final static private function send_response($response=array())
+	final private static function send_response($response=array())
 	{
 		if(empty($response['response']) || empty($response['response_code']))
 		{
@@ -792,7 +792,7 @@ class API {
  	 * @final
 	 */
 
-	final static private function send_output($output=array())
+	final private static function send_output($output=array())
 	{
 		header("Access-Control-Allow-Origin: *");
 	    header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
