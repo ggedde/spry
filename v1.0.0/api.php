@@ -21,7 +21,9 @@ class API {
 	private static $account_id=0;
 	private static $access_key='';
 	private static $config;
-
+	private static $dir;
+	
+	
 	/**
 	 * Initiates the API Call.
  	 *
@@ -47,6 +49,8 @@ class API {
 		spl_autoload_register(array(__CLASS__, 'autoloader'));
 
 		self::$params = self::fetch_params();
+		
+		self::$dir = dirname(__FILE__);
 
 		if(!empty(self::$config->pre_auth_filter))
 		{
@@ -492,6 +496,21 @@ class API {
 	final protected static function config()
 	{
 		return self::$config;
+	}
+	
+	
+	
+	/**
+	 * Returns the Root Directory of the API.
+ 	 *
+ 	 * @access 'protected'
+ 	 * @return object
+ 	 * @final
+	 */
+
+	final static protected function dir()
+	{
+		return self::$dir;
 	}
 
 
