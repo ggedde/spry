@@ -1,7 +1,9 @@
 <?php
 
 class AUTH extends API {
-
+	
+	private static $table = 'accounts';
+	
 
 	/**
 	 * Returns the Account ID and Access_key
@@ -13,7 +15,7 @@ class AUTH extends API {
  	 * @return array
 	 */
 
-	static public function get()
+	public static function get()
 	{
 		$username = parent::validator()->required()->minLength(1)->validate('username');
 		$password = parent::validator()->required()->minLength(1)->validate('password');
@@ -30,7 +32,7 @@ class AUTH extends API {
 				]
 			];
 
-			$response = parent::db()->get('accounts', ['id', 'access_key'], $where);
+			$response = parent::db()->get(self::$table, ['id', 'access_key'], $where);
 
 			if(!empty($response['id']))
 			{
@@ -54,7 +56,7 @@ class AUTH extends API {
  	 * @return int
 	 */
 
-	static public function get_account_id()
+	public static function get_account_id()
 	{
 		if($access_key = parent::params('access_key'))
 		{
@@ -65,7 +67,7 @@ class AUTH extends API {
 				]
 			];
 
-			$id = parent::db()->get('accounts', 'id', $where);
+			$id = parent::db()->get(self::$table, 'id', $where);
 
 			if(!empty($id) && is_numeric($id))
 			{
