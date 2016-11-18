@@ -582,6 +582,26 @@ class API {
 	{
 		if($param)
 		{
+			// Check for Multi-Demension Parameter
+			if(strpos($param, '.'))
+			{
+				$nested_param = self::$params;
+
+				$param_items = explode('.', $param);
+				foreach ($param_items as $param_item)
+				{
+					if(isset($nested_param[$param_item]))
+					{
+						$nested_param = $nested_param[$param_item];
+					}
+				}
+
+				if($nested_param)
+				{
+					return $nested_param;
+				}
+			}
+			
 			if(isset(self::$params[$param]))
 			{
 				return self::$params[$param];
