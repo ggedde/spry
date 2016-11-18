@@ -1,7 +1,7 @@
 # SpryAPI
 A lightweight PHP API Framework
 
-Current Release: 1.0.0
+Current Release: 1.1.0
 
 REQUIRES:
 * PHP 5.4
@@ -196,3 +196,9 @@ Or if Singleton
 MY_EXTENSION::some_method();
 ```
 
+
+
+## Changelog
+
+### 1.1.0 (Nov 18 2016)
+* Added ability to get Nested params by using the "." separator in the parent::params() method
