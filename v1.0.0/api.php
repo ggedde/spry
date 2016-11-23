@@ -4,7 +4,7 @@
  *
  * SpryAPI Framework
  * https://github.com/ggedde/SpryAPI
- * Version 1.1.0
+ * Version 1.1.1
  *
  * Copyright 2016, GGedde
  * Released under the MIT license
