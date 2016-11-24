@@ -4,7 +4,7 @@
  *
  * SpryAPI Framework
  * https://github.com/ggedde/SpryAPI
- * Version 1.1.1
+ * Version 1.2.0
  *
  * Copyright 2016, GGedde
  * Released under the MIT license
@@ -703,6 +703,27 @@ class API {
 		}
 
 		return md5(serialize($value).$salt);
+	}
+	
+	
+	
+	/**
+	 * Return just the body of the request is successfull.
+	 *
+ 	 * @param string $result
+ 	 *
+ 	 * @access 'protected'
+ 	 * @return mixed
+	 */
+
+	final protected static function get_body($result)
+	{
+		if(!empty($result['response']) && $result['response'] === 'success' && isset($result['body']))
+		{
+			return $result['body'];
+		}
+
+		return null;
 	}
 
 
