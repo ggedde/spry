@@ -417,6 +417,11 @@ class API {
 
 	final protected static function stop_error($response_code=0, $data=null, $messages=[])
 	{
+		if(!empty(self::$config->stop_error_filter))
+		{
+			self::get_response(self::get_controller(self::$config->stop_error_filter));
+		}
+		
 		$response = self::build_response($response_code, $data, $messages);
 		self::send_output($response);
 	}
