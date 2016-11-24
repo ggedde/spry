@@ -419,7 +419,13 @@ class API {
 	{
 		if(!empty(self::$config->stop_error_filter))
 		{
-			self::get_response(self::get_controller(self::$config->stop_error_filter));
+			$params = [
+				'response_code' => $response_code,
+				'data' => $data,
+				'messages' => $messages
+			];
+			
+			self::get_response(self::get_controller(self::$config->stop_error_filter), $params);
 		}
 		
 		$response = self::build_response($response_code, $data, $messages);
