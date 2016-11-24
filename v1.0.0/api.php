@@ -812,13 +812,18 @@ class API {
  	 * @final
 	 */
 
-	final private static function get_response($controller=array())
+	final static private function get_response($controller=array(), $params=null)
 	{
 		if(!is_callable(array($controller['obj'], $controller['method'])))
 		{
 			self::stop_error(5106, null, $controller['method']);
 		}
-		
+
+		if($params)
+		{
+			return call_user_func(array($controller['obj'], $controller['method']), $params);
+		}
+
 		return call_user_func(array($controller['obj'], $controller['method']));
 	}
 
