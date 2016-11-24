@@ -203,6 +203,7 @@ MY_EXTENSION::some_method();
 ### 1.2.0 (Nov 23 2016)
 * Fixed Issue with Nested Params
 * Added method for getting just the body of the results on success
+* Added Stop Error Filter
 
 ### 1.1.0 (Nov 18 2016)
 * Added ability to get Nested params by using the "." separator in the parent::params() method
