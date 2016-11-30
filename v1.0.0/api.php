@@ -4,7 +4,7 @@
  *
  * SpryAPI Framework
  * https://github.com/ggedde/SpryAPI
- * Version 1.2.0
+ * Version 1.3.0
  *
  * Copyright 2016, GGedde
  * Released under the MIT license
@@ -52,9 +52,12 @@ class API {
 		
 		self::$dir = dirname(__FILE__);
 
-		if(!empty(self::$config->pre_auth_filter))
+		if(!empty(self::$config->pre_auth_filters) && is_array(self::$config->pre_auth_filters))
 		{
-			self::get_response(self::get_controller(self::$config->pre_auth_filter));
+			foreach (self::$config->pre_auth_filters as $filter)
+			{
+				self::get_response(self::get_controller($filter));
+			}
 		}
 		
 		if(!empty(self::$config->db))
@@ -68,9 +71,12 @@ class API {
 
 		$route = self::get_route(self::$path);
 
-		if(!empty(self::$config->post_auth_filter))
+		if(!empty(self::$config->post_auth_filters) && is_array(self::$config->post_auth_filters))
 		{
-			self::get_response(self::get_controller(self::$config->post_auth_filter));
+			foreach (self::$config->post_auth_filters as $filter)
+			{
+				self::get_response(self::get_controller($filter));
+			}
 		}
 
 		$controller = self::get_controller($route['controller']);
@@ -417,15 +423,18 @@ class API {
 
 	final protected static function stop_error($response_code=0, $data=null, $messages=[])
 	{
-		if(!empty(self::$config->stop_error_filter))
+		if(!empty(self::$config->stop_error_filters) && is_array(self::$config->stop_error_filters))
 		{
 			$params = [
 				'response_code' => $response_code,
 				'data' => $data,
 				'messages' => $messages
 			];
-			
-			self::get_response(self::get_controller(self::$config->stop_error_filter), $params);
+
+			foreach (self::$config->stop_error_filters as $filter)
+			{
+				self::get_response(self::get_controller($filter), $params);
+			}
 		}
 		
 		$response = self::build_response($response_code, $data, $messages);
