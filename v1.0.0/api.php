@@ -64,6 +64,14 @@ class API {
 		{
 			self::$db = new DB(self::$config->db);
 		}
+		
+		if(!empty(self::$config->post_db_filters) && is_array(self::$config->post_db_filters))
+		{
+			foreach (self::$config->post_db_filters as $filter)
+			{
+				self::get_response(self::get_controller($filter));
+			}
+		}
 
 		self::check_auth(self::$path);
 
