@@ -1,7 +1,7 @@
 # SpryAPI
 A lightweight PHP API Framework
 
-Current Release: 1.2.0
+Current Release: 1.3.0
 
 REQUIRES:
 * PHP 5.4
@@ -199,6 +199,9 @@ MY_EXTENSION::some_method();
 
 
 ## Changelog
+
+### 1.3.0 (Nov 30 2016)
+* Made Filters Arrays to allow for multiple filters.
 
 ### 1.2.0 (Nov 23 2016)
 * Fixed Issue with Nested Params
