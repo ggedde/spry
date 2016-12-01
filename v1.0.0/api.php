@@ -202,10 +202,10 @@ class API {
 
 		if(!empty($response))
 		{
-			return ['response' => self::response_type($code), 'response_code' => $code, 'message' => $response];
+			return ['response' => self::response_type($code), 'response_code' => $code, 'messages' => [$response]];
 		}
 
-		return ['response' => 'unknown', 'response_code' => $code, 'message' => 'Unkown Response Code'];
+		return ['response' => 'unknown', 'response_code' => $code, 'messages' => ['Unkown Response Code']];
 	}
 
 
@@ -810,14 +810,14 @@ class API {
 			$response['body'] = $data;
 		}
 
-		if(!empty($messages) && !is_array($messages))
+		if(!empty($messages) && (is_string($messages) || is_numeric($messages)))
 		{
 			$messages = [$messages];
 		}
 
 		if(!empty($messages))
 		{
-			$response['messages'] = $messages;
+			$response['messages'] = array_merge($response['messages'], $messages);
 		}
 
 		return $response;
