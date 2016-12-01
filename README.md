@@ -114,8 +114,10 @@ $config->routes = [
 
 config.php
 ```
-$config->pre_auth_filter = 'YOUR_CONTROLLER::pre_auth_filter';
-$config->post_auth_filter = 'YOUR_CONTROLLER::post_auth_filter';
+$config->pre_auth_filters = ['YOUR_CONTROLLER::pre_auth_filter', 'SECOND_CONTROLLER::pre_auth_filter'];
+$config->post_db_filters = ['YOUR_CONTROLLER::post_db_filter'];
+$config->post_auth_filters = ['YOUR_CONTROLLER::post_auth_filter'];
+$config->stop_error_filters = [];
 ```
 Then Create a controller and add the methods.
 
@@ -123,6 +125,7 @@ Note that "pre_auth_filter" will run prior to user authentication and prior to a
 
 This is the fastest method and blocking requests here will help prevent load on your server, but it does not have all the data that you might require.
 
+"post_db_filter" runs after pre-auth_filter and has access to the database, but before user authentication.
 
 "post_auth_filter" has access to the user that authenticated with parent::account_id() and has access to the database with parent::db()
 
@@ -202,6 +205,7 @@ MY_EXTENSION::some_method();
 
 ### 1.3.0 (Nov 30 2016)
 * Made Filters Arrays to allow for multiple filters.
+* Added Post DB Filter
 
 ### 1.2.0 (Nov 23 2016)
 * Fixed Issue with Nested Params
