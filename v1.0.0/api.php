@@ -4,7 +4,7 @@
  *
  * SpryAPI Framework
  * https://github.com/ggedde/SpryAPI
- * Version 1.3.0
+ * Version 1.4.0
  *
  * Copyright 2016, GGedde
  * Released under the MIT license
@@ -18,12 +18,9 @@ class API {
 	private static $db;
 	private static $path;
 	private static $validator;
-	private static $account_id=0;
-	private static $access_key='';
+	private static $auth;
 	private static $config;
-	private static $dir;
-	
-	
+
 	/**
 	 * Initiates the API Call.
  	 *
@@ -38,19 +35,19 @@ class API {
 		require_once('config.php');
 		self::$config = $config;
 
-		if(!empty(self::$config->log_file))
+		spl_autoload_register(array(__CLASS__, 'autoloader'));
+
+		if(!empty(self::$config->post_config_filters) && is_array(self::$config->post_config_filters))
 		{
-			set_error_handler(array(__CLASS__, 'error_handler'));
-			register_shutdown_function(array(__CLASS__, 'shut_down_function'));
+			foreach (self::$config->post_config_filters as $filter)
+			{
+				self::get_response(self::get_controller($filter));
+			}
 		}
 
 		self::$path = self::get_path();
 
-		spl_autoload_register(array(__CLASS__, 'autoloader'));
-
 		self::$params = self::fetch_params();
-		
-		self::$dir = dirname(__FILE__);
 
 		if(!empty(self::$config->pre_auth_filters) && is_array(self::$config->pre_auth_filters))
 		{
@@ -59,12 +56,13 @@ class API {
 				self::get_response(self::get_controller($filter));
 			}
 		}
-		
-		if(!empty(self::$config->db))
-		{
-			self::$db = new DB(self::$config->db);
+
+		if(0/0){
+
 		}
-		
+
+		self::$db = new DB(self::$config->db);
+
 		if(!empty(self::$config->post_db_filters) && is_array(self::$config->post_db_filters))
 		{
 			foreach (self::$config->post_db_filters as $filter)
@@ -72,8 +70,6 @@ class API {
 				self::get_response(self::get_controller($filter));
 			}
 		}
-
-		self::check_auth(self::$path);
 
 		self::set_routes();
 
@@ -259,97 +255,6 @@ class API {
 
 
 	/**
-	 * Sets the error handler for all PHP errors in the App.
- 	 *
- 	 * @param int $errno
- 	 * @param string $errstr
- 	 * @param string $errfile
- 	 * @param string $errline
- 	 *
- 	 * @access 'public'
- 	 * @return void
- 	 * @final
-	 */
-
-	final protected static function error_handler($errno, $errstr, $errfile, $errline)
-	{
-		if(!empty($errstr))
-		{
-			if(strpos($errstr, '[SQL Error]') !== false)
-			{
-				$errno = 'SQL Error';
-			}
-
-			switch ($errno)
-			{
-			    case E_ERROR:
-			        $errstr = 'PHP Fatal Error: '.$errstr;
-			        break;
-
-			    case 'SQL Error':
-			        $errstr = 'SQL Error: '.str_replace('[SQL Error] ', '', $errstr);
-			        break;
-
-			    case E_WARNING:
-			    case E_USER_WARNING:
-			        $errstr = 'PHP Warning: '.$errstr;
-			        break;
-
-			    case E_NOTICE:
-			    case E_USER_NOTICE:
-			    case '8':
-			        $errstr = 'PHP Notice: '.$errstr;
-			        break;
-
-			    default:
-			    	$errstr = 'PHP Unknown Error: '.$errstr;
-			        break;
-	    	}
-
-		    $backtrace = '';
-		    $dbts = debug_backtrace();
-			foreach ($dbts as $dbt)
-			{
-				if(!empty($dbt['file']))
-				{
-					$backtrace.= ' - - Trace: '.$dbt['file'].' [Line: '.(!empty($dbt['line']) ? $dbt['line'] : '?').'] - Function: '.$dbt['function']."\n";
-				}
-			}
-
-			$data = $errstr.$errfile.' [Line: '.(!empty($errline) ? $errline : '?')."]\n".$backtrace;
-
-			// Try and Make directory if id doesn't exist
-			if(!is_dir(dirname(self::$config->log_file)))
-			{
-				mkdir(dirname(self::$config->log_file));
-			}
-
-			file_put_contents(self::$config->log_file, $data, FILE_APPEND);
-		}
-	}
-
-
-
-	/**
-	 * Checks the API on Shutdown for Fatal Errors.
- 	 *
- 	 * @access 'public'
- 	 * @return void
- 	 * @final
-	 */
-
-	final protected static function shut_down_function()
-	{
-	    $error = error_get_last();
-	    if ($error['type'] === E_ERROR)
-	    {
-	        self::error_handler($error['type'], $error['message'], $error['file'], $error['line']);
-	    }
-	}
-
-
-
-	/**
 	 * Sets the Autoloader for the Extra Classed needed for the API.
  	 *
  	 * @access 'public'
@@ -444,7 +349,7 @@ class API {
 				self::get_response(self::get_controller($filter), $params);
 			}
 		}
-		
+
 		$response = self::build_response($response_code, $data, $messages);
 		self::send_output($response);
 	}
@@ -452,65 +357,33 @@ class API {
 
 
 	/**
-	 * Checks the API call for Authentication.
-	 * Throughs stop_error() on failure.
-	 *
-	 * @param string $path
+	 * Sets the Auth object.
  	 *
- 	 * @access 'private'
- 	 * @return void
+ 	 * @access 'protected'
+ 	 * @return object
  	 * @final
 	 */
 
-	final private static function check_auth($path)
+	final protected static function set_auth($object)
 	{
-		if($path !== '/auth/get/')
-		{
-			$access_key = self::params('access_key');
-			$account_id = AUTH::get_account_id();
-
-			if($access_key && $account_id)
-			{
-				self::$access_key = $access_key;
-				self::$account_id = $account_id;
-				return true;
-			}
-			else
-			{
-				sleep(5); // Reduce Hack attempts
-				self::stop_error(5201);
-			}
-		}
+		self::$auth = $object;
 	}
 
 
 
 	/**
-	 * Returns the Account ID from the API Call.
+	 * Returns the Auth object.
  	 *
  	 * @access 'protected'
- 	 * @return int
+ 	 * @return object
  	 * @final
 	 */
 
-	final protected static function account_id()
+	final protected static function auth()
 	{
-		return self::$account_id;
+		return self::$auth;
 	}
-	
-	
-	/**
-	 * Returns the Access Key from the API Call.
- 	 *
- 	 * @access 'protected'
- 	 * @return string
- 	 * @final
-	 */
 
-	final protected static function access_key()
-	{
-		return self::$access_key;
-	}
 
 
 	/**
@@ -525,20 +398,21 @@ class API {
 	{
 		return self::$config;
 	}
-	
-	
-	
+
+
+
 	/**
-	 * Returns the Root Directory of the API.
+	 * Return a formatted alphnumeric safe version of the string.
+	 *
+ 	 * @param string $string
  	 *
  	 * @access 'protected'
- 	 * @return object
- 	 * @final
+ 	 * @return string
 	 */
 
-	final static protected function dir()
+	final protected static function sanitize($string)
 	{
-		return self::$dir;
+		return preg_replace("/\W/g", '', str_replace([' ', '-'], '_', strtolower($string)));
 	}
 
 
@@ -601,7 +475,7 @@ class API {
 	 * Then returns the converted Parameters as array.
 	 * Throughs stop_error() on failure.
  	 *
- 	 * @access 'private'
+ 	 * @access 'protected'
  	 * @return array
  	 * @final
 	 */
@@ -639,6 +513,29 @@ class API {
 		}
 
 		return self::$params;
+	}
+
+
+
+
+	/**
+	 * Sets the Param Data
+ 	 *
+ 	 * @access 'protected'
+ 	 * @return bool
+ 	 * @final
+	 */
+
+	final protected static function set_params($params=[])
+	{
+		if(empty($params) || !is_array($params))
+		{
+			return false;
+		}
+
+		self::$params = array_merge(self::$params, $params);
+
+		return true;
 	}
 
 
@@ -732,9 +629,9 @@ class API {
 
 		return md5(serialize($value).$salt);
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Return just the body of the request is successfull.
 	 *
@@ -774,12 +671,12 @@ class API {
 			return self::build_response($response_code, $data, $messages);
 		}
 
-		if(empty($data) && $data !== null && (empty(self::$db) || !self::$db->has_error()))
+		if(empty($data) && $data !== null && $data !== 0 && !self::$db->has_error())
 		{
 			return self::build_response('4' . $response_code, $data, $messages);
 		}
 
-		if(!empty($data))
+		if(!empty($data) || $data === 0)
 		{
 			return self::build_response('2' . $response_code, $data, $messages);
 		}
@@ -820,6 +717,14 @@ class API {
 			$response['messages'] = array_merge($response['messages'], $messages);
 		}
 
+		if(!empty(self::$config->build_response_filters) && is_array(self::$config->build_response_filters))
+		{
+			foreach (self::$config->build_response_filters as $filter)
+			{
+				self::get_response(self::get_controller($filter), $response);
+			}
+		}
+
 		return $response;
 	}
 
@@ -835,7 +740,7 @@ class API {
  	 * @final
 	 */
 
-	final static private function get_response($controller=array(), $params=null)
+	final private static function get_response($controller=array(), $params=null)
 	{
 		if(!is_callable(array($controller['obj'], $controller['method'])))
 		{
