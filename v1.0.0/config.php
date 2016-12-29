@@ -2,17 +2,16 @@
 
 // Salt for Security.  Change this to be Unique for each one of your API's.
 // You should use a long and Strong key.
+// DO NOT CHANGE IT ONCE YOU HAVE USERS.  Otherwise those users may not be able to login.
 $config->salt = 'asdfghjklkjhgfdsasdfghjklpoiuytrewqazxcvbnm';
 
-// Set Error Log file Location
-// THIS SHOULD BE DISABLED IN PRODUCTION (OR AT LEAST SET SOMEWHERE IN A PRIVATE FOLDER)
-// $config->log_file = dirname(__FILE__).'/error.log';
+// Set PHP and API Log file Locations
+// THESE SHOULD BE DISABLED IN PRODUCTION (OR AT LEAST SET SOMEWHERE IN A PRIVATE FOLDER)
+$config->php_log_file = dirname(__FILE__).'/php.log';
+$config->api_log_file = dirname(__FILE__).'/api.log';
 
-// Set Error Types
-if(!empty($config->log_file))
-{
-	ini_set('error_reporting', E_ALL);
-}
+// Set PHP Error Types
+ini_set('error_reporting', E_ALL);
 
 // Database
 $config->db = [
@@ -89,8 +88,11 @@ $config->response_codes = [
 
 ];
 
-// $config->pre_auth_filters = ['YOUR_CONTROLLER::pre_auth_filter', 'SECOND_CONTROLLER::pre_auth_filter'];
-// $config->post_auth_filters = ['YOUR_CONTROLLER::post_auth_filter'];
-// $config->stop_error_filters = [];
+// $config->post_config_filters = ['LOG::setup_php_logs'];
+// $config->pre_auth_filters = ['LOG::initial_request'];
+// $config->post_db_filters = ['AUTH::check'];
+// $config->post_auth_filters = ['LOG::user_request'];
+// $config->stop_error_filters = ['LOG::stop_error_filter'];
+// $config->build_response_filters = ['LOG::build_response_filter'];
 
 
