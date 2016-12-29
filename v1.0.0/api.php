@@ -633,6 +633,21 @@ class API {
 
 
 	/**
+	 * Returns the Root Directory of the API.
+ 	 *
+ 	 * @access 'protected'
+ 	 * @return object
+ 	 * @final
+	 */
+
+	final protected static function dir()
+	{
+		return dirname(__FILE__);
+	}
+
+
+
+	/**
 	 * Return just the body of the request is successfull.
 	 *
  	 * @param string $result
