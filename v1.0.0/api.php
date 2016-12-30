@@ -779,8 +779,8 @@ class API {
 	private static function send_output($output=array())
 	{
 		header("Access-Control-Allow-Origin: *");
-	    header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-	    header("Access-Control-Allow-Headers: X-Requested-With, content-type");
+		header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+		header("Access-Control-Allow-Headers: X-Requested-With, content-type");
 
 		echo json_encode($output);
 		exit;
