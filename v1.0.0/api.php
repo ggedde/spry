@@ -4,7 +4,7 @@
  *
  * SpryAPI Framework
  * https://github.com/ggedde/SpryAPI
- * Version 1.4.1
+ * Version 1.5.0
  *
  * Copyright 2016, GGedde
  * Released under the MIT license
@@ -15,7 +15,7 @@ class API {
 
 	private static $routes = [];
 	private static $params = [];
-	private static $db;
+	private static $db = null;
 	private static $path;
 	private static $validator;
 	private static $auth;
@@ -46,7 +46,7 @@ class API {
 
 		self::$path = self::get_path();
 
-		self::$params = self::fetch_params();
+		self::$params = self::set_params();
 
 		if(!empty(self::$config->pre_auth_filters) && is_array(self::$config->pre_auth_filters))
 		{
@@ -56,7 +56,10 @@ class API {
 			}
 		}
 
-		self::$db = new DB(self::$config->db);
+		if(!empty(self::$config->db))
+		{
+			self::$db = new DB(self::$config->db);
+		}
 
 		if(!empty(self::$config->post_db_filters) && is_array(self::$config->post_db_filters))
 		{
@@ -236,7 +239,17 @@ class API {
 
 		if(!empty($path) && !empty(self::$routes[$path]))
 		{
-			return ['path' => $path, 'controller' => self::$routes[$path]];
+			$route = ['path' => $path, 'controller' => self::$routes[$path]];
+
+			if(!empty(self::$config->get_route_filters) && is_array(self::$config->get_route_filters))
+			{
+				foreach (self::$config->get_route_filters as $filter)
+				{
+					$route = self::get_response(self::get_controller($filter), $route);
+				}
+			}
+
+			return $route;
 		}
 
 		self::stop_error(5102); // Request Not Found
@@ -337,7 +350,8 @@ class API {
 		}
 
 		$response = self::build_response($response_code, $data, $messages);
-		self::send_output($response);
+
+		self::send_response($response);
 	}
 
 
@@ -409,7 +423,7 @@ class API {
  	 * @return array
 	 */
 
-	private static function fetch_params($param='')
+	private static function set_params()
 	{
 		if($data = trim(file_get_contents('php://input')))
 		{
@@ -424,7 +438,16 @@ class API {
 			}
 		}
 
-
+		if(!empty($data))
+		{
+			if(!empty(self::$config->set_params_filters) && is_array(self::$config->set_params_filters))
+			{
+				foreach (self::$config->set_params_filters as $filter)
+				{
+					$data = self::get_response(self::get_controller($filter), $data);
+				}
+			}
+		}
 
 		if(!empty($data) && !is_array($data))
 		{
@@ -433,16 +456,6 @@ class API {
 
 		if(!empty($data) && is_array($data))
 		{
-			if($param)
-			{
-				if(isset($data[$param]))
-				{
-					return $data[$param];
-				}
-
-				return null;
-			}
-
 			return $data;
 		}
 
@@ -530,7 +543,17 @@ class API {
 	protected static function get_path()
 	{
 		$path = explode('?', strtolower($_SERVER['REQUEST_URI']), 2);
-		return self::clean_path($path[0]);
+		$path = self::clean_path($path[0]);
+
+		if(!empty(self::$config->get_path_filters) && is_array(self::$config->get_path_filters))
+		{
+			foreach (self::$config->get_path_filters as $filter)
+			{
+				$path = self::get_response(self::get_controller($filter), $path);
+			}
+		}
+
+		return $path;
 	}
 
 
@@ -661,7 +684,7 @@ class API {
 			return self::build_response($response_code, $data, $messages);
 		}
 
-		if(empty($data) && $data !== null && $data !== 0 && !self::$db->has_error())
+		if(empty($data) && $data !== null && $data !== 0 && (!self::$db || (self::$db && !self::$db->has_error())))
 		{
 			return self::build_response('4' . $response_code, $data, $messages);
 		}
@@ -710,7 +733,7 @@ class API {
 		{
 			foreach (self::$config->build_response_filters as $filter)
 			{
-				self::get_response(self::get_controller($filter), $response);
+				$response = self::get_response(self::get_controller($filter), $response);
 			}
 		}
 
@@ -778,11 +801,35 @@ class API {
 
 	private static function send_output($output=array())
 	{
-		header("Access-Control-Allow-Origin: *");
-		header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-		header("Access-Control-Allow-Headers: X-Requested-With, content-type");
+		$headers = [
+			'Access-Control-Allow-Origin: *',
+			'Access-Control-Allow-Methods: GET, POST, OPTIONS',
+			'Access-Control-Allow-Headers: X-Requested-With, content-type'
+		];
 
-		echo json_encode($output);
+		$output = ['headers' => $headers, 'body' => json_encode($output)];
+
+		if(!empty(self::$config->send_output_filters) && is_array(self::$config->send_output_filters))
+		{
+			foreach (self::$config->send_output_filters as $filter)
+			{
+				$output = self::get_response(self::get_controller($filter), $output);
+			}
+		}
+
+		if(!empty($output['headers']))
+		{
+			foreach ($output['headers'] as $header)
+			{
+				header($header);
+			}
+		}
+
+		if(!empty($output['body']))
+		{
+			echo $output['body'];
+		}
+
 		exit;
 	}
 
