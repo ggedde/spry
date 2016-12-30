@@ -2,7 +2,7 @@
 
 // Salt for Security.  Change this to be Unique for each one of your API's.
 // You should use a long and Strong key.
-// DO NOT CHANGE IT ONCE YOU HAVE USERS.  Otherwise those users may not be able to login.
+// DO NOT CHANGE IT ONCE YOU HAVE CREATED DATA.  Otherwise things like logins may no longer work.
 $config->salt = 'asdfghjklkjhgfdsasdfghjklpoiuytrewqazxcvbnm';
 
 // Set PHP and API Log file Locations
