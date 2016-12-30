@@ -1,9 +1,14 @@
 <?php
 
-class AUTH extends API {
-	
-	private static $table = 'accounts';
-	
+class AUTH extends API
+{
+
+	private static $auth_fields = [
+		'accounts.id(account_id)',
+		'users.id(user_id)',
+		'users.permissions(user_permissions)',
+		'users.access_key(user_access_key)'
+	];
 
 	/**
 	 * Returns the Account ID and Access_key
@@ -17,67 +22,125 @@ class AUTH extends API {
 
 	public static function get()
 	{
-		$username = parent::validator()->required()->minLength(1)->validate('username');
-		$password = parent::validator()->required()->minLength(1)->validate('password');
-
-		if(!empty($username) && !empty($password))
+		if(!empty(parent::auth()->account_id) && !empty(parent::auth()->user_id) && !empty(parent::auth()->user_access_key))
 		{
-			sleep(1); // Reduce Hack attempts
-
-			$where = [
-				'AND' => [
-					'username' => $username,
-					'password' => parent::hash($password),
-					'status' => 'active'
-				]
+			$request = [
+				'account_id' => parent::auth()->account_id,
+				'user_id' => parent::auth()->user_id,
+				'access_key' => parent::auth()->user_access_key,
 			];
 
-			$response = parent::db()->get(self::$table, ['id', 'access_key'], $where);
-
-			if(!empty($response['id']))
-			{
-				return parent::results(200, $response);
-			}
+			return parent::results(200, $request);
 		}
 
 		sleep(5); // Reduce Hack attempts
-
 		return parent::results(200);
 	}
 
 
 
-	/**
-	 * Returns the Account ID
-	 *
- 	 * @param string $access_key
- 	 *
- 	 * @access 'public'
- 	 * @return int
-	 */
 
-	public static function get_account_id()
+
+	public static function check()
 	{
-		if($access_key = parent::params('access_key'))
+		// Skip this Check if request is by username and password
+		if(parent::get_path() === '/auth/get/')
 		{
+			$username = parent::validator()->required()->minLength(1)->validate('username');
+			$password = parent::validator()->required()->minLength(1)->validate('password');
+
+			sleep(1); // Reduce Hack attempts
+
 			$where = [
 				'AND' => [
-					'access_key' => $access_key,
-					'status' => 'active'
+					'users.username' => $username,
+					'users.password' => parent::hash($password),
+					'accounts.status' => 'active'
 				]
 			];
+		}
+		else
+		{
+			// Run Auth Check
+			$access_key = parent::validator()->required()->minLength(1)->validate('access_key');
 
-			$id = parent::db()->get(self::$table, 'id', $where);
+			$where = [
+				'AND' => [
+					'users.access_key' => $access_key,
+					'accounts.status' => 'active'
+				]
+			];
+		}
 
-			if(!empty($id) && is_numeric($id))
+		$join = [
+			"[>]users" => ["id" => "users.account_id"]
+		];
+
+		$request = parent::db()->get('accounts', $join, self::$auth_fields, $where);
+
+		if(!empty($request['account_id']))
+		{
+			$auth = (object) $request;
+			if($auth->user_permissions !== '*')
 			{
-				return $id;
+				$auth->user_permissions = json_decode($auth->user_permissions, true);
 			}
+			parent::set_auth($auth);
+			return true;
 		}
 
 		sleep(5); // Reduce Hack attempts
+		self::stop_error(5201);
+	}
 
-		return 0;
+
+
+	public static function get_permissions()
+	{
+		$permissions = array_keys(parent::config()->routes);
+
+		return parent::results(205, $permissions);
+	}
+
+
+
+	public static function has_permission($path='')
+	{
+		if(!$path)
+		{
+			$path = parent::get_path();
+		}
+
+		if(!empty(parent::auth()->user_permissions))
+		{
+			$permissions = parent::auth()->user_permissions;
+		}
+
+		if(empty($permissions) || (!is_array($permissions) && $permissions !== '*') || (is_array($permissions) && !in_array($path, $permissions)))
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+
+
+	public static function check_permissions()
+	{
+		$path = parent::get_path();
+
+		// Skip this Check if request is by username and password
+		if($path === '/auth/get/')
+		{
+			return;
+		}
+
+		if(!self::has_permission($path))
+		{
+			sleep(2); // Reduce Hack attempts
+			parent::stop_error(5204);
+		}
 	}
 
 }
