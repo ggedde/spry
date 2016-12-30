@@ -335,6 +335,11 @@ class API {
 
 	protected static function stop_error($response_code=0, $data=null, $messages=[])
 	{
+		if(!empty($messages) && (is_string($messages) || is_numeric($messages)))
+		{
+			$messages = [$messages];
+		}
+		
 		if(!empty(self::$config->stop_error_filters) && is_array(self::$config->stop_error_filters))
 		{
 			$params = [
