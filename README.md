@@ -1,7 +1,7 @@
 # SpryAPI
 A lightweight PHP API Framework
 
-Current Release: 1.3.0
+Current Release: 1.4.1
 
 REQUIRES:
 * PHP 5.4
@@ -56,8 +56,8 @@ $config->response_codes = [
 ];
 
 // Auth Filters
-// $config->pre_auth_filter = 'YOUR_CONTROLLER::pre_auth_filter';
-// $config->post_auth_filter = 'YOUR_CONTROLLER::post_auth_filter';
+// $config->pre_auth_filter = ['YOUR_CONTROLLER::pre_auth_filter'];
+// $config->post_auth_filter = ['YOUR_CONTROLLER::post_auth_filter'];
 ```
 
 ## Response Codes / Multiple Lingual
