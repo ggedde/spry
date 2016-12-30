@@ -904,7 +904,7 @@ class DB
 		}
 		else
 		{
-			require false;
+			return false;
 		}
 	}
 
