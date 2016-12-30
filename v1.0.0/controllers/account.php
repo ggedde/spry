@@ -2,11 +2,10 @@
 
 class ACCOUNT extends API
 {
-	private static $table = 'accounts';
-	
-	
+	static private $table = 'accounts';
+
 	/**
-	 * Returns the Account by Access_key
+	 * Returns the Account
 	 *
  	 * @param string $username
  	 * @param string $password
@@ -15,25 +14,16 @@ class ACCOUNT extends API
  	 * @return array
 	 */
 
-	public static function get()
+	static public function get()
 	{
 		$where = [
 			'AND' => [
-				'id' => parent::account_id(),
+				'id' => parent::auth()->account_id,
 				'status' => 'active'
 			]
 		];
 
-		$fields = [
-			'id',
-			'type',
-			'username',
-			'email',
-			'server_ip',
-			'created_on'
-		];
-
-		return parent::results(400, parent::db()->get(self::$table, $fields, $where));
+		return parent::results(400, parent::db()->get(self::$table, '*', $where));
 	}
 
 }
