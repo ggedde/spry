@@ -4,7 +4,7 @@
  *
  * SpryAPI Framework
  * https://github.com/ggedde/SpryAPI
- * Version 1.4.0
+ * Version 1.4.1
  *
  * Copyright 2016, GGedde
  * Released under the MIT license
@@ -26,10 +26,9 @@ class API {
  	 *
  	 * @access 'public'
  	 * @return void
- 	 * @final
 	 */
 
-	final public static function run()
+	public static function run()
 	{
 		$config = new stdClass();
 		require_once('config.php');
@@ -55,10 +54,6 @@ class API {
 			{
 				self::get_response(self::get_controller($filter));
 			}
-		}
-
-		if(0/0){
-
 		}
 
 		self::$db = new DB(self::$config->db);
@@ -98,10 +93,9 @@ class API {
  	 *
  	 * @access 'private'
  	 * @return void
- 	 * @final
 	 */
 
-	final private static function set_routes()
+	private static function set_routes()
 	{
 		foreach (self::$config->routes as $route_url => $route_class)
 		{
@@ -116,10 +110,9 @@ class API {
  	 *
  	 * @access 'private'
  	 * @return string
- 	 * @final
 	 */
 
-	final private static function response_type($code='')
+	private static function response_type($code='')
 	{
 		if(!empty($code) && is_numeric($code))
 		{
@@ -150,10 +143,9 @@ class API {
  	 *
  	 * @access 'private'
  	 * @return array
- 	 * @final
 	 */
 
-	final private static function response_codes($code='')
+	private static function response_codes($code='')
 	{
 		$lang = 'en';
 		$type = 4;
@@ -214,10 +206,9 @@ class API {
  	 *
  	 * @access 'private'
  	 * @return void
- 	 * @final
 	 */
 
-	final private static function add_route($path, $controller)
+	private static function add_route($path, $controller)
 	{
 		$path = self::clean_path($path);
 		self::$routes[$path] = $controller;
@@ -232,10 +223,9 @@ class API {
  	 *
  	 * @access 'protected'
  	 * @return array
- 	 * @final
 	 */
 
-	final protected static function get_route($path=null)
+	protected static function get_route($path=null)
 	{
 		if(!$path)
 		{
@@ -259,10 +249,9 @@ class API {
  	 *
  	 * @access 'public'
  	 * @return void
- 	 * @final
 	 */
 
-	final protected static function autoloader($class)
+	protected static function autoloader($class)
 	{
 		$controller_file = __DIR__.'/controllers/'.strtolower($class).'.php';
 		$extension_file = __DIR__.'/extensions/'.strtolower($class).'.php';
@@ -284,10 +273,9 @@ class API {
  	 *
  	 * @access 'protected'
  	 * @return object
- 	 * @final
 	 */
 
-	final protected static function db()
+	protected static function db()
 	{
 		return self::$db;
 	}
@@ -299,10 +287,9 @@ class API {
  	 *
  	 * @access 'protected'
  	 * @return object
- 	 * @final
 	 */
 
-	final protected static function validator($params=array())
+	protected static function validator($params=array())
 	{
 		if(empty($params))
 		{
@@ -331,10 +318,9 @@ class API {
  	 *
  	 * @access 'protected'
  	 * @return void
- 	 * @final
 	 */
 
-	final protected static function stop_error($response_code=0, $data=null, $messages=[])
+	protected static function stop_error($response_code=0, $data=null, $messages=[])
 	{
 		if(!empty(self::$config->stop_error_filters) && is_array(self::$config->stop_error_filters))
 		{
@@ -361,10 +347,9 @@ class API {
  	 *
  	 * @access 'protected'
  	 * @return object
- 	 * @final
 	 */
 
-	final protected static function set_auth($object)
+	protected static function set_auth($object)
 	{
 		self::$auth = $object;
 	}
@@ -376,10 +361,9 @@ class API {
  	 *
  	 * @access 'protected'
  	 * @return object
- 	 * @final
 	 */
 
-	final protected static function auth()
+	protected static function auth()
 	{
 		return self::$auth;
 	}
@@ -391,10 +375,9 @@ class API {
  	 *
  	 * @access 'protected'
  	 * @return object
- 	 * @final
 	 */
 
-	final protected static function config()
+	protected static function config()
 	{
 		return self::$config;
 	}
@@ -410,7 +393,7 @@ class API {
  	 * @return string
 	 */
 
-	final protected static function sanitize($string)
+	protected static function sanitize($string)
 	{
 		return preg_replace("/\W/g", '', str_replace([' ', '-'], '_', strtolower($string)));
 	}
@@ -424,10 +407,9 @@ class API {
  	 *
  	 * @access 'private'
  	 * @return array
- 	 * @final
 	 */
 
-	final private static function fetch_params($param='')
+	private static function fetch_params($param='')
 	{
 		if($data = trim(file_get_contents('php://input')))
 		{
@@ -477,10 +459,9 @@ class API {
  	 *
  	 * @access 'protected'
  	 * @return array
- 	 * @final
 	 */
 
-	final protected static function params($param='')
+	protected static function params($param='')
 	{
 		if($param)
 		{
@@ -523,10 +504,9 @@ class API {
  	 *
  	 * @access 'protected'
  	 * @return bool
- 	 * @final
 	 */
 
-	final protected static function set_params($params=[])
+	protected static function set_params($params=[])
 	{
 		if(empty($params) || !is_array($params))
 		{
@@ -545,10 +525,9 @@ class API {
  	 *
  	 * @access 'protected'
  	 * @return string
- 	 * @final
 	 */
 
-	final protected static function get_path()
+	protected static function get_path()
 	{
 		$path = explode('?', strtolower($_SERVER['REQUEST_URI']), 2);
 		return self::clean_path($path[0]);
@@ -561,10 +540,9 @@ class API {
  	 *
  	 * @access 'private'
  	 * @return string
- 	 * @final
 	 */
 
-	final private static function clean_path($path)
+	private static function clean_path($path)
 	{
 		if(substr($path, -1) === '/')
 		{
@@ -583,10 +561,9 @@ class API {
  	 *
  	 * @access 'private'
  	 * @return array
- 	 * @final
 	 */
 
-	final private static function get_controller($controller_name='')
+	private static function get_controller($controller_name='')
 	{
 		if(!empty($controller_name))
 		{
@@ -618,7 +595,7 @@ class API {
  	 * @return string
 	 */
 
-	final protected static function hash($value)
+	protected static function hash($value)
 	{
 		$salt = '';
 
@@ -637,10 +614,9 @@ class API {
  	 *
  	 * @access 'protected'
  	 * @return object
- 	 * @final
 	 */
 
-	final protected static function dir()
+	protected static function dir()
 	{
 		return dirname(__FILE__);
 	}
@@ -656,7 +632,7 @@ class API {
  	 * @return mixed
 	 */
 
-	final protected static function get_body($result)
+	protected static function get_body($result)
 	{
 		if(!empty($result['response']) && $result['response'] === 'success' && isset($result['body']))
 		{
@@ -676,10 +652,9 @@ class API {
  	 *
  	 * @access 'protected'
  	 * @return array
- 	 * @final
 	 */
 
-	final protected static function results($response_code=0, $data=null, $messages=[])
+	protected static function results($response_code=0, $data=null, $messages=[])
 	{
 		if(strlen(strval($response_code)) > 3)
 		{
@@ -709,10 +684,9 @@ class API {
  	 *
  	 * @access 'protected'
  	 * @return array
- 	 * @final
 	 */
 
-	final private static function build_response($response_code=0, $data=null, $messages=[])
+	private static function build_response($response_code=0, $data=null, $messages=[])
 	{
 		$response = self::response_codes($response_code);
 
@@ -752,10 +726,9 @@ class API {
  	 *
  	 * @access 'private'
  	 * @return mixed
- 	 * @final
 	 */
 
-	final private static function get_response($controller=array(), $params=null)
+	private static function get_response($controller=array(), $params=null)
 	{
 		if(!is_callable(array($controller['obj'], $controller['method'])))
 		{
@@ -780,10 +753,9 @@ class API {
  	 *
  	 * @access 'private'
  	 * @return void
- 	 * @final
 	 */
 
-	final private static function send_response($response=array())
+	private static function send_response($response=array())
 	{
 		if(empty($response['response']) || empty($response['response_code']))
 		{
@@ -802,10 +774,9 @@ class API {
  	 *
  	 * @access 'protected'
  	 * @return void
- 	 * @final
 	 */
 
-	final private static function send_output($output=array())
+	private static function send_output($output=array())
 	{
 		header("Access-Control-Allow-Origin: *");
 	    header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
