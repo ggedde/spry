@@ -85,6 +85,12 @@ $config->response_codes = [
 	/* Accounts */
 	2400 => ['en' => 'Successfully Retrieved Account'],
 	5400 => ['en' => 'Error: Retrieving Account'],
+	
+	/* Tests */
+	2500 => ['en' => 'All Tests Passed Successfully'],
+	5500 => ['en' => 'Error: Retrieving Tests'],
+	5501 => ['en' => 'Error: No Tests Configured'],
+	5502 => ['en' => 'Error: Some Tests Failed'],
 
 ];
 
