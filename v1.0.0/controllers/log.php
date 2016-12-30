@@ -3,7 +3,7 @@
 /**
  *
  *  Generic Log Class to catch API Logs and PHP Error Logs
- *  Version 1.0.0
+ *  Version 1.0.1
  *
  */
 
@@ -85,7 +85,8 @@ class LOG extends API
 
 	public static function stop_error_filter($params)
 	{
-		$msg = 'Response Code ('.$params['response_code'].') - '.implode(', ', $params['messages']);
+		$messages = (!empty($params['messages']) && is_array($params['messages']) ? implode(', ', $params['messages']) : '');
+		$msg = 'Response Code ('.$params['response_code'].') - '.$messages;
 
 		self::write_log('GitShack STOP ERROR: '.$msg);
 	}
@@ -103,9 +104,12 @@ class LOG extends API
 
 	public static function build_response_filter($response)
 	{
-		$msg = 'Response Code ('.$response['response_code'].') - '.implode(', ', $response['messages']);
+		$messages = (!empty($params['messages']) && is_array($params['messages']) ? implode(', ', $params['messages']) : '');
+		$msg = 'Response Code ('.$response['response_code'].') - '.$messages;
 
 		self::write_log('GitShack Build Response: '.$msg);
+
+		return $response;
 	}
 
 
