@@ -46,7 +46,7 @@ class API {
 
 		self::$path = self::get_path();
 
-		self::$params = self::set_params();
+		self::$params = self::fetch_params();
 
 		if(!empty(self::$config->pre_auth_filters) && is_array(self::$config->pre_auth_filters))
 		{
@@ -423,7 +423,7 @@ class API {
  	 * @return array
 	 */
 
-	private static function set_params()
+	private static function fetch_params()
 	{
 		if($data = trim(file_get_contents('php://input')))
 		{
@@ -440,9 +440,9 @@ class API {
 
 		if(!empty($data))
 		{
-			if(!empty(self::$config->set_params_filters) && is_array(self::$config->set_params_filters))
+			if(!empty(self::$config->fetch_params_filters) && is_array(self::$config->fetch_params_filters))
 			{
-				foreach (self::$config->set_params_filters as $filter)
+				foreach (self::$config->fetch_params_filters as $filter)
 				{
 					$data = self::get_response(self::get_controller($filter), $data);
 				}
