@@ -97,6 +97,6 @@ $config->response_codes = [
 // $config->build_response_filters = ['LOG::build_response_filter']; // Filters must return the $response
 // $config->get_path_filters = [];  // Filters must return the $path
 // $config->get_route_filters = [];  // Filters must return the $route
-// $config->set_params_filters = [];  // Filters must return the $params
+// $config->fetch_params_filters = [];  // Filters must return the $params
 // $config->send_output_filters = [];  // Filters must return the $output
 
