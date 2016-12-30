@@ -20,7 +20,7 @@ class EXAMPLE extends API
 		$name = parent::validator()->required()->minLength(1)->validate('name');
 
 		$data = [
-			'account_id' => parent::account_id(),
+			'account_id' => parent::auth()->account_id,
 			'name' => $name
 		];
 
@@ -49,7 +49,7 @@ class EXAMPLE extends API
 
 		$where = [
 			'AND' => [
-				'account_id' => parent::account_id(),
+				'account_id' => parent::auth()->account_id,
 				'id' => $id
 			]
 		];
@@ -77,7 +77,7 @@ class EXAMPLE extends API
 
 		$where = [
 			'AND' => [
-				'account_id' => parent::account_id(),
+				'account_id' => parent::auth()->account_id,
 				'id' => $id
 			]
 		];
@@ -100,7 +100,7 @@ class EXAMPLE extends API
 	{
 		$where = [
 			'AND' => [
-				'account_id' => parent::account_id(),
+				'account_id' => parent::auth()->account_id,
 			],
 			'ORDER' => 'id DESC',
 			'GROUP' => 'id'
@@ -127,7 +127,7 @@ class EXAMPLE extends API
 
 		$where = [
 			'AND' => [
-				'account_id' => parent::account_id(),
+				'account_id' => parent::auth()->account_id,
 				'id' => $id
 			]
 		];
