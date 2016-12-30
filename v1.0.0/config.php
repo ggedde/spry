@@ -88,6 +88,27 @@ $config->response_codes = [
 
 ];
 
+// Tests
+$config->tests = [
+	'/auth/get' => [
+		'params' => [
+			'username' => 'usertest',
+			'password' => 'passwordtest'
+		],
+		'match' => [
+			'response' => 'success',
+		]
+	],
+	'/account/get' => [
+		'params' => [
+			'access_key' => 'xxxxxxxxxxxxxxxxxxxxxxxx'
+		],
+		'match' => [
+			'response' => 'success',
+		]
+	],
+];
+
 // Filters
 // $config->post_config_filters = ['LOG::setup_php_logs'];
 // $config->pre_auth_filters = ['LOG::initial_request'];
