@@ -14,7 +14,7 @@ Included Extensions:
 ## How to Use
 index.php
 ```
-require 'v1.0.0/app.php';
+require 'v1.0.0/api.php';
 API::run();
 ```
 
