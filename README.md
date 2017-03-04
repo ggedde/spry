@@ -14,7 +14,7 @@ Included Extensions:
 ## How to Use
 index.php
 ```
-require 'v1.0.0/api.php';
+require 'api.php';
 API::run();
 ```
 
@@ -187,7 +187,7 @@ To add your own extension just upload the Class file in /extensions/ folder.  Th
 /extensions/my_extension.php
 ```
 class MY_EXTENSION {
-	
+
 }
 ```
 in your controller
