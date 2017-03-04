@@ -1,0 +1,17 @@
+{
+    "name": "ggedde/spryapi",
+    "description": "PHP API Framework",
+    "type": "PHP",
+    "require": {
+        "php": ">=5.4.0",
+        "catfan/medoo": "^1.2",
+        "hundredminds/php-validation": "^1.2"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "ggedde",
+            "email": "ggeddedev@gmail.com"
+        }
+    ]
+}

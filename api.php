@@ -19,7 +19,24 @@ class API {
 	private static $path;
 	private static $validator;
 	private static $auth;
+	private static $config_file='';
 	private static $config;
+
+	/**
+	 * Set the Config File to be used.
+ 	 *
+ 	 * @access 'private'
+ 	 * @return void
+	 */
+
+	private static function set_config_file($file)
+	{
+		if(file_exists($file))
+		{
+			self::$config_file = $file;
+			return;
+		}
+	}
 
 	/**
 	 * Initiates the API Call.
@@ -30,8 +47,14 @@ class API {
 
 	public static function run()
 	{
+
+		if(empty(self::$config_file) || !file_exists(self::$config_file))
+		{
+			self::stop_error(5000, null, ['Missing Config File']);
+		}
+
 		$config = new stdClass();
-		require_once('config.php');
+		require_once(self::$config_file);
 		self::$config = $config;
 
 		spl_autoload_register(array(__CLASS__, 'autoloader'));
@@ -339,7 +362,7 @@ class API {
 		{
 			$messages = [$messages];
 		}
-		
+
 		if(!empty(self::$config->stop_error_filters) && is_array(self::$config->stop_error_filters))
 		{
 			$params = [
