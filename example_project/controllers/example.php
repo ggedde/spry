@@ -1,9 +1,9 @@
 <?php
 
-class EXAMPLE extends API
+class EXAMPLE extends SpryApi
 {
 	private static $table = 'examples_table';
-	
+
 
 	/**
 	 * Inserts an Item

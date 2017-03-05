@@ -13,6 +13,10 @@ $config->api_log_file = dirname(__FILE__).'/api.log';
 // Set PHP Error Types
 ini_set('error_reporting', E_ALL);
 
+$config->autoloader_directories = [
+	__DIR__.'/controllers',
+];
+
 // Database
 $config->db = [
 	'database_type' => 'mysql',
@@ -36,7 +40,6 @@ $config->routes = [
 	// '/example/update' => 'EXAMPLE::update',
 	// '/example/delete' => 'EXAMPLE::delete'
 ];
-
 
 $config->response_codes = [
 
@@ -85,7 +88,7 @@ $config->response_codes = [
 	/* Accounts */
 	2400 => ['en' => 'Successfully Retrieved Account'],
 	5400 => ['en' => 'Error: Retrieving Account'],
-	
+
 	/* Tests */
 	2500 => ['en' => 'All Tests Passed Successfully'],
 	5500 => ['en' => 'Error: Retrieving Tests'],

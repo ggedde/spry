@@ -1,17 +1,19 @@
 <?php
 
+namespace SpryApi;
+
 /*!
  *
  * SpryAPI Framework
  * https://github.com/ggedde/SpryAPI
- * Version 1.5.0
+ * Version 2.0.0
  *
  * Copyright 2016, GGedde
  * Released under the MIT license
  *
  */
 
-class API {
+class SpryApi {
 
 	private static $routes = [];
 	private static $params = [];
@@ -19,42 +21,27 @@ class API {
 	private static $path;
 	private static $validator;
 	private static $auth;
-	private static $config_file='';
 	private static $config;
 
 	/**
-	 * Set the Config File to be used.
- 	 *
- 	 * @access 'private'
- 	 * @return void
-	 */
-
-	private static function set_config_file($file)
-	{
-		if(file_exists($file))
-		{
-			self::$config_file = $file;
-			return;
-		}
-	}
-
-	/**
 	 * Initiates the API Call.
+	 *
+	 * @param string $config_file
  	 *
  	 * @access 'public'
  	 * @return void
 	 */
 
-	public static function run()
+	public static function run($config_file='')
 	{
 
-		if(empty(self::$config_file) || !file_exists(self::$config_file))
+		if(empty($config_file) || !file_exists($config_file))
 		{
 			self::stop_error(5000, null, ['Missing Config File']);
 		}
 
 		$config = new stdClass();
-		require_once(self::$config_file);
+		require_once($config_file);
 		self::$config = $config;
 
 		spl_autoload_register(array(__CLASS__, 'autoloader'));
@@ -289,19 +276,29 @@ class API {
 
 	protected static function autoloader($class)
 	{
-		$controller_file = __DIR__.'/controllers/'.strtolower($class).'.php';
-		$extension_file = __DIR__.'/extensions/'.strtolower($class).'.php';
-
-		if(file_exists($controller_file))
+		if(empty(self::$config->autoloader_directories))
 		{
-			require_once $controller_file;
+			self::$config->autoloader_directories = [];
 		}
-		else if(file_exists($extension_file))
+
+		// Add SpryApi Extensions to directories
+		self::$config->autoloader_directories[] = __DIR__.'/extensions';
+
+		if(!empty(self::$config->autoloader_directories))
 		{
-			require_once $extension_file;
+			foreach(self::$config->autoloader_directories as $dir)
+			{
+				foreach(glob(rtrim($dir, '/') . '/*')  as $file)
+				{
+					if(strtolower($class).'.php' === strtolower(basename($file)))
+					{
+						require_once $file;
+						return;
+					}
+				}
+			}
 		}
 	}
-
 
 
 	/**

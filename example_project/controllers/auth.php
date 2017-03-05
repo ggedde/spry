@@ -1,6 +1,6 @@
 <?php
 
-class AUTH extends API
+class AUTH extends SpryApi
 {
 
 	private static $auth_fields = [
