@@ -13,8 +13,6 @@
         }
     ],
     "autoload": {
-        "autoload": {
-            "classmap": ["src/SpryApi.php"]
-        }
+        "classmap": ["src/"]
     }
 }

@@ -66,7 +66,7 @@ class SpryApi {
 
 		if(!empty(self::$config->db))
 		{
-			self::$db = new DB(self::$config->db);
+			self::$db = new SpryApiDB(self::$config->db);
 		}
 
 		if(!empty(self::$config->post_db_filters) && is_array(self::$config->post_db_filters))
@@ -329,7 +329,7 @@ class SpryApi {
 
 		if(empty(self::$validator))
 		{
-			self::$validator = new Validator($params);
+			self::$validator = new SpryApiValidator($params);
 		}
 		else
 		{
