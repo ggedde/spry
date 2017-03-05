@@ -1,7 +1,7 @@
 # SpryAPI
 A lightweight PHP API Framework
 
-Current Release: 1.5.0
+Current Release: 2.0.0
 
 REQUIRES:
 * PHP 5.4
@@ -14,8 +14,8 @@ Included Extensions:
 ## How to Use
 index.php
 ```
-require 'api.php';
-API::run();
+require_once __DIR__ . '/vendor/autoload.php';
+SpryApi::run(__DIR__.'/config.php');
 ```
 
 
@@ -83,7 +83,7 @@ The Response Codes are set up to be multi-lingual.  For this to work your App ne
 ## Creating Controllers
 controllers/YOUR_CONTROLLER.php
 ```
-class YOUR_CONTROLLER extends API
+class YOUR_CONTROLLER extends SpryApi
 {
 	public function get_all()
 	{
@@ -131,7 +131,7 @@ This is the fastest method and blocking requests here will help prevent load on 
 
 Example:
 ```
-class YOUR_CONTROLLER extends API {
+class YOUR_CONTROLLER extends SpryApi {
 	public function pre_auth_filter()
 	{
 		$path = parent::get_path();
@@ -173,35 +173,42 @@ On Successfull responses the API will hash the body parameter and return [body_h
 
 ## Managing Multiple Versions
 
-When your API requires updates that might break the way current users are using then you would want to create another endpoint.  The easiest way is to just copy the v1.0.0 folder to v2.0.0, etc.  Then make a new endpoint and point to that folder.
+When your API requires updates that might break the way current users are using then you would want to create another endpoint.  The easiest way is to just make a directory for each version containing the entire Project.  Then make a new endpoint and point to that folder.
 
-index2.php
+Example:
 ```
-require 'v2.0.0/app.php';
-API::run();
+/v1.0
+- index.php
+- config.php
+- controllers
+  - auth.php
+  - etc
+
+/v1.1
+- index.php
+- config.php
+- controllers
+  - auth.php
+  - etc
+
+/v2.0
+- index.php
+- config.php
+- controllers
+  - auth.php
+  - etc
+
 ```
 
 ## Adding Extensions
-To add your own extension just upload the Class file in /extensions/ folder.  The file needs to be a class where the class name matchs the file.php name.  Then just call the class and the autoloader will do the rest.
-
-/extensions/my_extension.php
-```
-class MY_EXTENSION {
-
-}
-```
-in your controller
-```
-$my = new MY_EXTENSION();
-```
-Or if Singleton
-```
-MY_EXTENSION::some_method();
-```
-
+You can overwrite the DB and VALIDATOR Extensions by adding your own classes to the project either by placing them in your controllers directory or another directory and add that directory path to $config->autoloader_directories array.
+You will need to make sure that the class names and file names match the existing names to be overwritten.
 
 
 ## Changelog
+
+### 2.0.0 (March 4 2017)
+* MUpdated to allow for composer and better config settings.
 
 ### 1.3.0 (Nov 30 2016)
 * Made Filters Arrays to allow for multiple filters.
