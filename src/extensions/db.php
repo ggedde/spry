@@ -10,7 +10,7 @@
  *	Updated by App - Revision 3
  *
  */
-class DB
+class SpryApiDB
 {
 	// General
 	protected $database_type;

@@ -1,7 +1,7 @@
 {
     "name": "ggedde/spryapi",
     "description": "PHP API Framework",
-    "type": "PHP",
+    "type": "Framework",
     "require": {
         "php": ">=5.4.0"
     },
@@ -13,8 +13,8 @@
         }
     ],
     "autoload": {
-        "psr-4": {
-            "SpryApi\\":"src/"
+        "autoload": {
+            "classmap": ["src/SpryApi.php"]
         }
     }
 }

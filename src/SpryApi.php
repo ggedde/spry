@@ -1,7 +1,5 @@
 <?php
 
-namespace SpryApi;
-
 /*!
  *
  * SpryAPI Framework

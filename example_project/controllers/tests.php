@@ -7,7 +7,7 @@
  *
  */
 
-class TESTS extends SpryApi
+class Tests extends SpryApi
 {
 
 	/**

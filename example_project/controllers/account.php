@@ -1,6 +1,6 @@
 <?php
 
-class ACCOUNT extends SpryApi
+class Account extends SpryApi
 {
 	static private $table = 'accounts';
 

@@ -7,7 +7,7 @@
  *
  */
 
-class LOG extends SpryApi
+class Log extends SpryApi
 {
 	/**
 	 * Log a generic Message
