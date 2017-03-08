@@ -52,6 +52,8 @@ class SpryApi {
 			}
 		}
 
+		self::check_web_tools();
+
 		self::$path = self::get_path();
 
 		self::$params = self::fetch_params();
@@ -94,6 +96,13 @@ class SpryApi {
 		$response = self::get_response($controller);
 
 		self::send_response($response);
+	}
+
+
+	private static function check_web_tools()
+	{
+		$controller = self::get_controller('SpryApiWebTools::display');
+		$response = self::get_response($controller);
 	}
 
 
