@@ -40,6 +40,33 @@ class SpryApiWebTools extends SpryApi {
 	}
 
 
+	protected static function get_api_response($request='', $url='')
+	{
+		if(!empty($request))
+		{
+			$ch = curl_init();
+
+			curl_setopt($ch, CURLOPT_URL, $url);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+			curl_setopt($ch, CURLOPT_HEADER, FALSE);
+
+			curl_setopt($ch, CURLOPT_POST, TRUE);
+
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $request);
+
+			$response = curl_exec($ch);
+			curl_close($ch);
+
+			return $response;
+
+			// echo '<pre style="white-space:normal;">-';print_r($response);echo '-</pre>';
+
+			// echo '<pre>';print_r(json_decode($response));echo '</pre>';
+
+		}
+	}
+
+
 
 	public static function display()
 	{
@@ -58,6 +85,11 @@ class SpryApiWebTools extends SpryApi {
 				{
 					die(parent::hash($_POST['hash']));
 				}
+			}
+
+			if($ajax = 'api_request')
+			{
+				die(self::get_api_response($_POST['request'], "http://".$_SERVER['HTTP_HOST'].$_POST['url']));
 			}
 
 			exit;
@@ -93,7 +125,7 @@ $requests['/auth/get'] = '{
 		body,
 		html {
 			height: 100%;
-			background-color: #292929  !important;
+			background-color: #303030  !important;
 		}
 
 		* {
@@ -117,8 +149,10 @@ $requests['/auth/get'] = '{
 		textarea,
 		select,
 		input,
+		button,
 		.tabs li,
-		.container {
+		.container,
+		.content {
 			border: 1px solid #777;
 			-webkit-appearance: none;
 			-moz-appearance:    none;
@@ -126,6 +160,8 @@ $requests['/auth/get'] = '{
 			padding: 4px 10px;
 			font-size: .7rem;
 			background: transparent;
+			height: 28px;
+			line-height: 15px;
 		}
 		span.select select {
 			padding-right: 20px;
@@ -137,8 +173,8 @@ $requests['/auth/get'] = '{
 			content: '';
 			display: inline-block;
 			position: absolute;
-			top: 5px;
-			right: 4px;
+			top: 10px;
+			right: 100px;
 			color: #777;
 			width: 0.4em;
 		    height: 0.4em;
@@ -146,6 +182,31 @@ $requests['/auth/get'] = '{
 		    border-top: 1px solid #777;
 		    transform: rotate(135deg);
 		    margin-right: 0.5em;
+		}
+		span.submit button {
+			padding-right: 20px;
+			cursor: pointer;
+		}
+		span.submit {
+			position: relative;
+		}
+		span.submit::before {
+			content: '';
+			display: inline-block;
+			position: absolute;
+			top: 12px;
+			right: 8px;
+			color: #777;
+			width: 0.4em;
+		    height: 0.4em;
+		    border-right: 1px solid #777;
+		    border-top: 1px solid #777;
+		    transform: rotate(45deg);
+		    margin-right: 0.5em;
+		}
+		textarea {
+			background: #2a2a2a;
+			border-color: #555;
 		}
 		.container {
 			overflow: auto;
@@ -170,42 +231,103 @@ $requests['/auth/get'] = '{
 		}
 		.tab-content {
 			display: none;
-			margin-top: -30px;
+			margin-top: -20px;
 			padding-top: 30px;
 			background: transparent;
 			height: 100%;
+			overflow-x: hidden;
 		}
 		.tab-content[data-tab="tester"] {
 			display: block;
 		}
 		.top-section {
-			height: 60%;
+			height: 70%;
 			clear: bloth;
 		}
 		.bottom-section {
-			height: 40%;
+			height: 30%;
 			clear: bloth;
+			padding-top: 8px;
 		}
-		.api-form {
+		.api-form  textarea {
+			height: 90%;
+		}
+		.api-form span.submit button,
+		.api-form span.select select {
+			width: 100%;
+		}
+		.api-form span.submit,
+		.api-form span.select {
+			display: block;
+			float: left;
+		}
+		.api-form span.submit {
+			width: 90px;
+		}
+		.api-form span.select {
+			width: 100%;
+			margin-right: -90px;
+		}
+		.top-left-section {
 			float:left; width: 40%;
+			padding-right: 12px;
 		}
-		.api-response {
+		.top-right-section {
 			float:left; width: 60%;
 		}
-		.api-form,
-		.api-response {
-			padding-top: 30px;
-			position: relative;
+		.bottom-left-section {
+			float:left; width: 50%;
+			padding-right: 12px;
 		}
-		.api-form form,
-		.api-response .container {
-			margin-top: -30px;
+		.bottom-right-section {
+			float:left; width: 50%;
 		}
 		label {
 			position: absolute;
 			top: 2px;
 			left: 2px;
 		}
+		fieldset {
+			border: 1px solid #494949;
+			border-radius: 3px;
+			padding: 16px 10px 10px 10px;
+			height: 100%;
+			min-width: 0;
+    		width: 100%;
+		}
+		legend {
+			padding: 0 10px;
+			font-size: .8rem;
+			color: #79a;
+		}
+		.content {
+			overflow: auto;
+			height: 100%;
+			border: none;
+		}
+
+		.loader {
+			border: 1px solid #555;
+			border-radius: 50%;
+			border-top: 1px solid #eee;
+			width: 11px;
+			height: 11px;
+			-webkit-animation: spin 2s linear infinite;
+			animation: spin 0.75s linear infinite;
+			display: inline-block;
+			margin-left: 10px;
+		}
+
+		@-webkit-keyframes spin {
+			0% { -webkit-transform: rotate(0deg); }
+			100% { -webkit-transform: rotate(360deg); }
+		}
+
+		@keyframes spin {
+			0% { transform: rotate(0deg); }
+			100% { transform: rotate(360deg); }
+		}
+
 		</style>
 
 		<script>
@@ -234,12 +356,12 @@ $requests['/auth/get'] = '{
 					var content = $(this);
 					if(content.attr('data-tab') !== tab)
 					{
-						content.fadeOut(100);
+						content.fadeOut(50);
 					}
 					if(content.attr('data-tab') === tab && content.css('display') === 'none')
 					{
 						setTimeout(function(){
-							content.fadeIn(100);
+							content.fadeIn(50);
 						}, 200);
 					}
 				});
@@ -249,7 +371,17 @@ $requests['/auth/get'] = '{
 				$.post('<?php echo $_SERVER['REQUEST_URI'];?>', { ajax: 'hash', hash: $(this).val() }, function(response){
 					$('#hash-value').html(response);
 				});
-			})
+			});
+
+			$('#api-request-submit').on('click', function() {
+				$('#api-request-legend').append('<span class="loader" style="display:none"></span>');
+				$('#api-request-response').html('');
+				$('.loader').fadeIn(100);
+				$.post('<?php echo $_SERVER['REQUEST_URI'];?>', { ajax: 'api_request', url: $('#api-request-url').val(), request: $('#api-request-data').val() }, function(response){
+					$('#api-request-response').html('<pre>'+JSON.stringify(JSON.parse(response), null, "\t")+'</pre>');
+					$('#api-request-legend .loader').remove();
+				});
+			});
 		});
 
 
@@ -260,7 +392,7 @@ $requests['/auth/get'] = '{
 		<ul class="tabs">
 			<li class="active" data-tab="tester">Tester</li>
 			<li data-tab="tools">Tools</li>
-			<li data-tab="php-errors">PHP Errors</li>
+			<li data-tab="php-logs">PHP Logs</li>
 			<li data-tab="api-logs">API Logs</li>
 		</ul>
 
@@ -268,81 +400,87 @@ $requests['/auth/get'] = '{
 		<div class="tab-content" data-tab="tester">
 			<div>
 				<div class="top-section">
+					<div class="top-left-section">
+						<fieldset class="api-form">
+							<legend>Api Request</legend>
+							<div class="content">
+								<span class="select">
+									<select id="api-request-url" onchange="update_json();">
+										<?php foreach ($requests as $req_key => $req_json) { ?>
+											<option<?php if(!empty($_POST['url']) && $_POST['url'] === $req_key){?> selected="selected"<?php } ?>><?php echo $req_key;?></option>
+										<?php } ?>
+									</select>
+								</span>
+								<span class="submit">
+									<button id="api-request-submit">Submit</button>
+								</span>
+								<br>
+								<textarea id="api-request-data" style="padding:10px;width: 100%;"><?php if(!empty($_POST['request'])){ echo trim($_POST['request']); }else{ echo $requests['/auth/get']; } ?></textarea>
+							</div>
+						</fieldset>
+					</div>
 
-					<form class="api-form" method="post">
+					<div class="top-right-section">
+						<fieldset>
+							<legend id="api-request-legend">Api Response</legend>
+							<div id="api-request-response" class="content">
 
-						<span class="select">
-							<select id="url" name="url" onchange="update_json();">
-								<?php foreach ($requests as $req_key => $req_json) { ?>
-									<option<?php if(!empty($_POST['url']) && $_POST['url'] === $req_key){?> selected="selected"<?php } ?>><?php echo $req_key;?></option>
-								<?php } ?>
-							</select>
-						</span>
-						<input type="submit" name="submit" value="Get API Response">
-						<br>
-						<textarea id="request" name="request" style="padding:10px;width: 100%;">
-			<?php if(!empty($_POST['request'])){ echo trim($_POST['request']); }else{ echo $requests['/auth/get']; } ?>
-						</textarea>
-					</form>
-
-					<div class="api-response">
-						<label>Response</label>
-						<div class="container">
-						<?php
-
-						if(!empty($_POST['request']))
-						{
-
-							$ch = curl_init();
-
-							curl_setopt($ch, CURLOPT_URL, "http://".$_SERVER['HTTP_HOST'].$_POST['url']);
-							curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-							curl_setopt($ch, CURLOPT_HEADER, FALSE);
-
-							curl_setopt($ch, CURLOPT_POST, TRUE);
-
-							curl_setopt($ch, CURLOPT_POSTFIELDS, $_POST['request']);
-
-							$response = curl_exec($ch);
-							curl_close($ch);
-
-							echo '<pre style="white-space:normal;">-';print_r($response);echo '-</pre>';
-
-							echo '<pre>';print_r(json_decode($response));echo '</pre>';
-
-						}
-						?>
-						</div>
+							</div>
+						</fieldset>
 					</div>
 				</div>
 
 				<div class="bottom-section">
-					<div class="container">
-						<pre><?php if(file_exists(parent::config()->php_log_file)){echo file_get_contents(parent::config()->php_log_file);} ?></pre>
+					<div class="bottom-left-section">
+						<fieldset class="php-logs">
+							<legend>PHP Logs</legend>
+							<div class="content">
+								<pre><?php if(file_exists(parent::config()->php_log_file)){echo file_get_contents(parent::config()->php_log_file);} ?></pre>
+							</div>
+							<script>
+								$('php-logs .content').scrollTop = $('php-logs .content').scrollHeight;
+							</script>
+						</fieldset>
 					</div>
-					<script>
-					document.getElementById('php_log').scrollTop = document.getElementById('php_log').scrollHeight;
-					</script>
+					<div class="bottom-right-section">
+						<fieldset class="api-logs">
+							<legend>API Logs</legend>
+							<div class="content">
+								<pre><?php if(file_exists(parent::config()->api_log_file)){echo file_get_contents(parent::config()->api_log_file);} ?></pre>
+							</div>
+							<script>
+								$('api-logs .content').scrollTop = $('api-logs .content').scrollHeight;
+							</script>
+						</fieldset>
+					</div>
 				</div>
 			</div>
 		</div>
 
 		<div class="tab-content" data-tab="tools">
-			<h4>Get Hash Value</h4>
-
-			<input id="hash-input" type="text" name="hash" value="" autocomplete="off"> = <span id="hash-value"></span>
+			<fieldset>
+				<legend>Tools</legend>
+				<h5>Get Hash Value</h5>
+				<input id="hash-input" type="text" name="hash" value="" autocomplete="off"> = <span id="hash-value"></span>
+			</fieldset>
 		</div>
 
-		<div class="tab-content" data-tab="php-errors">
-			<div class="container">
-				<pre><?php if(file_exists(parent::config()->php_log_file)){echo file_get_contents(parent::config()->php_log_file);} ?></pre>
-			</div>
+		<div class="tab-content" data-tab="php-logs">
+			<fieldset>
+				<legend>PHP Logs</legend>
+				<div class="content">
+					<pre><?php if(file_exists(parent::config()->php_log_file)){echo file_get_contents(parent::config()->php_log_file);} ?></pre>
+				</div>
+			</fieldset>
 		</div>
 
 		<div class="tab-content" data-tab="api-logs">
-			<div class="container">
-				<pre><?php if(file_exists(parent::config()->api_log_file)){echo file_get_contents(parent::config()->api_log_file);} ?></pre>
-			</div>
+			<fieldset>
+				<legend>Api Logs</legend>
+				<div class="content">
+					<pre><?php if(file_exists(parent::config()->api_log_file)){echo file_get_contents(parent::config()->api_log_file);} ?></pre>
+				</div>
+			</fieldset>
 		</div>
 
 		<?php

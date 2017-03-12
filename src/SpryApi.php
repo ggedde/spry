@@ -32,7 +32,6 @@ class SpryApi {
 
 	public static function run($config_file='')
 	{
-
 		if(empty($config_file) || !file_exists($config_file))
 		{
 			self::stop_error(5000, null, ['Missing Config File']);
@@ -55,8 +54,6 @@ class SpryApi {
 		self::check_web_tools();
 
 		self::$path = self::get_path();
-
-		self::check_web_tools();
 
 		self::$params = self::fetch_params();
 
@@ -106,19 +103,6 @@ class SpryApi {
 		$controller = self::get_controller('SpryApiWebTools::display');
 		$response = self::get_response($controller);
 	}
-
-
-
-	private static function check_web_tools()
-	{
-		ini_set('error_reporting', E_ALL);
-		ini_set('display_errors', 1);
-
-		$controller = self::get_controller('SpryApiWebTools::display');
-		$response = self::get_response($controller);
-	}
-
-
 
 
 	/**
