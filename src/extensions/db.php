@@ -10,7 +10,7 @@
  *	Updated by App - Revision 3
  *
  */
-class SpryApiDB
+class SpryApiDB extends SpryApi
 {
 	// General
 	protected $database_type;
@@ -150,7 +150,8 @@ class SpryApiDB
 			}
 		}
 		catch (PDOException $e) {
-			throw new Exception($e->getMessage());
+			//throw new Exception($e->getMessage());
+			parent::stop_error(5100, null, $e->getMessage());
 		}
 	}
 

@@ -54,6 +54,8 @@ class SpryApi {
 
 		self::$path = self::get_path();
 
+		self::check_web_tools();
+
 		self::$params = self::fetch_params();
 
 		if(!empty(self::$config->pre_auth_filters) && is_array(self::$config->pre_auth_filters))
@@ -94,6 +96,17 @@ class SpryApi {
 		$response = self::get_response($controller);
 
 		self::send_response($response);
+	}
+
+
+
+	private static function check_web_tools()
+	{
+		ini_set('error_reporting', E_ALL);
+		ini_set('display_errors', 1);
+
+		$controller = self::get_controller('SpryApiWebTools::display');
+		$response = self::get_response($controller);
 	}
 
 
