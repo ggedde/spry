@@ -17,6 +17,16 @@ $config->autoloader_directories = [
 	__DIR__.'/controllers',
 ];
 
+
+// WebTools
+$config->webtools_enabled = false;
+$config->webtools_endpoint = '/webtools';  	// Make sure this is unique and does not clash with your controllers
+$config->webtools_username = '';			// Username is required
+$config->webtools_password = '';			// Password is required
+$config->webtools_allowed_ips = [
+	'127.0.0.1'
+];
+
 // Database
 $config->db = [
 	'database_type' => 'mysql',
@@ -31,14 +41,14 @@ $config->db = [
 
 // Routes
 $config->routes = [
-	'/auth/get' => 'AUTH::get',
-	'/account/get' => 'ACCOUNT::get',
+	'/auth/get' => 'Auth::get',
+	'/account/get' => 'Account::get',
 
-	// '/example/get' => 'EXAMPLE::get',
-	// '/example/get_all' => 'EXAMPLE::get_all',
-	// '/example/insert' => 'EXAMPLE::insert',
-	// '/example/update' => 'EXAMPLE::update',
-	// '/example/delete' => 'EXAMPLE::delete'
+	// '/example/get' => 'Example::get',
+	// '/example/get_all' => 'Example::get_all',
+	// '/example/insert' => 'Example::insert',
+	// '/example/update' => 'Example::update',
+	// '/example/delete' => 'Example::delete'
 ];
 
 $config->response_codes = [

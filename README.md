@@ -14,7 +14,7 @@ Included Extensions:
 ## How to Use
 index.php
 ```
-require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 SpryApi::run(__DIR__.'/config.php');
 ```
 
@@ -36,8 +36,8 @@ $config->db = [
 
 // Routes
 $config->routes = [
-	'/auth/get' => 'AUTH::get',
-	'/account/get' => 'ACCOUNT::get',
+	'/auth/get' => 'Auth::get',
+	'/account/get' => 'Account::get',
 ];
 
 // Response Codes and Messages.  Multi-Lingual support
@@ -56,8 +56,8 @@ $config->response_codes = [
 ];
 
 // Auth Filters
-// $config->pre_auth_filter = ['YOUR_CONTROLLER::pre_auth_filter'];
-// $config->post_auth_filter = ['YOUR_CONTROLLER::post_auth_filter'];
+// $config->pre_auth_filter = ['YourController::pre_auth_filter'];
+// $config->post_auth_filter = ['YourController::post_auth_filter'];
 ```
 
 ## Response Codes / Multiple Lingual
@@ -81,9 +81,9 @@ If $response is successfull then the method will return 2200. If $response is nu
 The Response Codes are set up to be multi-lingual.  For this to work your App needs to send the "lang" param to your API.  The default is "en".  You can still pass custom messages in your API, but custom messages don't support Multi-Lingual.  That is why it is best for you to use the Response Codes as intended.
 
 ## Creating Controllers
-controllers/YOUR_CONTROLLER.php
+controllers/YourController.php
 ```
-class YOUR_CONTROLLER extends SpryApi
+class YourController extends SpryApi
 {
 	public function get_all()
 	{
@@ -101,9 +101,9 @@ class YOUR_CONTROLLER extends SpryApi
 config.php
 ```
 $config->routes = [
-	'/auth/get' => 'AUTH::get',
-	'/account/get' => 'ACCOUNT::get',
-	'/your_controller/get_all' => 'YOUR_CONTROLLER::get_all',
+	'/auth/get' => 'Auth::get',
+	'/account/get' => 'Account::get',
+	'/your_controller/get_all' => 'YourController::get_all',
 ];
 ```
 
@@ -114,9 +114,9 @@ $config->routes = [
 
 config.php
 ```
-$config->pre_auth_filters = ['YOUR_CONTROLLER::pre_auth_filter', 'SECOND_CONTROLLER::pre_auth_filter'];
-$config->post_db_filters = ['YOUR_CONTROLLER::post_db_filter'];
-$config->post_auth_filters = ['YOUR_CONTROLLER::post_auth_filter'];
+$config->pre_auth_filters = ['YourController::pre_auth_filter', 'YourOtherController::pre_auth_filter'];
+$config->post_db_filters = ['YourController::post_db_filter'];
+$config->post_auth_filters = ['YourController::post_auth_filter'];
 $config->stop_error_filters = [];
 ```
 Then Create a controller and add the methods.
@@ -131,7 +131,8 @@ This is the fastest method and blocking requests here will help prevent load on 
 
 Example:
 ```
-class YOUR_CONTROLLER extends SpryApi {
+class YourController extends SpryApi
+{
 	public function pre_auth_filter()
 	{
 		$path = parent::get_path();
