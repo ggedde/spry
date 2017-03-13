@@ -114,7 +114,7 @@ $config->tests = [
 			'username' => 'usertest',
 			'password' => 'passwordtest'
 		],
-		'match' => [
+		'expect' => [
 			'response' => 'success',
 		]
 	],
@@ -122,21 +122,21 @@ $config->tests = [
 		'params' => [
 			'access_key' => 'xxxxxxxxxxxxxxxxxxxxxxxx'
 		],
-		'match' => [
+		'expect' => [
 			'response' => 'success',
 		]
 	],
 ];
 
 // Filters
-// $config->post_config_filters = ['LOG::setup_php_logs'];
-// $config->pre_auth_filters = ['LOG::initial_request'];
-// $config->post_db_filters = ['AUTH::check'];
-// $config->post_auth_filters = ['LOG::user_request'];
-// $config->stop_error_filters = ['LOG::stop_error_filter'];
-// $config->build_response_filters = ['LOG::build_response_filter']; // Filters must return the $response
-// $config->get_path_filters = [];  // Filters must return the $path
-// $config->get_route_filters = [];  // Filters must return the $route
-// $config->fetch_params_filters = [];  // Filters must return the $params
-// $config->send_output_filters = [];  // Filters must return the $output
-
+$config->filters->configure = ['Log::setup_php_logs'];
+$config->filters->params = ['Log::initial_request'];
+//$config->filters->database =  = ['AUTH::check'];
+$config->filters->routes = ['Log::user_request'];
+$config->filters->stop = ['Log::stop_filter'];
+$config->filters->build_response = ['Log::build_response_filter']; // Filters must return the $response
+// $config->filters->send_response = []; // Filters must return the $response
+// $config->filters->get_path = [];  // Filters must return the $path
+// $config->filters->get_route = [];  // Filters must return the $route
+// $config->filters->fetch_params = [];  // Filters must return the $params
+// $config->filters->send_output = [];  // Filters must return the $output

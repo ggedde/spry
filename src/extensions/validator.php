@@ -637,7 +637,7 @@ class SpryApiValidator extends SpryApi {
 
         if($this->hasErrors())
 		{
-            $this->stop_error(5100, null, $this->getAllErrors());
+            $this->stop(5100, null, $this->getAllErrors());
         }
 
         // reset rules

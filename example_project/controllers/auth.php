@@ -90,7 +90,7 @@ class Auth extends SpryApi
 		}
 
 		sleep(5); // Reduce Hack attempts
-		self::stop_error(5201);
+		self::stop(5201);
 	}
 
 
@@ -139,7 +139,7 @@ class Auth extends SpryApi
 		if(!self::has_permission($path))
 		{
 			sleep(2); // Reduce Hack attempts
-			parent::stop_error(5204);
+			parent::stop(5204);
 		}
 	}
 

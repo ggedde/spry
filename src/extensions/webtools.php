@@ -3,7 +3,7 @@
 class SpryApiWebTools extends SpryApi {
 
 
-	protected static function authenticate()
+	public static function authenticate()
 	{
 		$enabled = !empty(parent::config()->webtools_enabled);
 
@@ -40,7 +40,7 @@ class SpryApiWebTools extends SpryApi {
 	}
 
 
-	protected static function get_api_response($request='', $url='')
+	private static function get_api_response($request='', $url='')
 	{
 		if(!empty($request))
 		{
@@ -49,22 +49,79 @@ class SpryApiWebTools extends SpryApi {
 			curl_setopt($ch, CURLOPT_URL, $url);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
 			curl_setopt($ch, CURLOPT_HEADER, FALSE);
-
 			curl_setopt($ch, CURLOPT_POST, TRUE);
-
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $request);
 
 			$response = curl_exec($ch);
 			curl_close($ch);
 
 			return $response;
-
-			// echo '<pre style="white-space:normal;">-';print_r($response);echo '-</pre>';
-
-			// echo '<pre>';print_r(json_decode($response));echo '</pre>';
-
 		}
 	}
+
+	private static function run_all_tests()
+	{
+		if(!empty(parent::config()->tests))
+		{
+			//return parent::results(501, null);
+		}
+
+		$result = ['All Tests' => 'Passed'];
+		$response_code = 2500;
+
+		$last_response_body = null;
+		$last_response_body_id = null;
+
+		foreach (parent::config()->tests as $route => $test)
+		{
+			$result[$route] = ['response' => 'Passed'];
+
+			foreach ($test['params'] as $param_key => $param)
+			{
+				if($param === '{last_response_body}')
+				{
+					$test['params'][$param_key] = $last_response_body;
+				}
+
+				if($param === '{last_response_body_id}')
+				{
+					$test['params'][$param_key] = $last_response_body_id;
+				}
+			}
+
+			$response = self::get_api_response(json_encode($test['params']), "http://".$_SERVER['HTTP_HOST'].$route);
+
+			//echo $response;
+
+			$response = json_decode($response, true);
+
+			$result[$route]['response_code'] = (!empty($response['response_code']) ? $response['response_code'] : '');
+			$result[$route]['messages'] = (!empty($response['messages']) ? $response['messages'] : '');
+
+			if(!empty($test['match']) && is_array($test['match']))
+			{
+				$result[$route]['response_match'] = [];
+
+				foreach ($test['match'] as $match_key => $match)
+				{
+					$result[$route]['response_match'][$match_key] = $response[$match_key];
+
+					if(empty($response[$match_key]) || $response[$match_key] !== $match)
+					{
+						$result[$route]['response'] = 'Failed';
+						$result['All Tests'] = 'Failed';
+						$response_code = 5502;
+					}
+				}
+			}
+
+			$last_response_body = (!empty($response['body']) ? $response['body'] : null);
+			$last_response_body_id = (!empty($response['body']['id']) ? $response['body']['id'] : null);
+		}
+
+		parent::stop($response_code, $result);
+	}
+
 
 
 
@@ -79,7 +136,7 @@ class SpryApiWebTools extends SpryApi {
 		{
 			$ajax = $_POST['ajax'];
 
-			if($ajax = 'hash')
+			if($ajax === 'hash')
 			{
 				if(!empty($_POST['hash']))
 				{
@@ -87,9 +144,41 @@ class SpryApiWebTools extends SpryApi {
 				}
 			}
 
-			if($ajax = 'api_request')
+			if($ajax === 'api_request')
 			{
+				if(!empty($_POST['url']) && $_POST['url'] === 'All Tests')
+				{
+					self::run_all_tests();
+					exit;
+				}
+
 				die(self::get_api_response($_POST['request'], "http://".$_SERVER['HTTP_HOST'].$_POST['url']));
+			}
+
+			if($ajax === 'php_logs')
+			{
+				die((file_exists(parent::config()->php_log_file) ? file_get_contents(parent::config()->php_log_file) : ''));
+			}
+
+			if($ajax === 'api_logs')
+			{
+				die((file_exists(parent::config()->api_log_file) ? file_get_contents(parent::config()->api_log_file) : ''));
+			}
+
+			if($ajax === 'clear_php_logs')
+			{
+				if(file_exists(parent::config()->php_log_file))
+				{
+					file_put_contents(parent::config()->php_log_file, '');
+				}
+			}
+
+			if($ajax === 'clear_api_logs')
+			{
+				if(file_exists(parent::config()->api_log_file))
+				{
+					file_put_contents(parent::config()->api_log_file, '');
+				}
 			}
 
 			exit;
@@ -103,17 +192,12 @@ class SpryApiWebTools extends SpryApi {
 
 		$requests = [];
 
-		foreach (parent::config()->routes as $path => $route)
-		{
-$requests[$path] = '{
-	"access_key": ""
-}';
-		}
+		$requests['All Tests'] = '"Runs All Tests at Once"';
 
-$requests['/auth/get'] = '{
-	"username": "user1",
-	"password": "testing"
-}';
+		foreach (parent::config()->tests as $path => $test)
+		{
+			$requests[$path] = json_encode($test['params']);
+		}
 
 		?>
 
@@ -139,12 +223,9 @@ $requests['/auth/get'] = '{
 		    outline: none;
 		    outline-style: none;
 		}
-		select:-moz-focusring {
-		    color: transparent;
-		    text-shadow: 0 0 0 #eee;
-		}
 		body {
 			padding: 1%;
+			font: normal normal normal 16px / 20px "arail", sans-serif;
 		}
 		textarea,
 		select,
@@ -207,6 +288,11 @@ $requests['/auth/get'] = '{
 		textarea {
 			background: #2a2a2a;
 			border-color: #555;
+			width: 100%;
+			height: 100%;
+			max-width: 100%;
+			max-height: 100%;
+			border-radius: 3px;
 		}
 		.container {
 			overflow: auto;
@@ -223,19 +309,23 @@ $requests['/auth/get'] = '{
 			display: inline-block;
 			cursor: pointer;
 			color: #aaa;
+			line-height: 16px;
 		}
 		.tabs li:hover,
-		.tabs li.active {
+		.tabs li.active,
+		select:hover,
+		button:hover {
 			color: #eee;
 			border-color: #aaa;
+			cursor: pointer;
 		}
 		.tab-content {
 			display: none;
 			margin-top: -20px;
 			padding-top: 30px;
 			background: transparent;
-			height: 100%;
-			overflow-x: hidden;
+			height: 99%;
+			overflow: hidden;
 		}
 		.tab-content[data-tab="tester"] {
 			display: block;
@@ -248,9 +338,6 @@ $requests['/auth/get'] = '{
 			height: 30%;
 			clear: bloth;
 			padding-top: 8px;
-		}
-		.api-form  textarea {
-			height: 90%;
 		}
 		.api-form span.submit button,
 		.api-form span.select select {
@@ -268,9 +355,15 @@ $requests['/auth/get'] = '{
 			width: 100%;
 			margin-right: -90px;
 		}
+		fieldset.api-form  {
+			border-right: 0;
+		}
+		.api-request-text-container {
+			height: 100%;
+			padding-top: 28px;
+		}
 		.top-left-section {
 			float:left; width: 40%;
-			padding-right: 12px;
 		}
 		.top-right-section {
 			float:left; width: 60%;
@@ -287,21 +380,43 @@ $requests['/auth/get'] = '{
 			top: 2px;
 			left: 2px;
 		}
+		.clear-php-logs,
+		.clear-api-logs {
+			padding: 0 0px;
+			line-height: 1;
+			height: 15px;
+			border: 0;
+			color: #777;
+		}
 		fieldset {
-			border: 1px solid #494949;
+			border: 1px solid #222;
 			border-radius: 3px;
-			padding: 16px 10px 10px 10px;
+			padding: 10px 5px 10px 5px;
 			height: 100%;
 			min-width: 0;
     		width: 100%;
+		}
+		.success {
+			color: #0f5;
+		}
+		.error {
+			color: #f11;
+		}
+		.unknown {
+			color: #880;
 		}
 		legend {
 			padding: 0 10px;
 			font-size: .8rem;
 			color: #79a;
+			line-height: 1;
+		}
+		#api-request-legend .status {
+			padding: 0 6px 0 12px;
+			font-weight: bold;
 		}
 		.content {
-			overflow: auto;
+			overflow: hidden;
 			height: 100%;
 			border: none;
 		}
@@ -310,8 +425,8 @@ $requests['/auth/get'] = '{
 			border: 1px solid #555;
 			border-radius: 50%;
 			border-top: 1px solid #eee;
-			width: 11px;
-			height: 11px;
+			width: 10px;
+			height: 10px;
 			-webkit-animation: spin 2s linear infinite;
 			animation: spin 0.75s linear infinite;
 			display: inline-block;
@@ -326,6 +441,28 @@ $requests['/auth/get'] = '{
 		@keyframes spin {
 			0% { transform: rotate(0deg); }
 			100% { transform: rotate(360deg); }
+		}
+
+		textarea,
+		pre {
+		    -moz-tab-size : 4;
+		      -o-tab-size : 4;
+		         tab-size : 4;
+		}
+		select:-moz-focusring {
+		    color: transparent;
+		    text-shadow: 0 0 0 #eee;
+		}
+		*,
+		*:active {
+			outline: none !important;
+		}
+		button::-moz-focus-inner {
+		  border: 0;
+		}
+		option {
+			color: black;
+			background: #aaa;
 		}
 
 		</style>
@@ -344,7 +481,37 @@ $requests['/auth/get'] = '{
 
 		function update_json()
 		{
-			document.getElementById('request').value = jsons[document.getElementById('url').value].split('{{nl}}').join("\n");
+			document.getElementById('api-request-data').value = JSON.stringify(JSON.parse(jsons[document.getElementById('api-request-url').value].split('{{nl}}').join("\n")), null, "\t");
+		}
+
+		function update_logs($type)
+		{
+			if($type == 'php' || $type == 'all')
+			{
+				$.post('<?php echo $_SERVER['REQUEST_URI'];?>', { ajax: 'php_logs' }, function(response){
+					$('.php-logs').val(response);
+					$('.php-logs').each(function(){
+						$(this).scrollTop($(this)[0].scrollHeight);
+					});
+				});
+			}
+
+			if($type == 'api' || $type == 'all')
+			{
+				$.post('<?php echo $_SERVER['REQUEST_URI'];?>', { ajax: 'api_logs' }, function(response){
+					$('.api-logs').val(response);
+					$('.api-logs').each(function(){
+						$(this).scrollTop($(this)[0].scrollHeight);
+					});
+				});
+			}
+		}
+
+		function update_logs_scrolled()
+		{
+			$('.php-logs,.api-logs').each(function(){
+				$(this).scrollTop($(this)[0].scrollHeight);
+			});
 		}
 
 		$(document).ready(function(){
@@ -361,8 +528,10 @@ $requests['/auth/get'] = '{
 					if(content.attr('data-tab') === tab && content.css('display') === 'none')
 					{
 						setTimeout(function(){
-							content.fadeIn(50);
-						}, 200);
+							content.fadeIn(50, function(){
+								update_logs_scrolled();
+							});
+						}, 100);
 					}
 				});
 			});
@@ -374,14 +543,60 @@ $requests['/auth/get'] = '{
 			});
 
 			$('#api-request-submit').on('click', function() {
+				$('#api-request-legend span').remove();
 				$('#api-request-legend').append('<span class="loader" style="display:none"></span>');
-				$('#api-request-response').html('');
+				$('#api-request-response textarea').val('');
 				$('.loader').fadeIn(100);
 				$.post('<?php echo $_SERVER['REQUEST_URI'];?>', { ajax: 'api_request', url: $('#api-request-url').val(), request: $('#api-request-data').val() }, function(response){
-					$('#api-request-response').html('<pre>'+JSON.stringify(JSON.parse(response), null, "\t")+'</pre>');
+
+					var data = JSON.parse(response);
+
+					if(typeof(data['response']) !== 'undefined')
+					{
+						if(data['response'] === 'success')
+						{
+							$('#api-request-legend').append('<span class="status success">Success</span>');
+						}
+
+						if(data['response'] === 'error')
+						{
+							$('#api-request-legend').append('<span class="status error">Error</span>');
+						}
+
+						if(data['response'] === 'unknown')
+						{
+							$('#api-request-legend').append('<span class="status unknown">Unknown</span>');
+						}
+					}
+
+					$('#api-request-response textarea').val(JSON.stringify(JSON.parse(response), null, "\t"));
 					$('#api-request-legend .loader').remove();
+
+					update_logs('all');
+
 				});
 			});
+
+			$('.clear-php-logs').on('click', function(){
+				if(confirm('Are you Sure?'))
+				{
+					$.post('<?php echo $_SERVER['REQUEST_URI'];?>', { ajax: 'clear_php_logs' }, function(response){
+						update_logs('php');
+					});
+				}
+			});
+
+			$('.clear-api-logs').on('click', function(){
+				if(confirm('Are you Sure?'))
+				{
+					$.post('<?php echo $_SERVER['REQUEST_URI'];?>', { ajax: 'clear_api_logs' }, function(response){
+						update_logs('api');
+					});
+				}
+			});
+
+			update_logs('all');
+
 		});
 
 
@@ -414,8 +629,9 @@ $requests['/auth/get'] = '{
 								<span class="submit">
 									<button id="api-request-submit">Submit</button>
 								</span>
-								<br>
-								<textarea id="api-request-data" style="padding:10px;width: 100%;"><?php if(!empty($_POST['request'])){ echo trim($_POST['request']); }else{ echo $requests['/auth/get']; } ?></textarea>
+								<div class="api-request-text-container">
+									<textarea id="api-request-data" style="padding:10px;width: 100%;"><?php if(!empty($_POST['request'])){ echo trim($_POST['request']); }else{ echo $requests['All Tests']; } ?></textarea>
+								</div>
 							</div>
 						</fieldset>
 					</div>
@@ -424,7 +640,7 @@ $requests['/auth/get'] = '{
 						<fieldset>
 							<legend id="api-request-legend">Api Response</legend>
 							<div id="api-request-response" class="content">
-
+							<textarea></textarea>
 							</div>
 						</fieldset>
 					</div>
@@ -433,9 +649,9 @@ $requests['/auth/get'] = '{
 				<div class="bottom-section">
 					<div class="bottom-left-section">
 						<fieldset class="php-logs">
-							<legend>PHP Logs</legend>
+							<legend>PHP Logs &nbsp;-&nbsp; <button class="clear-php-logs">clear</button></legend>
 							<div class="content">
-								<pre><?php if(file_exists(parent::config()->php_log_file)){echo file_get_contents(parent::config()->php_log_file);} ?></pre>
+								<textarea class="php-logs"></textarea>
 							</div>
 							<script>
 								$('php-logs .content').scrollTop = $('php-logs .content').scrollHeight;
@@ -444,9 +660,9 @@ $requests['/auth/get'] = '{
 					</div>
 					<div class="bottom-right-section">
 						<fieldset class="api-logs">
-							<legend>API Logs</legend>
+							<legend>API Logs &nbsp;-&nbsp; <button class="clear-api-logs">clear</button></legend>
 							<div class="content">
-								<pre><?php if(file_exists(parent::config()->api_log_file)){echo file_get_contents(parent::config()->api_log_file);} ?></pre>
+								<textarea class="api-logs"></textarea>
 							</div>
 							<script>
 								$('api-logs .content').scrollTop = $('api-logs .content').scrollHeight;
@@ -467,18 +683,18 @@ $requests['/auth/get'] = '{
 
 		<div class="tab-content" data-tab="php-logs">
 			<fieldset>
-				<legend>PHP Logs</legend>
+				<legend>PHP Logs &nbsp;-&nbsp; <button class="clear-php-logs">clear</button></legend>
 				<div class="content">
-					<pre><?php if(file_exists(parent::config()->php_log_file)){echo file_get_contents(parent::config()->php_log_file);} ?></pre>
+					<textarea class="php-logs"></textarea>
 				</div>
 			</fieldset>
 		</div>
 
 		<div class="tab-content" data-tab="api-logs">
 			<fieldset>
-				<legend>Api Logs</legend>
+				<legend>Api Logs &nbsp;-&nbsp; <button class="clear-api-logs">clear</button></legend>
 				<div class="content">
-					<pre><?php if(file_exists(parent::config()->api_log_file)){echo file_get_contents(parent::config()->api_log_file);} ?></pre>
+					<textarea class="api-logs"></textarea>
 				</div>
 			</fieldset>
 		</div>

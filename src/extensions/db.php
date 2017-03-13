@@ -151,7 +151,7 @@ class SpryApiDB extends SpryApi
 		}
 		catch (PDOException $e) {
 			//throw new Exception($e->getMessage());
-			parent::stop_error(5100, null, $e->getMessage());
+			parent::stop(5100, null, $e->getMessage());
 		}
 	}
 

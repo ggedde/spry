@@ -83,7 +83,7 @@ class Log extends SpryApi
  	 * @return bool
 	 */
 
-	public static function stop_error_filter($params)
+	public static function stop_filter($params)
 	{
 		$messages = (!empty($params['messages']) && is_array($params['messages']) ? implode(', ', $params['messages']) : '');
 		$msg = 'Response Code ('.$params['response_code'].') - '.$messages;
@@ -234,7 +234,7 @@ class Log extends SpryApi
  	 * @final
 	 */
 
-	protected static function php_shut_down_function()
+	protected static function php_shutdown_function()
 	{
 	    $error = error_get_last();
 	    if ($error['type'] === E_ERROR)
@@ -258,7 +258,7 @@ class Log extends SpryApi
 		if(parent::config()->php_log_file)
 		{
 	    	set_error_handler(array(__CLASS__, 'php_log_handler'));
-	    	register_shutdown_function(array(__CLASS__, 'php_shut_down_function'));
+	    	register_shutdown_function(array(__CLASS__, 'php_shutdown_function'));
 	    }
 	}
 
