@@ -173,7 +173,7 @@ class Log extends SpryApi
  	 * @final
 	 */
 
-	protected static function php_log_handler($errno, $errstr, $errfile, $errline)
+	public static function php_log_handler($errno, $errstr, $errfile, $errline)
 	{
 		if(!empty($errstr))
 		{
@@ -185,6 +185,10 @@ class Log extends SpryApi
 			switch ($errno)
 			{
 			    case E_ERROR:
+			    case E_USER_ERROR:
+			    case E_CORE_ERROR:
+			    case E_COMPILE_ERROR:
+			    case E_RECOVERABLE_ERROR:
 			        $errstr = 'PHP Fatal Error: '.$errstr;
 			        break;
 
@@ -194,6 +198,8 @@ class Log extends SpryApi
 
 			    case E_WARNING:
 			    case E_USER_WARNING:
+			    case E_CORE_WARNING:
+			    case E_COMPILE_WARNING:
 			        $errstr = 'PHP Warning: '.$errstr;
 			        break;
 
@@ -201,6 +207,14 @@ class Log extends SpryApi
 			    case E_USER_NOTICE:
 			    case '8':
 			        $errstr = 'PHP Notice: '.$errstr;
+			        break;
+
+			    case E_PARSE:
+			        $errstr = 'PHP Parse Error: '.$errstr;
+			        break;
+
+			    case E_STRICT:
+			        $errstr = 'PHP Strict: '.$errstr;
 			        break;
 
 			    default:
@@ -219,7 +233,6 @@ class Log extends SpryApi
 			}
 
 			$data = $errstr.$errfile.' [Line: '.(!empty($errline) ? $errline : '?')."]\n".$backtrace;
-
 			file_put_contents(parent::config()->php_log_file, $data, FILE_APPEND);
 		}
 	}
@@ -229,15 +242,15 @@ class Log extends SpryApi
 	/**
 	 * Checks the API on Shutdown for Fatal Errors.
  	 *
- 	 * @access 'protected'
+ 	 * @access 'public'
  	 * @return void
  	 * @final
 	 */
 
-	protected static function php_shutdown_function()
+	public static function php_shutdown_function()
 	{
-	    $error = error_get_last();
-	    if ($error['type'] === E_ERROR)
+		$error = error_get_last();
+	    if(!empty($error['type']) && !empty($error['message']))
 	    {
 	        self::php_log_handler($error['type'], $error['message'], $error['file'], $error['line']);
 	    }

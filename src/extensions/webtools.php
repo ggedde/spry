@@ -59,6 +59,19 @@ class SpryApiWebTools extends SpryApi {
 		}
 	}
 
+	private static function db_migrate($args=[])
+	{
+		$logs = [];
+
+		if(!empty(parent::config()->db))
+		{
+			$db = new SpryApiDB(parent::config()->db);
+			$logs = $db->migrate($args);
+		}
+
+		parent::stop(2500, $logs);
+	}
+
 	private static function run_all_tests()
 	{
 		if(!empty(parent::config()->tests))
@@ -152,7 +165,21 @@ class SpryApiWebTools extends SpryApi {
 					exit;
 				}
 
+				if(!empty($_POST['url']) && $_POST['url'] === 'DB Migrate')
+				{
+					self::db_migrate();
+					exit;
+				}
+
 				die(self::get_api_response($_POST['request'], "http://".$_SERVER['HTTP_HOST'].$_POST['url']));
+			}
+
+			if($ajax === 'db_migrate')
+			{
+				$destructive = !empty($_POST['destructive']) ? true : false;
+				$dryrun = !empty($_POST['dryrun']) ? true : false;
+				self::db_migrate(['destructive' => $destructive, 'dryrun' => $dryrun]);
+				exit;
 			}
 
 			if($ajax === 'php_logs')
@@ -193,6 +220,7 @@ class SpryApiWebTools extends SpryApi {
 		$requests = [];
 
 		$requests['All Tests'] = '"Runs All Tests at Once"';
+		$requests['DB Migrate'] = '"DB"';
 
 		foreach (parent::config()->tests as $path => $test)
 		{
@@ -229,7 +257,8 @@ class SpryApiWebTools extends SpryApi {
 		}
 		textarea,
 		select,
-		input,
+		input[type="text"],
+		input[type="password"],
 		button,
 		.tabs li,
 		.container,
@@ -355,30 +384,28 @@ class SpryApiWebTools extends SpryApi {
 			width: 100%;
 			margin-right: -90px;
 		}
-		fieldset.api-form  {
+		.left-section fieldset  {
 			border-right: 0;
 		}
 		.api-request-text-container {
 			height: 100%;
 			padding-top: 28px;
 		}
-		.top-left-section {
+		.left-section {
 			float:left; width: 40%;
 		}
-		.top-right-section {
+		.right-section {
 			float:left; width: 60%;
 		}
-		.bottom-left-section {
+		.bottom-section .left-section {
 			float:left; width: 50%;
 			padding-right: 12px;
 		}
-		.bottom-right-section {
-			float:left; width: 50%;
+		.bottom-section .left-section fieldset {
+			border-right: 1px solid #222;
 		}
-		label {
-			position: absolute;
-			top: 2px;
-			left: 2px;
+		.bottom-section .right-section {
+			float:left; width: 50%;
 		}
 		.clear-php-logs,
 		.clear-api-logs {
@@ -411,7 +438,7 @@ class SpryApiWebTools extends SpryApi {
 			color: #79a;
 			line-height: 1;
 		}
-		#api-request-legend .status {
+		legend .status {
 			padding: 0 6px 0 12px;
 			font-weight: bold;
 		}
@@ -464,6 +491,41 @@ class SpryApiWebTools extends SpryApi {
 			color: black;
 			background: #aaa;
 		}
+		.migrate-controls {
+			padding-bottom: 10px;
+		}
+		.migrate-controls::after{
+			content: '';
+			display: block;
+			float: none;
+			clear: both;
+		}
+
+		.migrate-controls .submit {
+			float: right;
+		}
+
+		.migrate-controls .submit button {
+			padding-right: 30px
+		}
+
+		label {
+			display: inline-block;
+			padding-left: 15px;
+			text-indent: -15px;
+			margin: 6px 30px 0 0 ;
+		}
+		label input {
+			width: 13px;
+			height: 13px;
+			padding: 0;
+			margin: 0 10px 0 0;
+			vertical-align: bottom;
+			position: relative;
+			top: -1px;
+			*overflow: hidden;
+		}
+
 
 		</style>
 
@@ -546,35 +608,101 @@ class SpryApiWebTools extends SpryApi {
 				$('#api-request-legend span').remove();
 				$('#api-request-legend').append('<span class="loader" style="display:none"></span>');
 				$('#api-request-response textarea').val('');
-				$('.loader').fadeIn(100);
+				$('#api-request-legend .loader').fadeIn(100);
 				$.post('<?php echo $_SERVER['REQUEST_URI'];?>', { ajax: 'api_request', url: $('#api-request-url').val(), request: $('#api-request-data').val() }, function(response){
 
-					var data = JSON.parse(response);
-
-					if(typeof(data['response']) !== 'undefined')
+					if(response && response.indexOf('{') > -1)
 					{
-						if(data['response'] === 'success')
-						{
-							$('#api-request-legend').append('<span class="status success">Success</span>');
-						}
+						var data = JSON.parse(response);
 
-						if(data['response'] === 'error')
+						if(typeof(data['response']) !== 'undefined')
 						{
-							$('#api-request-legend').append('<span class="status error">Error</span>');
-						}
+							if(data['response'] === 'success')
+							{
+								$('#api-request-legend').append('<span class="status success">Success</span>');
+							}
 
-						if(data['response'] === 'unknown')
+							if(data['response'] === 'error')
+							{
+								$('#api-request-legend').append('<span class="status error">Error</span>');
+							}
+
+							if(data['response'] === 'unknown')
+							{
+								$('#api-request-legend').append('<span class="status unknown">Unknown</span>');
+							}
+
+							$('#api-request-response textarea').val(JSON.stringify(JSON.parse(response), null, "\t"));
+						}
+						else
 						{
 							$('#api-request-legend').append('<span class="status unknown">Unknown</span>');
+							$('#api-request-response textarea').val(response);
 						}
 					}
+					else
+					{
+						$('#api-request-legend').append('<span class="status unknown">Unknown</span>');
+						$('#api-request-response textarea').val(response);
+					}
 
-					$('#api-request-response textarea').val(JSON.stringify(JSON.parse(response), null, "\t"));
 					$('#api-request-legend .loader').remove();
 
 					update_logs('all');
 
 				});
+			});
+
+			$('#db-migrate-submit').on('click', function(){
+				if(confirm('Are you sure you want to Run DB Migrate'+($('#destructive').is(":checked") ? ' with Destructive turned ON' : '')+'?'))
+				{
+					$('#db-migrate-container legend span').remove();
+					$('#db-migrate-container legend').append('<span class="loader" style="display:none"></span>');
+					$('#db-migrate-container textarea').val('');
+					$('#db-migrate-container legend .loader').fadeIn(100);
+					$.post('<?php echo $_SERVER['REQUEST_URI'];?>', { ajax: 'db_migrate', destructive: ($('#destructive').is(":checked") ? 1 : 0), dryrun: ($('#dryrun').is(":checked") ? 1 : 0) }, function(response){
+
+						if(response && response.indexOf('{') > -1)
+						{
+							var data = JSON.parse(response);
+
+							if(typeof(data['response']) !== 'undefined')
+							{
+								if(data['response'] === 'success')
+								{
+									$('#db-migrate-container legend').append('<span class="status success">Success</span>');
+								}
+
+								if(data['response'] === 'error')
+								{
+									$('#db-migrate-container legend').append('<span class="status error">Error</span>');
+								}
+
+								if(data['response'] === 'unknown')
+								{
+									$('#db-migrate-container legend').append('<span class="status unknown">Unknown</span>');
+								}
+
+								$('#db-migrate-container textarea').val(JSON.stringify(JSON.parse(response), null, "\t"));
+							}
+							else
+							{
+								$('#db-migrate-container legend').append('<span class="status unknown">Unknown</span>');
+								$('#db-migrate-container textarea').val(response);
+							}
+						}
+						else
+						{
+							$('#db-migrate-container legend').append('<span class="status unknown">Unknown</span>');
+							$('#db-migrate-container textarea').val(response);
+						}
+
+						$('#db-migrate-container legend .loader').remove();
+
+						update_logs('all');
+
+					});
+				}
 			});
 
 			$('.clear-php-logs').on('click', function(){
@@ -615,7 +743,7 @@ class SpryApiWebTools extends SpryApi {
 		<div class="tab-content" data-tab="tester">
 			<div>
 				<div class="top-section">
-					<div class="top-left-section">
+					<div class="left-section">
 						<fieldset class="api-form">
 							<legend>Api Request</legend>
 							<div class="content">
@@ -636,7 +764,7 @@ class SpryApiWebTools extends SpryApi {
 						</fieldset>
 					</div>
 
-					<div class="top-right-section">
+					<div class="right-section">
 						<fieldset>
 							<legend id="api-request-legend">Api Response</legend>
 							<div id="api-request-response" class="content">
@@ -647,7 +775,7 @@ class SpryApiWebTools extends SpryApi {
 				</div>
 
 				<div class="bottom-section">
-					<div class="bottom-left-section">
+					<div class="left-section">
 						<fieldset class="php-logs">
 							<legend>PHP Logs &nbsp;-&nbsp; <button class="clear-php-logs">clear</button></legend>
 							<div class="content">
@@ -658,7 +786,7 @@ class SpryApiWebTools extends SpryApi {
 							</script>
 						</fieldset>
 					</div>
-					<div class="bottom-right-section">
+					<div class="right-section">
 						<fieldset class="api-logs">
 							<legend>API Logs &nbsp;-&nbsp; <button class="clear-api-logs">clear</button></legend>
 							<div class="content">
@@ -674,11 +802,39 @@ class SpryApiWebTools extends SpryApi {
 		</div>
 
 		<div class="tab-content" data-tab="tools">
-			<fieldset>
-				<legend>Tools</legend>
-				<h5>Get Hash Value</h5>
-				<input id="hash-input" type="text" name="hash" value="" autocomplete="off"> = <span id="hash-value"></span>
-			</fieldset>
+
+			<div class="left-section">
+				<fieldset>
+					<legend>Tools</legend>
+					<div class="content">
+						<h3>Get Hash Value</h3>
+						<input id="hash-input" type="text" name="hash" value="" autocomplete="off"> = <span id="hash-value"></span>
+					</div>
+				</fieldset>
+			</div>
+
+			<div class="right-section" id="db-migrate-container">
+				<fieldset>
+					<legend>DB Migrate</legend>
+					<div class="content">
+						<div class="migrate-controls">
+
+							<label title="Destructive will drop tables and columns that are not listed in your Migrate Schema. Which will result in Lost Data.">
+								<input type="checkbox" id="destructive" value="1">Destructive
+							</label>
+							<label title="Dryrun will only report back what the migrate will do, but not make any actual changes.">
+								<input type="checkbox" id="dryrun" value="1">Dryrun
+							</label>
+							<span class="submit">
+								<button id="db-migrate-submit">Submit</button>
+							</span>
+
+						</div>
+						<textarea></textarea>
+					</div>
+				</fieldset>
+			</div>
+
 		</div>
 
 		<div class="tab-content" data-tab="php-logs">

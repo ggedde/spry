@@ -39,6 +39,7 @@ class SpryApi {
 
 		$config = new stdClass();
 		$config->filters = new stdClass();
+		$config->db = new stdClass();
 		require_once($config_file);
 		self::$config = $config;
 
