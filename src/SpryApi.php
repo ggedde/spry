@@ -34,36 +34,32 @@ class SpryApi {
 	{
 		if(empty($config_file) || !file_exists($config_file))
 		{
-			self::stop(5000, null, ['Missing Config File']);
+			self::stop(5001, null, ['Error: Missing Config File']);
 		}
 
-		$config = new stdClass();
-		$config->filters = new stdClass();
-		$config->db = new stdClass();
-		require_once($config_file);
-		self::$config = $config;
+		self::load_config($config_file);
 
 		spl_autoload_register(array(__CLASS__, 'autoloader'));
 
 		// Configure Filters
-		if(!empty(self::$config->filters->configure) && is_array(self::$config->filters->configure))
+		if(!empty(self::$config->hooks->configure) && is_array(self::$config->hooks->configure))
 		{
-			foreach (self::$config->filters->configure as $filter)
+			foreach (self::$config->hooks->configure as $filter)
 			{
 				self::get_response(self::get_controller($filter));
 			}
 		}
 
-		self::check_web_tools();
+		self::check_tools();
 
 		self::$path = self::get_path();
 
 		self::$params = self::fetch_params();
 
 		// Param Filters
-		if(!empty(self::$config->filters->params) && is_array(self::$config->filters->params))
+		if(!empty(self::$config->hooks->params) && is_array(self::$config->hooks->params))
 		{
-			foreach (self::$config->filters->params as $filter)
+			foreach (self::$config->hooks->params as $filter)
 			{
 				self::get_response(self::get_controller($filter));
 			}
@@ -75,9 +71,9 @@ class SpryApi {
 		}
 
 		// Database Filters
-		if(!empty(self::$config->filters->database) && is_array(self::$config->filters->database))
+		if(!empty(self::$config->hooks->database) && is_array(self::$config->hooks->database))
 		{
-			foreach (self::$config->filters->database as $filter)
+			foreach (self::$config->hooks->database as $filter)
 			{
 				self::get_response(self::get_controller($filter));
 			}
@@ -88,9 +84,9 @@ class SpryApi {
 		$route = self::get_route(self::$path);
 
 		// Route Filters
-		if(!empty(self::$config->filters->routes) && is_array(self::$config->filters->routes))
+		if(!empty(self::$config->hooks->routes) && is_array(self::$config->hooks->routes))
 		{
-			foreach (self::$config->filters->routes as $filter)
+			foreach (self::$config->hooks->routes as $filter)
 			{
 				self::get_response(self::get_controller($filter));
 			}
@@ -103,8 +99,48 @@ class SpryApi {
 		self::send_response($response);
 	}
 
+	protected static function load_config($config_file='')
+	{
+		$config = new stdClass();
+		$config->hooks = new stdClass();
+		$config->db = new stdClass();
+		require_once($config_file);
 
-	private static function check_web_tools()
+		$config->response_codes = array_replace(self::get_core_response_codes(), (!empty($config->response_codes) ? $config->response_codes : []));
+		self::$config = $config;
+	}
+
+	private static function get_core_response_codes()
+	{
+		return [
+			4000 => ['en' => 'No Results Found'],
+			5000 => ['en' => 'Error: Unknown Error'],
+			5001 => ['en' => 'Error: Missing Config File'],
+
+			5010 => ['en' => 'Error: No Parameters Found.'],
+			5011 => ['en' => 'Error: Request Not Found.'],
+			5012 => ['en' => 'Error: Controller Not Found.'],
+			5013 => ['en' => 'Error: Controllers Method Not Found.'],
+			5014 => ['en' => 'Error: Returned Data is not in JSON format.'],
+			5015 => ['en' => 'Error: Controller Method is not Callable. Make sure it is Public.'],
+
+			5020 => ['en' => 'Error: Field did not Validate.'],
+
+			/* DB */
+			2030 => ['en' => 'DB Migrate Ran Successfully'],
+			5030 => ['en' => 'Error: DB Migrate had an Error'],
+
+			/* Tests */
+			2050 => ['en' => 'All Tests Passed Successfully'],
+			5050 => ['en' => 'Error: Some Tests Failed'],
+			5051 => ['en' => 'Error: Retrieving Tests'], //5500
+			5052 => ['en' => 'Error: No Tests Configured'],
+
+		];
+	}
+
+
+	private static function check_tools()
 	{
 		$controller = self::get_controller('SpryApiWebTools::display');
 		$response = self::get_response($controller);
@@ -261,9 +297,9 @@ class SpryApi {
 		{
 			$route = ['path' => $path, 'controller' => self::$routes[$path]];
 
-			if(!empty(self::$config->filters->get_route) && is_array(self::$config->filters->get_route))
+			if(!empty(self::$config->hooks->get_route) && is_array(self::$config->hooks->get_route))
 			{
-				foreach (self::$config->filters->get_route as $filter)
+				foreach (self::$config->hooks->get_route as $filter)
 				{
 					$route = self::get_response(self::get_controller($filter), $route);
 				}
@@ -272,7 +308,7 @@ class SpryApi {
 			return $route;
 		}
 
-		self::stop(5102); // Request Not Found
+		self::stop(5011); // Request Not Found
 	}
 
 
@@ -370,7 +406,7 @@ class SpryApi {
 			$messages = [$messages];
 		}
 
-		if(!empty(self::$config->filters->stop) && is_array(self::$config->filters->stop))
+		if(!empty(self::$config->hooks->stop) && is_array(self::$config->hooks->stop))
 		{
 			$params = [
 				'response_code' => $response_code,
@@ -378,7 +414,7 @@ class SpryApi {
 				'messages' => $messages
 			];
 
-			foreach (self::$config->filters->stop as $filter)
+			foreach (self::$config->hooks->stop as $filter)
 			{
 				self::get_response(self::get_controller($filter), $params);
 			}
@@ -475,9 +511,9 @@ class SpryApi {
 
 		if(!empty($data))
 		{
-			if(!empty(self::$config->filters->fetch_params) && is_array(self::$config->filters->fetch_params))
+			if(!empty(self::$config->hooks->fetch_params) && is_array(self::$config->hooks->fetch_params))
 			{
-				foreach (self::$config->filters->fetch_params as $filter)
+				foreach (self::$config->hooks->fetch_params as $filter)
 				{
 					$data = self::get_response(self::get_controller($filter), $data);
 				}
@@ -486,7 +522,7 @@ class SpryApi {
 
 		if(!empty($data) && !is_array($data))
 		{
-			self::stop(5104); // Returned Data is not in JSON format
+			self::stop(5014); // Returned Data is not in JSON format
 		}
 
 		if(!empty($data) && is_array($data))
@@ -494,7 +530,7 @@ class SpryApi {
 			return $data;
 		}
 
-		self::stop(5101); // No Parameters Found
+		self::stop(5010); // No Parameters Found
 	}
 
 
@@ -580,9 +616,9 @@ class SpryApi {
 		$path = explode('?', strtolower($_SERVER['REQUEST_URI']), 2);
 		$path = self::clean_path($path[0]);
 
-		if(!empty(self::$config->filters->get_path) && is_array(self::$config->filters->get_path))
+		if(!empty(self::$config->hooks->get_path) && is_array(self::$config->hooks->get_path))
 		{
-			foreach (self::$config->filters->get_path as $filter)
+			foreach (self::$config->hooks->get_path as $filter)
 			{
 				$path = self::get_response(self::get_controller($filter), $path);
 			}
@@ -635,11 +671,11 @@ class SpryApi {
 				{
 					return ['obj' => $obj, 'method' => $method];
 				}
-				self::stop(5105, null, $controller_name); // Method Not Found
+				self::stop(5013, null, $controller_name); // Method Not Found
 			}
 		}
 
-		self::stop(5103, null, $controller_name); // Controller Not Found
+		self::stop(5012, null, $controller_name); // Controller Not Found
 	}
 
 
@@ -714,7 +750,14 @@ class SpryApi {
 
 	protected static function results($response_code=0, $data=null, $messages=[])
 	{
-		if(strlen(strval($response_code)) > 3)
+		$response_code = strval($response_code);
+
+		if(strlen($response_code) < 3)
+		{
+			$response_code = '0'.$response_code;
+		}
+
+		if(strlen($response_code) > 3)
 		{
 			return self::build_response($response_code, $data, $messages);
 		}
@@ -764,9 +807,9 @@ class SpryApi {
 			$response['messages'] = array_merge($response['messages'], $messages);
 		}
 
-		if(!empty(self::$config->filters->build_response) && is_array(self::$config->filters->build_response))
+		if(!empty(self::$config->hooks->build_response) && is_array(self::$config->hooks->build_response))
 		{
-			foreach (self::$config->filters->build_response as $filter)
+			foreach (self::$config->hooks->build_response as $filter)
 			{
 				$response = self::get_response(self::get_controller($filter), $response);
 			}
@@ -790,7 +833,7 @@ class SpryApi {
 	{
 		if(!is_callable(array($controller['obj'], $controller['method'])))
 		{
-			self::stop(5106, null, $controller['method']);
+			self::stop(5015, null, $controller['method']);
 		}
 
 		if($params)
@@ -809,20 +852,20 @@ class SpryApi {
 	 *
 	 * @param array $response
  	 *
- 	 * @access 'private'
+ 	 * @access 'protected'
  	 * @return void
 	 */
 
-	private static function send_response($response=array())
+	protected static function send_response($response=array())
 	{
 		if(empty($response['response']) || empty($response['response_code']))
 		{
 			$response = self::build_response('', $response);
 		}
 
-		if(!empty(self::$config->filters->send_response) && is_array(self::$config->filters->send_response))
+		if(!empty(self::$config->hooks->send_response) && is_array(self::$config->hooks->send_response))
 		{
-			foreach (self::$config->filters->send_response as $filter)
+			foreach (self::$config->hooks->send_response as $filter)
 			{
 				$response = self::get_response(self::get_controller($filter), $response);
 			}
@@ -853,9 +896,9 @@ class SpryApi {
 
 		$output = ['headers' => $headers, 'body' => json_encode($output)];
 
-		if(!empty(self::$config->filters->send_output) && is_array(self::$config->filters->send_output))
+		if(!empty(self::$config->hooks->send_output) && is_array(self::$config->hooks->send_output))
 		{
-			foreach (self::$config->filters->send_output as $filter)
+			foreach (self::$config->hooks->send_output as $filter)
 			{
 				$output = self::get_response(self::get_controller($filter), $output);
 			}

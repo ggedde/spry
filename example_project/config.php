@@ -53,16 +53,6 @@ $config->routes = [
 
 $config->response_codes = [
 
-	/* General */
-	4000 => ['en' => 'No Results Found'],
-	5100 => ['en' => 'Error: Field did not Validate.'],
-	5101 => ['en' => 'Error: No Parameters Found.'],
-	5102 => ['en' => 'Error: Request Not Found.'],
-	5103 => ['en' => 'Error: Controller Not Found.'],
-	5105 => ['en' => 'Error: Controllers Method Not Found.'],
-	5104 => ['en' => 'Error: Returned Data is not in JSON format.'],
-	5106 => ['en' => 'Error: Controller Method is not Callable. Make sure it is Public.'],
-
 	/* Auth */
 	2200 => ['en' => 'Authentication Passed Successfully'],
 	5200 => ['en' => 'Error: Invalid Username and Password'],
@@ -99,12 +89,6 @@ $config->response_codes = [
 	2400 => ['en' => 'Successfully Retrieved Account'],
 	5400 => ['en' => 'Error: Retrieving Account'],
 
-	/* Tests */
-	2500 => ['en' => 'All Tests Passed Successfully'],
-	5500 => ['en' => 'Error: Retrieving Tests'],
-	5501 => ['en' => 'Error: No Tests Configured'],
-	5502 => ['en' => 'Error: Some Tests Failed'],
-
 ];
 
 // Tests
@@ -129,14 +113,14 @@ $config->tests = [
 ];
 
 // Filters
-$config->filters->configure = ['Log::setup_php_logs'];
-$config->filters->params = ['Log::initial_request'];
-//$config->filters->database =  = ['AUTH::check'];
-$config->filters->routes = ['Log::user_request'];
-$config->filters->stop = ['Log::stop_filter'];
-$config->filters->build_response = ['Log::build_response_filter']; // Filters must return the $response
-// $config->filters->send_response = []; // Filters must return the $response
-// $config->filters->get_path = [];  // Filters must return the $path
-// $config->filters->get_route = [];  // Filters must return the $route
-// $config->filters->fetch_params = [];  // Filters must return the $params
-// $config->filters->send_output = [];  // Filters must return the $output
+$config->hooks->configure = ['Log::setup_php_logs'];
+$config->hooks->params = ['Log::initial_request'];
+//$config->hooks->database =  = ['AUTH::check'];
+$config->hooks->routes = ['Log::user_request'];
+$config->hooks->stop = ['Log::stop_filter'];
+$config->hooks->build_response = ['Log::build_response_filter']; // Filters must return the $response
+// $config->hooks->send_response = []; // Filters must return the $response
+// $config->hooks->get_path = [];  // Filters must return the $path
+// $config->hooks->get_route = [];  // Filters must return the $route
+// $config->hooks->fetch_params = [];  // Filters must return the $params
+// $config->hooks->send_output = [];  // Filters must return the $output

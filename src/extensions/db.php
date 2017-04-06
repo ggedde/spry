@@ -33,6 +33,7 @@ class SpryApiDB extends SpryApi
 	protected $migrate_options = [];
 	protected $migrate_destructive = false;
 	protected $migrate_logs = [];
+	protected $migrate_errors = [];
 
 	public function __construct($options = null)
 	{
@@ -1311,11 +1312,32 @@ class SpryApiDB extends SpryApi
 					// Set Default ID Column
 					if(!isset($table['columns']['id']) && (!isset($table['use_id']) || !empty($table['use_id'])))
 					{
-						$this->migrate_schema['tables'][$table_name]['columns']['id'] = [
+						$column_id = [
 							'type' => 'int',
 							'primary' => 1,
 							'auto_increment' => 1,
 							'default' => 0
+						];
+
+						$this->migrate_schema['tables'][$table_name]['columns'] = array_merge(['id' => $column_id], $this->migrate_schema['tables'][$table_name]['columns']);
+					}
+
+					// Set Default Created On
+					if(!isset($table['columns']['created_on']) && (!isset($table['use_created_on']) || !empty($table['use_created_on'])))
+					{
+						$this->migrate_schema['tables'][$table_name]['columns']['created_on'] = [
+							'type' => 'datetime',
+							'default_datetime' => 1,
+						];
+					}
+
+					// Set Default Updated On
+					if(!isset($table['columns']['updated_on']) && (!isset($table['use_updated_on']) || !empty($table['use_updated_on'])))
+					{
+						$this->migrate_schema['tables'][$table_name]['columns']['updated_on'] = [
+							'type' => 'datetime',
+							'default_datetime' => 1,
+							'update_datetime' => 1,
 						];
 					}
 				}
@@ -1334,14 +1356,44 @@ class SpryApiDB extends SpryApi
 		return $this->migrate_logs;
 	}
 
+	private function migrateCheckErrors($command='')
+	{
+		$error = $this->error();
+
+		if(!empty($error[2]))
+		{
+			$this->migrate_logs[] = 'DB Error: ('.$command.') '.$error[2];
+		}
+	}
+
 	private function migrateTablesGet()
 	{
-		return $this->query('SHOW TABLES')->fetchAll(PDO::FETCH_COLUMN);
+		$sql = 'SHOW TABLES';
+
+		if($results = $this->query($sql))
+		{
+			$this->migrateCheckErrors($sql);
+			return $results->fetchAll(PDO::FETCH_COLUMN);
+		}
+
+		$this->migrateCheckErrors($sql);
+
+		return [];
 	}
 
 	private function migrateColumnsGet($table='', $names=false)
 	{
-		return $this->query('SHOW COLUMNS FROM '.$table)->fetchAll($names ? PDO::FETCH_COLUMN : PDO::FETCH_ASSOC);
+		$sql = 'SHOW COLUMNS FROM '.$table;
+
+		if($results = $this->query($sql))
+		{
+			$this->migrateCheckErrors($sql);
+			return $results->fetchAll($names ? PDO::FETCH_COLUMN : PDO::FETCH_ASSOC);
+		}
+
+		$this->migrateCheckErrors($sql);
+
+		return [];
 	}
 
 	private function migrateTablesDrop()
@@ -1377,6 +1429,8 @@ class SpryApiDB extends SpryApi
 				{
 					$this->migrate_logs[] = 'ERROR: '.$log_message.' Reported an Error.';
 				}
+
+				$this->migrateCheckErrors($sql);
 
 			}
 		}
@@ -1432,6 +1486,8 @@ class SpryApiDB extends SpryApi
 			{
 				$this->migrate_logs[] = 'Error: '.$log_message.'. Reported an Error.';
 			}
+
+			$this->migrateCheckErrors($sql);
 		}
 	}
 
@@ -1468,6 +1524,8 @@ class SpryApiDB extends SpryApi
 						{
 							$this->migrate_logs[] = 'Error: '.$log_message.'. Reported an Error.';
 						}
+
+						$this->migrateCheckErrors($sql);
 					}
 				}
 			}
@@ -1505,6 +1563,8 @@ class SpryApiDB extends SpryApi
 						{
 							$this->migrate_logs[] = 'Error: '.$log_message.'. Reported an Error.';
 						}
+
+						$this->migrateCheckErrors($sql);
 					}
 				}
 			}
@@ -1633,20 +1693,17 @@ class SpryApiDB extends SpryApi
 		}
 
 		// Default
-		if(!empty($field['default']))
+		if(!empty($field['default_datetime']))
 		{
-			if($field['default'] === 'CURRENT_TIMESTAMP')
-			{
-				$field_values[] = 'DEFAULT CURRENT_TIMESTAMP';
-			}
-			else
-			{
-				$field_values[] = "DEFAULT '".$field['default']."'";
-			}
+			$field_values[] = 'DEFAULT CURRENT_TIMESTAMP';
+		}
+		elseif(!empty($field['default']))
+		{
+			$field_values[] = "DEFAULT '".$field['default']."'";
 		}
 
 		// Extra
-		if(!empty($field['update_time']))
+		if(!empty($field['update_datetime']))
 		{
 			$field_values[] = 'ON UPDATE CURRENT_TIMESTAMP';
 		}

@@ -1,6 +1,6 @@
 <?php
 
-class SpryApiWebTools extends SpryApi {
+class SpryApiWebTools extends SpryApiTools {
 
 
 	public static function authenticate()
@@ -39,105 +39,6 @@ class SpryApiWebTools extends SpryApi {
 		return true;
 	}
 
-
-	private static function get_api_response($request='', $url='')
-	{
-		if(!empty($request))
-		{
-			$ch = curl_init();
-
-			curl_setopt($ch, CURLOPT_URL, $url);
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-			curl_setopt($ch, CURLOPT_HEADER, FALSE);
-			curl_setopt($ch, CURLOPT_POST, TRUE);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, $request);
-
-			$response = curl_exec($ch);
-			curl_close($ch);
-
-			return $response;
-		}
-	}
-
-	private static function db_migrate($args=[])
-	{
-		$logs = [];
-
-		if(!empty(parent::config()->db))
-		{
-			$db = new SpryApiDB(parent::config()->db);
-			$logs = $db->migrate($args);
-		}
-
-		parent::stop(2500, $logs);
-	}
-
-	private static function run_all_tests()
-	{
-		if(!empty(parent::config()->tests))
-		{
-			//return parent::results(501, null);
-		}
-
-		$result = ['All Tests' => 'Passed'];
-		$response_code = 2500;
-
-		$last_response_body = null;
-		$last_response_body_id = null;
-
-		foreach (parent::config()->tests as $route => $test)
-		{
-			$result[$route] = ['response' => 'Passed'];
-
-			foreach ($test['params'] as $param_key => $param)
-			{
-				if($param === '{last_response_body}')
-				{
-					$test['params'][$param_key] = $last_response_body;
-				}
-
-				if($param === '{last_response_body_id}')
-				{
-					$test['params'][$param_key] = $last_response_body_id;
-				}
-			}
-
-			$response = self::get_api_response(json_encode($test['params']), "http://".$_SERVER['HTTP_HOST'].$route);
-
-			//echo $response;
-
-			$response = json_decode($response, true);
-
-			$result[$route]['response_code'] = (!empty($response['response_code']) ? $response['response_code'] : '');
-			$result[$route]['messages'] = (!empty($response['messages']) ? $response['messages'] : '');
-
-			if(!empty($test['match']) && is_array($test['match']))
-			{
-				$result[$route]['response_match'] = [];
-
-				foreach ($test['match'] as $match_key => $match)
-				{
-					$result[$route]['response_match'][$match_key] = $response[$match_key];
-
-					if(empty($response[$match_key]) || $response[$match_key] !== $match)
-					{
-						$result[$route]['response'] = 'Failed';
-						$result['All Tests'] = 'Failed';
-						$response_code = 5502;
-					}
-				}
-			}
-
-			$last_response_body = (!empty($response['body']) ? $response['body'] : null);
-			$last_response_body_id = (!empty($response['body']['id']) ? $response['body']['id'] : null);
-		}
-
-		parent::stop($response_code, $result);
-	}
-
-
-
-
 	public static function display()
 	{
 		if(!self::authenticate())
@@ -153,7 +54,7 @@ class SpryApiWebTools extends SpryApi {
 			{
 				if(!empty($_POST['hash']))
 				{
-					die(parent::hash($_POST['hash']));
+					die(parent::get_hash($_POST['hash']));
 				}
 			}
 
@@ -161,24 +62,19 @@ class SpryApiWebTools extends SpryApi {
 			{
 				if(!empty($_POST['url']) && $_POST['url'] === 'All Tests')
 				{
-					self::run_all_tests();
+					parent::send_response(parent::run_test());
 					exit;
 				}
 
-				if(!empty($_POST['url']) && $_POST['url'] === 'DB Migrate')
-				{
-					self::db_migrate();
-					exit;
-				}
-
-				die(self::get_api_response($_POST['request'], "http://".$_SERVER['HTTP_HOST'].$_POST['url']));
+				die(parent::get_api_response($_POST['request'], "http://".$_SERVER['HTTP_HOST'].$_POST['url']));
 			}
 
 			if($ajax === 'db_migrate')
 			{
 				$destructive = !empty($_POST['destructive']) ? true : false;
 				$dryrun = !empty($_POST['dryrun']) ? true : false;
-				self::db_migrate(['destructive' => $destructive, 'dryrun' => $dryrun]);
+				$results = parent::db_migrate(['destructive' => $destructive, 'dryrun' => $dryrun]);
+				parent::send_response($results);
 				exit;
 			}
 
@@ -654,7 +550,15 @@ class SpryApiWebTools extends SpryApi {
 			});
 
 			$('#db-migrate-submit').on('click', function(){
-				if(confirm('Are you sure you want to Run DB Migrate'+($('#destructive').is(":checked") ? ' with Destructive turned ON' : '')+'?'))
+
+				var confirmed = true;
+
+				if(!$('#dryrun').is(":checked"))
+				{
+					confirmed = confirm('Are you sure you want to Run DB Migrate'+($('#destructive').is(":checked") ? ' with Destructive turned ON' : '')+'?');
+				}
+
+				if(confirmed)
 				{
 					$('#db-migrate-container legend span').remove();
 					$('#db-migrate-container legend').append('<span class="loader" style="display:none"></span>');
@@ -823,7 +727,7 @@ class SpryApiWebTools extends SpryApi {
 								<input type="checkbox" id="destructive" value="1">Destructive
 							</label>
 							<label title="Dryrun will only report back what the migrate will do, but not make any actual changes.">
-								<input type="checkbox" id="dryrun" value="1">Dryrun
+								<input type="checkbox" id="dryrun" value="1" checked="checked">Dryrun
 							</label>
 							<span class="submit">
 								<button id="db-migrate-submit">Submit</button>

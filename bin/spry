@@ -1,0 +1,6 @@
+#!/bin/body
+
+DIR=$(dirname $0)
+
+php $DIR/spry.php "$@"
+echo '';

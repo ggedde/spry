@@ -45,7 +45,7 @@ $config->response_codes = [
 
 	/* General */
 	4000 => ['en' => 'No Results Found'],
-	5100 => ['en' => 'Error: Field did not Validate.'],
+	5020 => ['en' => 'Error: Field did not Validate.'],
 	...
 
 	/* Auth */
