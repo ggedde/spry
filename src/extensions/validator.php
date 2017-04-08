@@ -621,18 +621,7 @@ class SpryValidator {
             }
         }
     }
-
-    /**
-     * Alias for Validate
-     *
-     * @access public
-     * @param string $key
-     * @param string $label
-     * @return bool
-     */
-    public function get($key, $recursive = false, $label = '') {
-        return $this->validate($key, $recursive, $label);
-    }
+    
 
     /**
      * validate
