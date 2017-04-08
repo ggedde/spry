@@ -370,9 +370,9 @@ class Spry {
  	 * @return object
 	 */
 
-	protected static function validate($params=array())
+	protected static function validator($params=null)
 	{
-		if(empty($params))
+		if(is_null($params))
 		{
 			$params = self::$params;
 		}

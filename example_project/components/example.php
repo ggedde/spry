@@ -19,10 +19,7 @@ class Example
 	public function insert()
 	{
 		// Required Fields
-		$name = Spry::validate()->required()->from('name');
-		$name = Spry::validate()->param('name');
-		$email = Spry::validate()->minLength(5)->param('email');
-		$email = Spry::validate($params)->minLength(5)->from('email');
+		$name = Spry::validator()->required()->minLength(1)->validate('name');
 
 		$data = [
 			'account_id' => Spry::auth()->account_id,
