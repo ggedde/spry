@@ -1,5 +1,5 @@
 <?php
-//namespace Medoo;
+namespace SpryDB;
 
 /*!
  * Medoo database framework
@@ -10,9 +10,10 @@
  * Released under the MIT license
  */
 
-//use PDO;
+use PDO;
+use Spry;
 
-class SpryApiDB extends SpryApi
+class SpryDB
 {
 	// General
 	protected $database_type;

@@ -1,5 +1,7 @@
 <?php
 
+namespace SpryLog;
+
 /**
  *
  *  Generic Log Class to catch API Logs and PHP Error Logs
@@ -7,7 +9,9 @@
  *
  */
 
-class Log extends SpryApi
+use Spry;
+
+class SpryLog
 {
 	/**
 	 * Log a generic Message
@@ -20,11 +24,11 @@ class Log extends SpryApi
 
 	private static function write_log($msg)
 	{
-		if(parent::config()->api_log_file)
+		if(Spry::config()->api_log_file)
 		{
 			date_default_timezone_set('America/Los_Angeles');
 			$msg = "\n".date('Y-m-d H:i:s').' '.$_SERVER['REMOTE_ADDR'].' - '.$msg;
-			file_put_contents(parent::config()->api_log_file, $msg, FILE_APPEND);
+			file_put_contents(Spry::config()->api_log_file, $msg, FILE_APPEND);
 		}
 	}
 
@@ -40,7 +44,7 @@ class Log extends SpryApi
 
 	public static function message($msg)
 	{
-		self::write_log('GitShack: '.$msg);
+		self::write_log('Spry: '.$msg);
 	}
 
 
@@ -55,7 +59,7 @@ class Log extends SpryApi
 
 	public static function warning($msg)
 	{
-		self::write_log('GitShack WARNING: '.$msg);
+		self::write_log('Spry WARNING: '.$msg);
 	}
 
 
@@ -70,7 +74,7 @@ class Log extends SpryApi
 
 	public static function error($msg)
 	{
-		self::write_log('GitShack ERROR: '.$msg);
+		self::write_log('Spry ERROR: '.$msg);
 	}
 
 
@@ -88,7 +92,7 @@ class Log extends SpryApi
 		$messages = (!empty($params['messages']) && is_array($params['messages']) ? implode(', ', $params['messages']) : '');
 		$msg = 'Response Code ('.$params['response_code'].') - '.$messages;
 
-		self::write_log('GitShack STOP ERROR: '.$msg);
+		self::write_log('Spry STOPPED: '.$msg);
 	}
 
 
@@ -107,7 +111,7 @@ class Log extends SpryApi
 		$messages = (!empty($params['messages']) && is_array($params['messages']) ? implode(', ', $params['messages']) : '');
 		$msg = 'Response Code ('.$response['response_code'].') - '.$messages;
 
-		self::write_log('GitShack Build Response: '.$msg);
+		self::write_log('Spry Build Response: '.$msg);
 
 		return $response;
 	}
@@ -123,18 +127,24 @@ class Log extends SpryApi
 
 	public static function initial_request()
 	{
-		$secure = ['password', 'pass', 'access_key', 'secret'];
-		$params = parent::params();
+		$secure = [
+			'password',
+			'pass',
+			'access_key',
+			'key',
+			'secret'
+		];
+		$params = Spry::params();
 
 		foreach ($params as $param_key => $param_value)
 		{
-			if(in_array($param_key, $secure))
+			if(in_array(strtolower($param_key), $secure))
 			{
-				$params[$param_key] = 'xxxxxxxx';
+				$params[$param_key] = 'xxxxxx...';
 			}
 		}
 
-		self::write_log("GitShack Initial Request: - - - - - - - - - - - - - - - - - - \nPath: ".parent::get_path()."\nParams:\n".print_r($params, true));
+		self::write_log("Spry Initial Request: - - - - - - - - - - - - - - - - - - \nPath: ".Spry::get_path()."\nParams:\n".print_r($params, true));
 	}
 
 
@@ -149,13 +159,13 @@ class Log extends SpryApi
 	public static function user_request()
 	{
 		$data = [
-			'account_id' => parent::auth()->account_id,
-			'user_id' => parent::auth()->user_id,
-			'request' => parent::get_path(),
-			'permitted' => (AUTH::has_permission() ? 1 : 0)
+			'account_id' => Spry::auth()->account_id,
+			'user_id' => Spry::auth()->user_id,
+			'request' => Spry::get_path(),
+			'permitted' => (Spry::auth()->has_permission() ? 1 : 0)
 		];
 
-		parent::db()->insert('logs', $data);
+		Spry::db()->insert('logs', $data);
 	}
 
 
@@ -233,7 +243,7 @@ class Log extends SpryApi
 			}
 
 			$data = $errstr.$errfile.' [Line: '.(!empty($errline) ? $errline : '?')."]\n".$backtrace;
-			file_put_contents(parent::config()->php_log_file, $data, FILE_APPEND);
+			file_put_contents(Spry::config()->php_log_file, $data, FILE_APPEND);
 		}
 	}
 
@@ -268,10 +278,10 @@ class Log extends SpryApi
 
 	public static function setup_php_logs()
 	{
-		if(parent::config()->php_log_file)
+		if(Spry::config()->php_log_file)
 		{
-	    	set_error_handler(array(__CLASS__, 'php_log_handler'));
-	    	register_shutdown_function(array(__CLASS__, 'php_shutdown_function'));
+	    	set_error_handler([__CLASS__, 'php_log_handler']);
+	    	register_shutdown_function([__CLASS__, 'php_shutdown_function']);
 	    }
 	}
 

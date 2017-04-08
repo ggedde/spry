@@ -1,8 +1,10 @@
 <?php
 
-class Account extends SpryApi
+use Spry;
+
+class Account
 {
-	static private $table = 'accounts';
+	private $table = 'accounts';
 
 	/**
 	 * Returns the Account
@@ -14,16 +16,16 @@ class Account extends SpryApi
  	 * @return array
 	 */
 
-	static public function get()
+	public function get()
 	{
 		$where = [
 			'AND' => [
-				'id' => parent::auth()->account_id,
+				'id' => Spry::auth()->account_id,
 				'status' => 'active'
 			]
 		];
 
-		return parent::results(400, parent::db()->get(self::$table, '*', $where));
+		return Spry::results(400, Spry::db()->get($this->table, '*', $where));
 	}
 
 }

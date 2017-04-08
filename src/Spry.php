@@ -1,5 +1,7 @@
 <?php
 
+namespace Spry;
+
 /*!
  *
  * SpryAPI Framework
@@ -11,7 +13,7 @@
  *
  */
 
-class SpryApi {
+class Spry {
 
 	private static $routes = [];
 	private static $params = [];
@@ -67,7 +69,7 @@ class SpryApi {
 
 		if(!empty(self::$config->db))
 		{
-			self::$db = new SpryApiDB(self::$config->db);
+			self::$db = new SpryDB(self::$config->db);
 		}
 
 		// Database Filters
@@ -368,7 +370,7 @@ class SpryApi {
  	 * @return object
 	 */
 
-	protected static function validator($params=array())
+	protected static function validate($params=array())
 	{
 		if(empty($params))
 		{
@@ -377,7 +379,7 @@ class SpryApi {
 
 		if(empty(self::$validator))
 		{
-			self::$validator = new SpryApiValidator($params);
+			self::$validator = new SpryValidator($params);
 		}
 		else
 		{

@@ -1,6 +1,8 @@
 <?php
+namespace SpryTools;
+use Spry;
 
-class SpryApiTools extends SpryApi {
+class SpryTools {
 
     protected static function get_api_response($request='', $url='')
 	{
@@ -23,32 +25,32 @@ class SpryApiTools extends SpryApi {
 
     protected static function get_hash($value='')
     {
-        return parent::hash($value);
+        return Spry::hash($value);
     }
 
     protected static function db_migrate($args=[])
 	{
 		$logs = [];
 
-        if(empty(parent::config()))
+        if(empty(Spry::config()))
         {
-            return parent::results(5001, null);
+            return Spry::results(5001, null);
         }
 
-		if(!empty(parent::config()->db))
+		if(!empty(Spry::config()->db))
 		{
-			$db = new SpryApiDB(parent::config()->db);
+			$db = new SpryDB(Spry::config()->db);
 			$logs = $db->migrate($args);
 		}
 
-		return parent::results(30, $logs);
+		return Spry::results(30, $logs);
 	}
 
-    protected static function run_test($test='')
+    protected static function test($requested_test_name='')
 	{
-		if(!empty(parent::config()->tests))
+		if(empty(Spry::config()->tests))
 		{
-			parent::stop(5052);
+			Spry::stop(5052);
 		}
 
 		$result = ['All Tests' => 'Passed'];
@@ -57,9 +59,15 @@ class SpryApiTools extends SpryApi {
 		$last_response_body = null;
 		$last_response_body_id = null;
 
-		foreach (parent::config()->tests as $route => $test)
+		foreach (Spry::config()->tests as $test_name => $test)
 		{
-			$result[$route] = ['response' => 'Passed'];
+            // Skip this test if a Test Name was Requested and does not match this Test.
+            if($requested_test_name && $requested_test_name != $test_name)
+            {
+                continue;
+            }
+
+			$result[$test_name] = ['response' => 'Passed'];
 
 			foreach ($test['params'] as $param_key => $param)
 			{
@@ -74,24 +82,24 @@ class SpryApiTools extends SpryApi {
 				}
 			}
 
-			$response = self::get_api_response(json_encode($test['params']), "http://".$_SERVER['HTTP_HOST'].$route);
+			$response = self::get_api_response(json_encode($test['params']), "http://".$_SERVER['HTTP_HOST'].$test['route']);
 
 			$response = json_decode($response, true);
 
-			$result[$route]['response_code'] = (!empty($response['response_code']) ? $response['response_code'] : '');
-			$result[$route]['messages'] = (!empty($response['messages']) ? $response['messages'] : '');
+			$result[$test_name]['response_code'] = (!empty($response['response_code']) ? $response['response_code'] : '');
+			$result[$test_name]['messages'] = (!empty($response['messages']) ? $response['messages'] : '');
 
 			if(!empty($test['match']) && is_array($test['match']))
 			{
-				$result[$route]['response_match'] = [];
+				$result[$test_name]['response_match'] = [];
 
 				foreach ($test['match'] as $match_key => $match)
 				{
-					$result[$route]['response_match'][$match_key] = $response[$match_key];
+					$result[$test_name]['response_match'][$match_key] = $response[$match_key];
 
 					if(empty($response[$match_key]) || $response[$match_key] !== $match)
 					{
-						$result[$route]['response'] = 'Failed';
+						$result[$test_name]['response'] = 'Failed';
 						$result['All Tests'] = 'Failed';
 						$response_code = 5050;
 					}
@@ -102,6 +110,6 @@ class SpryApiTools extends SpryApi {
 			$last_response_body_id = (!empty($response['body']['id']) ? $response['body']['id'] : null);
 		}
 
-		return parent::results($response_code, $result);
+		return Spry::results($response_code, $result);
 	}
 }

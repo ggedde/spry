@@ -1,6 +1,6 @@
-#!/bin/body
+#!/bin/bash
 
 DIR=$(dirname $0)
 
-php $DIR/spry.php "$@"
+php $DIR/cli.php "$@"
 echo '';

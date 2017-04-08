@@ -1,9 +1,11 @@
 <?php
 
-class Auth extends SpryApi
+use Spry;
+
+class Auth
 {
 
-	private static $auth_fields = [
+	private $auth_fields = [
 		'accounts.id(account_id)',
 		'users.id(user_id)',
 		'users.permissions(user_permissions)',
@@ -20,41 +22,41 @@ class Auth extends SpryApi
  	 * @return array
 	 */
 
-	public static function get()
+	public function get()
 	{
-		if(!empty(parent::auth()->account_id) && !empty(parent::auth()->user_id) && !empty(parent::auth()->user_access_key))
+		if(!empty(Spry::auth()->account_id) && !empty(Spry::auth()->user_id) && !empty(Spry::auth()->user_access_key))
 		{
 			$request = [
-				'account_id' => parent::auth()->account_id,
-				'user_id' => parent::auth()->user_id,
-				'access_key' => parent::auth()->user_access_key,
+				'account_id' => Spry::auth()->account_id,
+				'user_id' => Spry::auth()->user_id,
+				'access_key' => Spry::auth()->user_access_key,
 			];
 
-			return parent::results(200, $request);
+			return Spry::results(200, $request);
 		}
 
 		sleep(5); // Reduce Hack attempts
-		return parent::results(200);
+		return Spry::results(200);
 	}
 
 
 
 
 
-	public static function check()
+	public function check()
 	{
 		// Skip this Check if request is by username and password
-		if(parent::get_path() === '/auth/get/')
+		if(Spry::get_path() === '/auth/get/')
 		{
-			$username = parent::validator()->required()->minLength(1)->validate('username');
-			$password = parent::validator()->required()->minLength(1)->validate('password');
+			$username = Spry::validator()->required()->minLength(1)->validate('username');
+			$password = Spry::validator()->required()->minLength(1)->validate('password');
 
 			sleep(1); // Reduce Hack attempts
 
 			$where = [
 				'AND' => [
 					'users.username' => $username,
-					'users.password' => parent::hash($password),
+					'users.password' => Spry::hash($password),
 					'accounts.status' => 'active'
 				]
 			];
@@ -62,7 +64,7 @@ class Auth extends SpryApi
 		else
 		{
 			// Run Auth Check
-			$access_key = parent::validator()->required()->minLength(1)->validate('access_key');
+			$access_key = Spry::validator()->required()->minLength(1)->validate('access_key');
 
 			$where = [
 				'AND' => [
@@ -76,7 +78,7 @@ class Auth extends SpryApi
 			"[>]users" => ["id" => "users.account_id"]
 		];
 
-		$request = parent::db()->get('accounts', $join, self::$auth_fields, $where);
+		$request = Spry::db()->get('accounts', $join, $this->auth_fields, $where);
 
 		if(!empty($request['account_id']))
 		{
@@ -85,35 +87,35 @@ class Auth extends SpryApi
 			{
 				$auth->user_permissions = json_decode($auth->user_permissions, true);
 			}
-			parent::set_auth($auth);
+			Spry::set_auth($auth);
 			return true;
 		}
 
 		sleep(5); // Reduce Hack attempts
-		self::stop(5201);
+		Spry::stop(5201);
 	}
 
 
 
-	public static function get_permissions()
+	public function get_permissions()
 	{
-		$permissions = array_keys(parent::config()->routes);
+		$permissions = array_keys(Spry::config()->routes);
 
-		return parent::results(205, $permissions);
+		return Spry::results(205, $permissions);
 	}
 
 
 
-	public static function has_permission($path='')
+	public function has_permission($path='')
 	{
 		if(!$path)
 		{
-			$path = parent::get_path();
+			$path = Spry::get_path();
 		}
 
-		if(!empty(parent::auth()->user_permissions))
+		if(!empty(Spry::auth()->user_permissions))
 		{
-			$permissions = parent::auth()->user_permissions;
+			$permissions = Spry::auth()->user_permissions;
 		}
 
 		if(empty($permissions) || (!is_array($permissions) && $permissions !== '*') || (is_array($permissions) && !in_array($path, $permissions)))
@@ -126,9 +128,9 @@ class Auth extends SpryApi
 
 
 
-	public static function check_permissions()
+	public function check_permissions()
 	{
-		$path = parent::get_path();
+		$path = Spry::get_path();
 
 		// Skip this Check if request is by username and password
 		if($path === '/auth/get/')
@@ -136,10 +138,10 @@ class Auth extends SpryApi
 			return;
 		}
 
-		if(!self::has_permission($path))
+		if(!$this->has_permission($path))
 		{
 			sleep(2); // Reduce Hack attempts
-			parent::stop(5204);
+			Spry::stop(5204);
 		}
 	}
 

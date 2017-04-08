@@ -1,24 +1,26 @@
 <?php
+namespace SpryWebTools;
+use SpryTools;
+use Spry;
 
-class SpryApiWebTools extends SpryApiTools {
+class SpryWebTools {
 
-
-	public static function authenticate()
+	public function authenticate()
 	{
-		$enabled = !empty(parent::config()->webtools_enabled);
+		$enabled = !empty(Spry::config()->webtools_enabled);
 
 		if(!$enabled)
 		{
 			return false;
 		}
 
-		$endpoint = !empty(parent::config()->webtools_endpoint) ? trim(parent::config()->webtools_endpoint) : '';
-		$username = !empty(parent::config()->webtools_username) ? parent::config()->webtools_username : '';
-		$password = !empty(parent::config()->webtools_password) ? parent::config()->webtools_password : '';
-		$ips = !empty(parent::config()->webtools_allowed_ips) ? parent::config()->webtools_allowed_ips : [];
+		$endpoint = !empty(Spry::config()->webtools_endpoint) ? trim(Spry::config()->webtools_endpoint) : '';
+		$username = !empty(Spry::config()->webtools_username) ? Spry::config()->webtools_username : '';
+		$password = !empty(Spry::config()->webtools_password) ? Spry::config()->webtools_password : '';
+		$ips = !empty(Spry::config()->webtools_allowed_ips) ? Spry::config()->webtools_allowed_ips : [];
 
 		// Check for Values
-		if('/'.trim($endpoint, '/').'/' !== parent::get_path() ||
+		if('/'.trim($endpoint, '/').'/' !== Spry::get_path() ||
 		   !$username ||
 		   !$password ||
 		   !$endpoint ||
@@ -39,9 +41,9 @@ class SpryApiWebTools extends SpryApiTools {
 		return true;
 	}
 
-	public static function display()
+	public function display()
 	{
-		if(!self::authenticate())
+		if(!$this->authenticate())
 		{
 			return;
 		}
@@ -54,7 +56,7 @@ class SpryApiWebTools extends SpryApiTools {
 			{
 				if(!empty($_POST['hash']))
 				{
-					die(parent::get_hash($_POST['hash']));
+					die(SpryTools::get_hash($_POST['hash']));
 				}
 			}
 
@@ -62,54 +64,54 @@ class SpryApiWebTools extends SpryApiTools {
 			{
 				if(!empty($_POST['url']) && $_POST['url'] === 'All Tests')
 				{
-					parent::send_response(parent::run_test());
+					Spry::send_response(SpryTools::test());
 					exit;
 				}
 
-				die(parent::get_api_response($_POST['request'], "http://".$_SERVER['HTTP_HOST'].$_POST['url']));
+				die(SpryTools::get_api_response($_POST['request'], "http://".$_SERVER['HTTP_HOST'].$_POST['url']));
 			}
 
 			if($ajax === 'db_migrate')
 			{
 				$destructive = !empty($_POST['destructive']) ? true : false;
 				$dryrun = !empty($_POST['dryrun']) ? true : false;
-				$results = parent::db_migrate(['destructive' => $destructive, 'dryrun' => $dryrun]);
-				parent::send_response($results);
+				$results = SpryTools::db_migrate(['destructive' => $destructive, 'dryrun' => $dryrun]);
+				Spry::send_response($results);
 				exit;
 			}
 
 			if($ajax === 'php_logs')
 			{
-				die((file_exists(parent::config()->php_log_file) ? file_get_contents(parent::config()->php_log_file) : ''));
+				die((file_exists(Spry::config()->php_log_file) ? file_get_contents(Spry::config()->php_log_file) : ''));
 			}
 
 			if($ajax === 'api_logs')
 			{
-				die((file_exists(parent::config()->api_log_file) ? file_get_contents(parent::config()->api_log_file) : ''));
+				die((file_exists(Spry::config()->api_log_file) ? file_get_contents(Spry::config()->api_log_file) : ''));
 			}
 
 			if($ajax === 'clear_php_logs')
 			{
-				if(file_exists(parent::config()->php_log_file))
+				if(file_exists(Spry::config()->php_log_file))
 				{
-					file_put_contents(parent::config()->php_log_file, '');
+					file_put_contents(Spry::config()->php_log_file, '');
 				}
 			}
 
 			if($ajax === 'clear_api_logs')
 			{
-				if(file_exists(parent::config()->api_log_file))
+				if(file_exists(Spry::config()->api_log_file))
 				{
-					file_put_contents(parent::config()->api_log_file, '');
+					file_put_contents(Spry::config()->api_log_file, '');
 				}
 			}
 
 			exit;
 		}
 
-		if(!empty($_GET['clear_log']) && !empty(parent::config()->php_log_file))
+		if(!empty($_GET['clear_log']) && !empty(Spry::config()->php_log_file))
 		{
-			file_put_contents(parent::config()->php_log_file, '');
+			file_put_contents(Spry::config()->php_log_file, '');
 			header("Location: ".$_SERVER['PHP_SELF']);
 		}
 
@@ -118,7 +120,7 @@ class SpryApiWebTools extends SpryApiTools {
 		$requests['All Tests'] = '"Runs All Tests at Once"';
 		$requests['DB Migrate'] = '"DB"';
 
-		foreach (parent::config()->tests as $path => $test)
+		foreach (Spry::config()->tests as $path => $test)
 		{
 			$requests[$path] = json_encode($test['params']);
 		}

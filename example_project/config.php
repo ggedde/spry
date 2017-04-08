@@ -36,7 +36,22 @@ $config->db = [
 	'password' => '',
 	'charset' => 'utf8',
 	'port' => 3306,
-	'prefix' => 'api_x_' // Should change this to be someting Uniue
+	'prefix' => 'api_x_', // Should change this to be someting Uniue
+	'migrate_destructive' => false,
+	'migrate_schema' => [
+		'tables' => [
+			'users' => [
+				'columns' => [
+					'name' => [
+						'type' => 'string'
+					],
+					'email' => [
+						'type' => 'string'
+					],
+				]
+			]
+		]
+	]
 ];
 
 // Routes
@@ -93,7 +108,8 @@ $config->response_codes = [
 
 // Tests
 $config->tests = [
-	'/auth/get' => [
+	'Test 1' => [
+		'route' => '/auth/get',
 		'params' => [
 			'username' => 'usertest',
 			'password' => 'passwordtest'
@@ -102,7 +118,8 @@ $config->tests = [
 			'response' => 'success',
 		]
 	],
-	'/account/get' => [
+	'Test 2' => [
+		'route' => '/account/get',
 		'params' => [
 			'access_key' => 'xxxxxxxxxxxxxxxxxxxxxxxx'
 		],
@@ -113,12 +130,12 @@ $config->tests = [
 ];
 
 // Filters
-$config->hooks->configure = ['Log::setup_php_logs'];
-$config->hooks->params = ['Log::initial_request'];
+$config->hooks->configure = ['SpryLog::setup_php_logs'];
+$config->hooks->params = ['SpryLog::initial_request'];
 //$config->hooks->database =  = ['AUTH::check'];
-$config->hooks->routes = ['Log::user_request'];
-$config->hooks->stop = ['Log::stop_filter'];
-$config->hooks->build_response = ['Log::build_response_filter']; // Filters must return the $response
+$config->hooks->routes = ['SpryLog::user_request'];
+$config->hooks->stop = ['SpryLog::stop_filter'];
+$config->hooks->build_response = ['SpryLog::build_response_filter']; // Filters must return the $response
 // $config->hooks->send_response = []; // Filters must return the $response
 // $config->hooks->get_path = [];  // Filters must return the $path
 // $config->hooks->get_route = [];  // Filters must return the $route

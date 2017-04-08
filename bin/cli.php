@@ -2,12 +2,13 @@
 
 include(dirname(dirname(__FILE__)).'/src/SpryApi.php');
 include(dirname(dirname(__FILE__)).'/src/extensions/db.php');
+include(dirname(dirname(__FILE__)).'/src/extensions/log.php');
 include(dirname(dirname(__FILE__)).'/src/extensions/validator.php');
 include(dirname(dirname(__FILE__)).'/src/extensions/tools.php');
 
-class SpryApiCLI extends SpryApiTools {
+class SpryCLI extends SpryTools {
 
-    public static function run($config_file='')
+    public static function run()
     {
         $args = [];
         $config_file = 'config.php';
@@ -71,7 +72,7 @@ class SpryApiCLI extends SpryApiTools {
                     'dryrun' => (in_array('--dryrun', $args) ? true : false),
                     'destructive' => (in_array('--destructive', $args) ? true : false),
                 ];
-                
+
                 $response = parent::db_migrate($migrate_args);
 
                 if(!empty($response['response']) && $response['response'] === 'error')
@@ -101,4 +102,4 @@ class SpryApiCLI extends SpryApiTools {
     }
 }
 
-SpryApiCLI::run();
+SpryCLI::run();

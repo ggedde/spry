@@ -1,4 +1,5 @@
 <?php
+namespace SpryValidator;
 
 /**
  * Form validation library.
@@ -9,7 +10,11 @@
  * @see https://github.com/blackbelt/php-validation
  * @see Based on idea: http://brettic.us/2010/06/18/form-validation-class-using-php-5-3/
  */
-class SpryApiValidator extends SpryApi {
+
+use Spry;
+use DateTime;
+
+class SpryValidator {
 
     protected $messages = array();
     protected $errors = array();
@@ -251,7 +256,7 @@ class SpryApiValidator extends SpryApi {
      * @
      */
     public function betweenlength($minlength, $maxlength, $message = null) {
-        $message = empty($message) ? self::getDefaultMessage(__FUNCTION__, array($minlength, $maxlength)) : NULL;
+        $message = empty($message) ? $this->_getDefaultMessage(__FUNCTION__, array($minlength, $maxlength)) : NULL;
 
         $this->minlength($minlength, $message)->max($maxlength, $message);
         return $this;
@@ -618,6 +623,18 @@ class SpryApiValidator extends SpryApi {
     }
 
     /**
+     * Alias for Validate
+     *
+     * @access public
+     * @param string $key
+     * @param string $label
+     * @return bool
+     */
+    public function get($key, $recursive = false, $label = '') {
+        return $this->validate($key, $recursive, $label);
+    }
+
+    /**
      * validate
      * @param string $key
      * @param string $label
@@ -637,7 +654,7 @@ class SpryApiValidator extends SpryApi {
 
         if($this->hasErrors())
 		{
-            $this->stop(5020, null, $this->getAllErrors());
+            Spry::stop(5020, null, $this->getAllErrors());
         }
 
         // reset rules
