@@ -7,15 +7,13 @@ $config->salt = 'asdfghjklkjhgfdsasdfghjklpoiuytrewqazxcvbnm';
 
 // Set PHP and API Log file Locations
 // THESE SHOULD BE DISABLED IN PRODUCTION (OR AT LEAST SET SOMEWHERE IN A PRIVATE FOLDER)
-$config->php_log_file = dirname(__FILE__).'/php.log';
-$config->api_log_file = dirname(__FILE__).'/api.log';
+$config->php_log_file = __DIR__.'/php.log';
+$config->api_log_file = __DIR__.'/api.log';
 
 // Set PHP Error Types
 ini_set('error_reporting', E_ALL);
 
-$config->autoloader_directories = [
-	__DIR__.'/controllers',
-];
+$config->components_dir = __DIR__.'/components';
 
 
 // WebTools

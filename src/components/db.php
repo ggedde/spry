@@ -1,5 +1,8 @@
 <?php
-namespace SpryDB;
+
+namespace SpryApi\SpryComponent;
+
+use SpryApi\Spry as Spry;
 
 /*!
  * Medoo database framework

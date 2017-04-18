@@ -1,6 +1,8 @@
 <?php
 
-namespace Spry;
+namespace SpryApi;
+
+use stdClass;
 
 /*!
  *
@@ -101,7 +103,7 @@ class Spry {
 		self::send_response($response);
 	}
 
-	protected static function load_config($config_file='')
+	public static function load_config($config_file='')
 	{
 		$config = new stdClass();
 		$config->hooks = new stdClass();
@@ -144,7 +146,7 @@ class Spry {
 
 	private static function check_tools()
 	{
-		$controller = self::get_controller('SpryApiWebTools::display');
+		$controller = self::get_controller('SpryWebTools::display');
 		$response = self::get_response($controller);
 	}
 
@@ -282,11 +284,11 @@ class Spry {
  	 *
  	 * @param string $path
  	 *
- 	 * @access 'protected'
+ 	 * @access 'public'
  	 * @return array
 	 */
 
-	protected static function get_route($path=null)
+	public static function get_route($path=null)
 	{
 		if(!$path)
 		{
@@ -322,19 +324,21 @@ class Spry {
  	 * @return void
 	 */
 
-	protected static function autoloader($class)
+	public static function autoloader($class)
 	{
-		if(empty(self::$config->autoloader_directories))
+		$autoloader_directories = [];
+
+		if(!empty(self::$config->components_dir))
 		{
-			self::$config->autoloader_directories = [];
+			$autoloader_directories[] = self::$config->components_dir;
 		}
 
 		// Add SpryApi Extensions to directories
-		self::$config->autoloader_directories[] = __DIR__.'/extensions';
+		$autoloader_directories[] = __DIR__.'/extensions';
 
-		if(!empty(self::$config->autoloader_directories))
+		if(!empty($autoloader_directories))
 		{
-			foreach(self::$config->autoloader_directories as $dir)
+			foreach($autoloader_directories as $dir)
 			{
 				foreach(glob(rtrim($dir, '/') . '/*')  as $file)
 				{
@@ -352,11 +356,11 @@ class Spry {
 	/**
 	 * Returns DB Extension.
  	 *
- 	 * @access 'protected'
+ 	 * @access 'public'
  	 * @return object
 	 */
 
-	protected static function db()
+	public static function db()
 	{
 		return self::$db;
 	}
@@ -366,11 +370,11 @@ class Spry {
 	/**
 	 * Returns Validator Extension.
  	 *
- 	 * @access 'protected'
+ 	 * @access 'public'
  	 * @return object
 	 */
 
-	protected static function validator($params=null)
+	public static function validator($params=null)
 	{
 		if(is_null($params))
 		{
@@ -397,11 +401,11 @@ class Spry {
  	 * @param int $response_code
  	 * @param mixed $data
  	 *
- 	 * @access 'protected'
+ 	 * @access 'public'
  	 * @return void
 	 */
 
-	protected static function stop($response_code=0, $data=null, $messages=[])
+	public static function stop($response_code=0, $data=null, $messages=[])
 	{
 		if(!empty($messages) && (is_string($messages) || is_numeric($messages)))
 		{
@@ -432,11 +436,11 @@ class Spry {
 	/**
 	 * Sets the Auth object.
  	 *
- 	 * @access 'protected'
+ 	 * @access 'public'
  	 * @return object
 	 */
 
-	protected static function set_auth($object)
+	public static function set_auth($object)
 	{
 		self::$auth = $object;
 	}
@@ -446,11 +450,11 @@ class Spry {
 	/**
 	 * Returns the Auth object.
  	 *
- 	 * @access 'protected'
+ 	 * @access 'public'
  	 * @return object
 	 */
 
-	protected static function auth()
+	public static function auth()
 	{
 		return self::$auth;
 	}
@@ -460,11 +464,11 @@ class Spry {
 	/**
 	 * Returns the Config Parameters from the Singleton Class.
  	 *
- 	 * @access 'protected'
+ 	 * @access 'public'
  	 * @return object
 	 */
 
-	protected static function config()
+	public static function config()
 	{
 		return self::$config;
 	}
@@ -476,11 +480,11 @@ class Spry {
 	 *
  	 * @param string $string
  	 *
- 	 * @access 'protected'
+ 	 * @access 'public'
  	 * @return string
 	 */
 
-	protected static function sanitize($string)
+	public static function sanitize($string)
 	{
 		return preg_replace("/\W/g", '', str_replace([' ', '-'], '_', strtolower($string)));
 	}
@@ -543,11 +547,11 @@ class Spry {
 	 * Then returns the converted Parameters as array.
 	 * Throughs stop() on failure.
  	 *
- 	 * @access 'protected'
+ 	 * @access 'public'
  	 * @return array
 	 */
 
-	protected static function params($param='')
+	public static function params($param='')
 	{
 		if($param)
 		{
@@ -588,11 +592,11 @@ class Spry {
 	/**
 	 * Sets the Param Data
  	 *
- 	 * @access 'protected'
+ 	 * @access 'public'
  	 * @return bool
 	 */
 
-	protected static function set_params($params=[])
+	public static function set_params($params=[])
 	{
 		if(empty($params) || !is_array($params))
 		{
@@ -609,11 +613,11 @@ class Spry {
 	/**
 	 * Gets the URL Path of the current API Call.
  	 *
- 	 * @access 'protected'
+ 	 * @access 'public'
  	 * @return string
 	 */
 
-	protected static function get_path()
+	public static function get_path()
 	{
 		$path = explode('?', strtolower($_SERVER['REQUEST_URI']), 2);
 		$path = self::clean_path($path[0]);
@@ -665,6 +669,7 @@ class Spry {
 		{
 			list($class, $method) = explode('::', $controller_name);
 
+			$class = 'Spry\\SpryComponent\\'.$class;
 			$obj = new $class;
 
 			if($obj)
@@ -687,11 +692,11 @@ class Spry {
 	 *
  	 * @param string $value
  	 *
- 	 * @access 'private'
+ 	 * @access 'public'
  	 * @return string
 	 */
 
-	protected static function hash($value)
+	public static function hash($value)
 	{
 		$salt = '';
 
@@ -708,11 +713,11 @@ class Spry {
 	/**
 	 * Returns the Root Directory of the API.
  	 *
- 	 * @access 'protected'
+ 	 * @access 'public'
  	 * @return object
 	 */
 
-	protected static function dir()
+	public static function dir()
 	{
 		return dirname(__FILE__);
 	}
@@ -724,11 +729,11 @@ class Spry {
 	 *
  	 * @param string $result
  	 *
- 	 * @access 'protected'
+ 	 * @access 'public'
  	 * @return mixed
 	 */
 
-	protected static function get_body($result)
+	public static function get_body($result)
 	{
 		if(!empty($result['response']) && $result['response'] === 'success' && isset($result['body']))
 		{
@@ -746,11 +751,11 @@ class Spry {
 	 * @param int $response_code
 	 * @param mixed $data
  	 *
- 	 * @access 'protected'
+ 	 * @access 'public'
  	 * @return array
 	 */
 
-	protected static function results($response_code=0, $data=null, $messages=[])
+	public static function results($response_code=0, $data=null, $messages=[])
 	{
 		$response_code = strval($response_code);
 
@@ -785,7 +790,7 @@ class Spry {
 	 * @param int $response_code
 	 * @param mixed $data
  	 *
- 	 * @access 'protected'
+ 	 * @access 'private'
  	 * @return array
 	 */
 
@@ -854,11 +859,11 @@ class Spry {
 	 *
 	 * @param array $response
  	 *
- 	 * @access 'protected'
+ 	 * @access 'public'
  	 * @return void
 	 */
 
-	protected static function send_response($response=array())
+	public static function send_response($response=array())
 	{
 		if(empty($response['response']) || empty($response['response_code']))
 		{
@@ -884,7 +889,7 @@ class Spry {
 	 *
 	 * @param array $output
  	 *
- 	 * @access 'protected'
+ 	 * @access 'private'
  	 * @return void
 	 */
 

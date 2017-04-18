@@ -1,5 +1,8 @@
 <?php
-namespace SpryValidator;
+namespace SpryApi\SpryComponent;
+
+use SpryApi\Spry as Spry;
+use DateTime;
 
 /**
  * Form validation library.
@@ -11,8 +14,6 @@ namespace SpryValidator;
  * @see Based on idea: http://brettic.us/2010/06/18/form-validation-class-using-php-5-3/
  */
 
-use Spry;
-use DateTime;
 
 class SpryValidator {
 
@@ -621,7 +622,7 @@ class SpryValidator {
             }
         }
     }
-    
+
 
     /**
      * validate

@@ -1,6 +1,8 @@
 <?php
 
-use Spry;
+namespace SpryApi\SpryComponent;
+
+use SpryApi\Spry as Spry;
 
 class Auth
 {

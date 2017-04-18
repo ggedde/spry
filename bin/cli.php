@@ -1,6 +1,6 @@
 <?php
 
-include(dirname(dirname(__FILE__)).'/src/SpryApi.php');
+include(dirname(dirname(__FILE__)).'/src/Spry.php');
 include(dirname(dirname(__FILE__)).'/src/extensions/db.php');
 include(dirname(dirname(__FILE__)).'/src/extensions/log.php');
 include(dirname(dirname(__FILE__)).'/src/extensions/validator.php');

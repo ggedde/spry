@@ -1,7 +1,10 @@
 <?php
-namespace SpryWebTools;
+
+namespace SpryApi\SpryComponent;
+
+use SpryApi\Spry as Spry;
 use SpryTools;
-use Spry;
+
 
 class SpryWebTools {
 

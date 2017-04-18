@@ -1,6 +1,8 @@
 <?php
 
-namespace SpryLog;
+namespace SpryApi\SpryComponent;
+
+use SpryApi\Spry as Spry;
 
 /**
  *
@@ -8,8 +10,6 @@ namespace SpryLog;
  *  Version 1.0.1
  *
  */
-
-use Spry;
 
 class SpryLog
 {
