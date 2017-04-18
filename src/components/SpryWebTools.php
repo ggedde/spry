@@ -3,7 +3,7 @@
 namespace SpryApi\SpryComponent;
 
 use SpryApi\Spry as Spry;
-use SpryTools;
+use SpryApi\SpryComponent\SpryTools as SpryTools;
 
 
 class SpryWebTools {

@@ -6,7 +6,7 @@ use SpryApi\Spry as Spry;
 
 class SpryTools {
 
-    protected static function get_api_response($request='', $url='')
+    public static function get_api_response($request='', $url='')
 	{
 		if(!empty($request))
 		{
@@ -25,12 +25,12 @@ class SpryTools {
 		}
 	}
 
-    protected static function get_hash($value='')
+    public static function get_hash($value='')
     {
         return Spry::hash($value);
     }
 
-    protected static function db_migrate($args=[])
+    public static function db_migrate($args=[])
 	{
 		$logs = [];
 
@@ -48,7 +48,7 @@ class SpryTools {
 		return Spry::results(30, $logs);
 	}
 
-    protected static function test($requested_test_name='')
+    public static function test($requested_test_name='')
 	{
 		if(empty(Spry::config()->tests))
 		{

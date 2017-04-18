@@ -3,6 +3,7 @@
 namespace SpryApi\SpryComponent;
 
 use SpryApi\Spry as Spry;
+use PDO;
 
 /*!
  * Medoo database framework
@@ -12,9 +13,6 @@ use SpryApi\Spry as Spry;
  * Copyright 2017, Angel Lai
  * Released under the MIT license
  */
-
-use PDO;
-use Spry;
 
 class SpryDB
 {
