@@ -669,7 +669,7 @@ class Spry {
 		{
 			list($class, $method) = explode('::', $controller_name);
 
-			$class = 'Spry\\SpryComponent\\'.$class;
+			$class = 'SpryApi\\SpryComponent\\'.$class;
 			$obj = new $class;
 
 			if($obj)
