@@ -15,7 +15,7 @@
     "autoload": {
         "psr-4": {
             "SpryApi\\": "src/",
-            "SpryApi\\SpryComponent\\": "src/components"
+            "SpryApi\\SpryComponent\\": "src/components/"
         }
     }
 }
