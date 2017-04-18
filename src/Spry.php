@@ -3,6 +3,7 @@
 namespace SpryApi;
 
 use stdClass;
+//use Spry\SpryComponent\SpryLog as SpryLog;
 
 /*!
  *
@@ -36,6 +37,8 @@ class Spry {
 
 	public static function run($config_file='')
 	{
+		//$log = new SpryComponent\SpryLog;
+
 		if(empty($config_file) || !file_exists($config_file))
 		{
 			self::stop(5001, null, ['Error: Missing Config File']);
