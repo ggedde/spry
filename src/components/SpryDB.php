@@ -1256,6 +1256,11 @@ class SpryDB
 		return $this->pdo->errorInfo();
 	}
 
+	public function has_error()
+	{
+		return ($this->pdo->errorCode() ? 1 : 0);
+	}
+
 	public function last()
 	{
 		return end($this->logs);

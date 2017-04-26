@@ -65,13 +65,14 @@ class SpryWebTools {
 
 			if($ajax === 'api_request')
 			{
-				if(!empty($_POST['url']) && $_POST['url'] === 'All Tests')
+				if(!empty($_POST['test']) && $_POST['test'] === 'All Tests')
 				{
 					Spry::send_response(SpryTools::test());
 					exit;
 				}
 
-				die(SpryTools::get_api_response($_POST['request'], "http://".$_SERVER['HTTP_HOST'].$_POST['url']));
+				Spry::send_response(SpryTools::test($_POST['test']));
+				exit;
 			}
 
 			if($ajax === 'db_migrate')
@@ -444,7 +445,7 @@ class SpryWebTools {
 
 		function update_json()
 		{
-			document.getElementById('api-request-data').value = JSON.stringify(JSON.parse(jsons[document.getElementById('api-request-url').value].split('{{nl}}').join("\n")), null, "\t");
+			document.getElementById('api-request-data').value = JSON.stringify(JSON.parse(jsons[document.getElementById('api-request-test').value].split('{{nl}}').join("\n")), null, "\t");
 		}
 
 		function update_logs($type)
@@ -510,7 +511,7 @@ class SpryWebTools {
 				$('#api-request-legend').append('<span class="loader" style="display:none"></span>');
 				$('#api-request-response textarea').val('');
 				$('#api-request-legend .loader').fadeIn(100);
-				$.post('<?php echo $_SERVER['REQUEST_URI'];?>', { ajax: 'api_request', url: $('#api-request-url').val(), request: $('#api-request-data').val() }, function(response){
+				$.post('<?php echo $_SERVER['REQUEST_URI'];?>', { ajax: 'api_request', test: $('#api-request-test').val(), request: $('#api-request-data').val() }, function(response){
 
 					if(response && response.indexOf('{') > -1)
 					{
@@ -657,9 +658,9 @@ class SpryWebTools {
 							<legend>Api Request</legend>
 							<div class="content">
 								<span class="select">
-									<select id="api-request-url" onchange="update_json();">
+									<select id="api-request-test" onchange="update_json();">
 										<?php foreach ($requests as $req_key => $req_json) { ?>
-											<option<?php if(!empty($_POST['url']) && $_POST['url'] === $req_key){?> selected="selected"<?php } ?>><?php echo $req_key;?></option>
+											<option<?php if(!empty($_POST['test']) && $_POST['test'] === $req_key){?> selected="selected"<?php } ?>><?php echo $req_key;?></option>
 										<?php } ?>
 									</select>
 								</span>

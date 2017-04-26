@@ -55,11 +55,17 @@ class SpryTools {
 			Spry::stop(5052);
 		}
 
-		$result = ['All Tests' => 'Passed'];
 		$response_code = 2050;
 
 		$last_response_body = null;
 		$last_response_body_id = null;
+
+        $result = [];
+
+        if($requested_test_name && !isset(Spry::config()->tests[$requested_test_name]))
+        {
+            $response_code = 5053;
+        }
 
 		foreach (Spry::config()->tests as $test_name => $test)
 		{
@@ -69,7 +75,11 @@ class SpryTools {
                 continue;
             }
 
-			$result[$test_name] = ['response' => 'Passed'];
+			$result[$test_name] = [
+                'status' => 'Passed',
+                'expect' => [],
+                'result' => [],
+            ];
 
 			foreach ($test['params'] as $param_key => $param)
 			{
@@ -84,28 +94,35 @@ class SpryTools {
 				}
 			}
 
-			$response = self::get_api_response(json_encode($test['params']), "http://".$_SERVER['HTTP_HOST'].$test['route']);
-
+			$response = self::get_api_response(json_encode($test['params']), Spry::config()->endpoint.$test['route']);
 			$response = json_decode($response, true);
 
-			$result[$test_name]['response_code'] = (!empty($response['response_code']) ? $response['response_code'] : '');
-			$result[$test_name]['messages'] = (!empty($response['messages']) ? $response['messages'] : '');
+            $result[$test_name]['full_response'] = $response;
 
-			if(!empty($test['match']) && is_array($test['match']))
+			if(!empty($test['expect']) && is_array($test['expect']))
 			{
-				$result[$test_name]['response_match'] = [];
+				$result[$test_name]['result'] = [];
 
-				foreach ($test['match'] as $match_key => $match)
-				{
-					$result[$test_name]['response_match'][$match_key] = $response[$match_key];
+                if(empty($test['expect']))
+                {
+                    $result[$test_name]['status'] = 'Failed';
+                    $response_code = 5050;
+                }
+                else
+                {
+                    $result[$test_name]['expect'] = $test['expect'];
 
-					if(empty($response[$match_key]) || $response[$match_key] !== $match)
-					{
-						$result[$test_name]['response'] = 'Failed';
-						$result['All Tests'] = 'Failed';
-						$response_code = 5050;
-					}
-				}
+    				foreach ($test['expect'] as $expect_key => $expect)
+    				{
+    					$result[$test_name]['result'][$expect_key] = $response[$expect_key];
+
+    					if(empty($response[$expect_key]) || $response[$expect_key] !== $expect)
+    					{
+    						$result[$test_name]['status'] = 'Failed';
+    						$response_code = 5050;
+    					}
+    				}
+                }
 			}
 
 			$last_response_body = (!empty($response['body']) ? $response['body'] : null);

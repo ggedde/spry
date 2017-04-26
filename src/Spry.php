@@ -140,8 +140,9 @@ class Spry {
 			/* Tests */
 			2050 => ['en' => 'All Tests Passed Successfully'],
 			5050 => ['en' => 'Error: Some Tests Failed'],
-			5051 => ['en' => 'Error: Retrieving Tests'], //5500
+			5051 => ['en' => 'Error: Retrieving Tests'],
 			5052 => ['en' => 'Error: No Tests Configured'],
+			5053 => ['en' => 'Error: No Test with that name Configured'],
 
 		];
 	}
@@ -337,7 +338,7 @@ class Spry {
 		}
 
 		// Add SpryApi Extensions to directories
-		$autoloader_directories[] = __DIR__.'/extensions';
+		// $autoloader_directories[] = __DIR__.'/extensions';
 
 		if(!empty($autoloader_directories))
 		{
@@ -345,7 +346,7 @@ class Spry {
 			{
 				foreach(glob(rtrim($dir, '/') . '/*')  as $file)
 				{
-					if(strtolower($class).'.php' === strtolower(basename($file)))
+					if(strtolower(basename(str_replace('\\', '/', $class))).'.php' === strtolower(basename($file)))
 					{
 						require_once $file;
 						return;

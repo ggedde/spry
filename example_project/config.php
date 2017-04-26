@@ -13,6 +13,7 @@ $config->api_log_file = __DIR__.'/api.log';
 // Set PHP Error Types
 ini_set('error_reporting', E_ALL);
 
+$config->endpoint = 'http://localhost';
 $config->components_dir = __DIR__.'/components';
 
 
@@ -130,8 +131,8 @@ $config->tests = [
 // Filters
 $config->hooks->configure = ['SpryLog::setup_php_logs'];
 $config->hooks->params = ['SpryLog::initial_request'];
-//$config->hooks->database =  = ['AUTH::check'];
-$config->hooks->routes = ['SpryLog::user_request'];
+// $config->hooks->database =  = ['AUTH::check'];
+// $config->hooks->routes = ['SpryLog::user_request'];
 $config->hooks->stop = ['SpryLog::stop_filter'];
 $config->hooks->build_response = ['SpryLog::build_response_filter']; // Filters must return the $response
 // $config->hooks->send_response = []; // Filters must return the $response
