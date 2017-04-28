@@ -1,6 +1,20 @@
 #!/bin/bash
 
 DIR=$(dirname $0)
+SPRYDIR=$(dirname $DIR)
+
+for arg in "$@"
+do
+    if [ $arg == "init" ]
+    then
+        if [ -d 'spry' ]
+        then
+            echo 'The folder "spry" already exists.'
+            exit
+        fi
+        cp -r $SPRYDIR/example_project spry
+    fi
+done
 
 php $DIR/cli.php "$@"
 echo '';

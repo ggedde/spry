@@ -46,6 +46,11 @@ class Spry {
 
 		self::load_config($config_file);
 
+		if(empty(self::$config->salt))
+		{
+			self::stop(5002);
+		}
+
 		spl_autoload_register(array(__CLASS__, 'autoloader'));
 
 		// Configure Filters
@@ -123,6 +128,7 @@ class Spry {
 			4000 => ['en' => 'No Results Found'],
 			5000 => ['en' => 'Error: Unknown Error'],
 			5001 => ['en' => 'Error: Missing Config File'],
+			5002 => ['en' => 'Error: Missing Salt in Config File'],
 
 			5010 => ['en' => 'Error: No Parameters Found.'],
 			5011 => ['en' => 'Error: Request Not Found.'],
@@ -134,8 +140,10 @@ class Spry {
 			5020 => ['en' => 'Error: Field did not Validate.'],
 
 			/* DB */
-			2030 => ['en' => 'DB Migrate Ran Successfully'],
-			5030 => ['en' => 'Error: DB Migrate had an Error'],
+			2030 => ['en' => 'Database Migrate Ran Successfully'],
+			5030 => ['en' => 'Error: Database Migrate had an Error'],
+			5031 => ['en' => 'Error: Database Connect Error.'],
+			5032 => ['en' => 'Error: Missing Database Credentials from config.'],
 
 			/* Tests */
 			2050 => ['en' => 'All Tests Passed Successfully'],

@@ -16,11 +16,30 @@ $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 
 class SpryCLI extends SpryTools {
 
+    private static function find_config()
+    {
+        $files = [
+            'config.php',
+            'spry/config.php',
+            'spryapi/config.php',
+        ];
+
+        foreach($files as $file)
+        {
+            if(file_exists($file))
+            {
+                return $file;
+            }
+        }
+
+        return '';
+    }
+
     public static function run()
     {
         $args = [];
-        $config_file = 'config.php';
-        $commands = ['hash', 'migrate', 'test'];
+        $config_file = '';
+        $commands = ['hash', 'migrate', 'test', 'init'];
         $command = '';
         $test = '';
         $hash = '';
@@ -67,6 +86,11 @@ class SpryCLI extends SpryTools {
             die('No Command Found');
         }
 
+        if(!$config_file)
+        {
+            $config_file = self::find_config();
+        }
+
         if(!$config_file || !file_exists($config_file))
         {
             die('No Config File Found. Run SpryCLI from the same folder that contains your "config.php" file or specify the config file with --config');
@@ -77,7 +101,37 @@ class SpryCLI extends SpryTools {
 
         switch($command)
         {
+            case 'init':
+
+                echo "\nSpry init complete!\n";
+                echo "Folder 'spry' created.\n";
+
+                if(is_writable($config_file) && is_readable($config_file))
+                {
+                    $salt = sha1(rand(10000,99999).uniqid(mt_rand(), true).rand(10000,99999));
+                    //echo $salt;
+                    $config_contents = str_replace("config->salt = '';", "config->salt = '".$salt."';", file_get_contents($config_file));
+                    if($config_contents)
+                    {
+                        if(file_put_contents($config_file, $config_contents))
+                        {
+                            echo "Salt value auto generated.\n";
+                        }
+                        else
+                        {
+                            echo "ERROR: Could not update config file salt value.\n";
+                        }
+
+                        echo "Update the rest of your config file accordingly: ".$config_file."\n";
+                    }
+                }
+
+                exit;
+
+            break;
+
             case 'hash':
+
                 if(!$hash)
                 {
                     die('Missing Hash Value.  If hashing a value that has spaces then wrap with ""');

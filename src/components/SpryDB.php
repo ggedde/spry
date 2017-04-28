@@ -52,6 +52,11 @@ class SpryDB
 				return false;
 			}
 
+			if(empty($options['username']) || empty($options['database_name']))
+			{
+				Spry::stop(5032);
+			}
+
 			if (isset($options['migrate_schema']))
 			{
 				$this->migrate_schema = $options['migrate_schema'];
@@ -246,6 +251,8 @@ class SpryDB
 				$this->option
 			);
 
+			exit;
+
 			foreach ($commands as $value)
 			{
 				$this->pdo->exec($value);
@@ -253,6 +260,7 @@ class SpryDB
 		}
 		catch (PDOException $e)
 		{
+			Spry::stop(5031);
 			throw new Exception($e->getMessage());
 		}
 	}
