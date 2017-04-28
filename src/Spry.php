@@ -18,6 +18,7 @@ use stdClass;
 
 class Spry {
 
+	private static $version = "2.0.0";
 	private static $routes = [];
 	private static $params = [];
 	private static $db = null;
@@ -109,6 +110,11 @@ class Spry {
 		$response = self::get_response($controller);
 
 		self::send_response($response);
+	}
+
+	public static function get_version()
+	{
+		return self::$version;
 	}
 
 	public static function load_config($config_file='')

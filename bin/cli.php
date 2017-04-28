@@ -39,7 +39,7 @@ class SpryCLI extends SpryTools {
     {
         $args = [];
         $config_file = '';
-        $commands = ['hash', 'migrate', 'test', 'init'];
+        $commands = ['hash', 'migrate', 'test', 'init', 'version'];
         $command = '';
         $test = '';
         $hash = '';
@@ -83,7 +83,20 @@ class SpryCLI extends SpryTools {
 
         if(!$command)
         {
-            die('No Command Found');
+            if(array_search('-v', $args) !== false || array_search('--version', $args) !== false)
+            {
+                $command = 'version';
+            }
+        }
+
+        if(!$command)
+        {
+            die('Spry - Command not Found');
+        }
+
+        if($command === 'version')
+        {
+            die("SpryApi -v ".Spry::get_version());
         }
 
         if(!$config_file)

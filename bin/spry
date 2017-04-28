@@ -5,7 +5,7 @@ SPRYDIR=$(dirname $DIR)
 
 for arg in "$@"
 do
-    if [ $arg == "init" ]
+    if [ "$arg" == "init" ]
     then
         if [ -d 'spry' ]
         then
