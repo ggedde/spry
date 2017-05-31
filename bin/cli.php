@@ -39,10 +39,19 @@ class SpryCLI extends SpryTools {
     {
         $args = [];
         $config_file = '';
-        $commands = ['hash', 'migrate', 'test', 'init', 'version'];
+        $commands = [
+            'c' => 'component',
+            'h' => 'hash',
+            'help' => 'help',
+            'i' => 'init',
+            'm' => 'migrate',
+            't' => 'test',
+            'v' => 'version'
+        ];
         $command = '';
         $test = '';
         $hash = '';
+        $component = '';
         $verbose = false;
 
         if(!empty($_SERVER['argv']))
@@ -60,16 +69,34 @@ class SpryCLI extends SpryTools {
                 $verbose = true;
             }
 
-            $key = array_search('hash', $args);
+            $key = array_search('h', $args);
+            if($key === false)
+            {
+                $key = array_search('hash', $args);
+            }
             if($key !== false && isset($args[($key + 1)]) && strpos($args[($key + 1)], '--') === false)
             {
                 $hash = $args[($key + 1)];
             }
 
-            $key = array_search('test', $args);
+            $key = array_search('t', $args);
+            if($key === false)
+            {
+                $key = array_search('test', $args);
+            }
             if($key !== false && isset($args[($key + 1)]) && strpos($args[($key + 1)], '--') === false)
             {
                 $test = $args[($key + 1)];
+            }
+
+            $key = array_search('c', $args);
+            if($key === false)
+            {
+                $key = array_search('component', $args);
+            }
+            if($key !== false && isset($args[($key + 1)]) && strpos($args[($key + 1)], '--') === false)
+            {
+                $component = $args[($key + 1)];
             }
 
             foreach ($args as $value)
@@ -77,6 +104,10 @@ class SpryCLI extends SpryTools {
                 if(in_array($value, $commands))
                 {
                     $command = $value;
+                }
+                elseif(in_array($value, array_keys($commands)))
+                {
+                    $command = $commands[$value];
                 }
             }
         }
@@ -87,16 +118,42 @@ class SpryCLI extends SpryTools {
             {
                 $command = 'version';
             }
+
+            if(array_search('-h', $args) !== false || array_search('--help', $args) !== false)
+            {
+                $command = 'help';
+            }
         }
 
         if(!$command)
         {
-            die('Spry - Command not Found');
+            die('Error: Spry - Command not Found');
         }
 
         if($command === 'version')
         {
             die("SpryApi -v ".Spry::get_version());
+        }
+
+        if($command === 'help')
+        {
+            echo "SpryApi -v ".Spry::get_version()."\n".
+            "Usage: spry [command] [value] [--argument] [--argument]... \n\n".
+            "List of Commands and arguments:\n\n".
+            "hash | h                      - Hash a value that procedes it using the salt in the config file.\n".
+            "  ex.     spry hash something_to_hash_123\n".
+            "  ex.     spry hash \"hash with spaces 123\"\n\n".
+            "help | -h | --help            - Display Information about Spry-cli.\n\n".
+            "init | i                      - Initiate a Spry Setup and Configuration with default project.\n\n".
+            "migrate | m                   - Migrate the Database Schema.\n".
+            "  --dryrun                    - Only check for what will be migrated and report back. No actions will be taken.\n".
+            "  --destructive               - Delete Fields, Tables and other data that does not match the new Scheme.\n\n".
+            "test | t                      - Run a Test or all Tests if a Test name is not specified.\n".
+            "  --verbose                   - List out full details of the Test(s).\n".
+            "  ex.     spry test\n".
+            "  ex.     spry test --verbose\n".
+            "  ex.     spry test test_123 --verbose\n\n".
+            "version | v | -v | --version  - Display the Version of the Spry Instalation.\n\n";
         }
 
         if(!$config_file)
@@ -106,7 +163,7 @@ class SpryCLI extends SpryTools {
 
         if(!$config_file || !file_exists($config_file))
         {
-            die('No Config File Found. Run SpryCLI from the same folder that contains your "config.php" file or specify the config file with --config');
+            die('Error: No Config File Found. Run SpryCLI from the same folder that contains your "config.php" file or specify the config file with --config');
         }
 
         Spry::load_config($config_file);
@@ -114,6 +171,56 @@ class SpryCLI extends SpryTools {
 
         switch($command)
         {
+            case 'component':
+
+                $component_sanitized = preg_replace("/\W/", '', str_replace([' ', '-'], '_', $component));
+                $component_name = str_replace(' ', '', ucwords(str_replace('_', ' ', $component_sanitized)));
+
+                if(!$component_name)
+                {
+                    die('Error: Missing Component Name.');
+                }
+
+                $source_component = dirname(__DIR__).'/example_project/components/example.php';
+                $new_component = Spry::config()->components_dir.'/'.$component_name.'.php';
+
+                if(!is_dir(Spry::config()->components_dir.'/'))
+                {
+                    die('Error: Component Directory is not configured in config.php or not found.');
+                }
+
+                if(!is_writable(Spry::config()->components_dir.'/'))
+                {
+                    die('Error: Component Directory Does not seem to be writable.');
+                }
+
+                if(file_exists($new_component))
+                {
+                    die('Error: Component with that name already exists.');
+                }
+
+                if(!file_exists($source_component))
+                {
+                    die('Error: Missing Source Component Template.');
+                }
+
+                if(!copy($source_component, $new_component))
+                {
+                    die('Error: Component could not be created.');
+                }
+
+                // Replace Component config_content
+                $component_contents = file_get_contents($new_component);
+                $component_contents = str_replace('class Example', 'class '.$component_name, $component_contents);
+                $component_contents = str_replace('examples_table', strtolower($component_sanitized), $component_contents);
+                file_put_contents($new_component, $component_contents);
+
+                echo "Component Created Successfully!\n".
+                $new_component."\n";
+
+
+            break;
+
             case 'init':
 
                 echo "\nSpry init complete!\n";

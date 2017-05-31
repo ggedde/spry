@@ -504,7 +504,7 @@ class Spry {
 
 	public static function sanitize($string)
 	{
-		return preg_replace("/\W/g", '', str_replace([' ', '-'], '_', strtolower($string)));
+		return preg_replace("/\W/", '', str_replace([' ', '-'], '_', strtolower($string)));
 	}
 
 

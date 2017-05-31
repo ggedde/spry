@@ -6,7 +6,6 @@ use SpryApi\Spry as Spry;
 
 class Auth
 {
-
 	private $auth_fields = [
 		'accounts.id(account_id)',
 		'users.id(user_id)',
