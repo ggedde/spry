@@ -1,5 +1,5 @@
 {
-    "name": "ggedde/spryapi",
+    "name": "ggedde/spry",
     "description": "PHP API Framework",
     "type": "Framework",
     "require": {
@@ -14,8 +14,8 @@
     ],
     "autoload": {
         "psr-4": {
-            "SpryApi\\": "src/",
-            "SpryApi\\SpryComponent\\": "src/components/"
+            "Spry\\": "src/",
+            "Spry\\SpryComponent\\": "src/components/"
         }
     }
 }
