@@ -1,14 +1,13 @@
 <?php
 
-namespace SpryApi;
+namespace Spry;
 
 use stdClass;
-//use Spry\SpryComponent\SpryLog as SpryLog;
 
 /*!
  *
- * SpryAPI Framework
- * https://github.com/ggedde/SpryAPI
+ * Spry Framework
+ * https://github.com/ggedde/spry
  * Version 2.0.0
  *
  * Copyright 2016, GGedde
@@ -349,9 +348,6 @@ class Spry {
 			$autoloader_directories[] = self::$config->components_dir;
 		}
 
-		// Add SpryApi Extensions to directories
-		// $autoloader_directories[] = __DIR__.'/extensions';
-
 		if(!empty($autoloader_directories))
 		{
 			foreach($autoloader_directories as $dir)
@@ -685,7 +681,7 @@ class Spry {
 		{
 			list($class, $method) = explode('::', $controller_name);
 
-			$class = 'SpryApi\\SpryComponent\\'.$class;
+			$class = 'Spry\\SpryComponent\\'.$class;
 			$obj = new $class;
 
 			if($obj)

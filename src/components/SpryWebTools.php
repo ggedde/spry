@@ -1,9 +1,9 @@
 <?php
 
-namespace SpryApi\SpryComponent;
+namespace Spry\SpryComponent;
 
-use SpryApi\Spry as Spry;
-use SpryApi\SpryComponent\SpryTools as SpryTools;
+use Spry\Spry as Spry;
+use Spry\SpryComponent\SpryTools as SpryTools;
 
 
 class SpryWebTools {

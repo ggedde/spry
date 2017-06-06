@@ -1,7 +1,8 @@
 <?php
-namespace SpryApi\SpryComponent;
 
-use SpryApi\Spry as Spry;
+namespace Spry\SpryComponent;
+
+use Spry\Spry as Spry;
 use DateTime;
 
 /**

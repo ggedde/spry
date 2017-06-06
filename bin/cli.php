@@ -1,9 +1,9 @@
 <?php
 
-namespace SpryApi\SpryCLI;
+namespace Spry\SpryCli;
 
-use SpryApi\Spry as Spry;
-use SpryApi\SpryComponent\SpryTools as SpryTools;
+use Spry\Spry as Spry;
+use Spry\SpryComponent\SpryTools as SpryTools;
 
 include(dirname(dirname(__FILE__)).'/src/Spry.php');
 include(dirname(dirname(__FILE__)).'/src/components/SpryDB.php');
@@ -14,14 +14,13 @@ include(dirname(dirname(__FILE__)).'/src/components/SpryTools.php');
 // Setup Server Vars for CLI
 $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 
-class SpryCLI extends SpryTools {
+class SpryCli extends SpryTools {
 
     private static function find_config()
     {
         $files = [
             'config.php',
-            'spry/config.php',
-            'spryapi/config.php',
+            'spry/config.php'
         ];
 
         foreach($files as $file)
@@ -128,17 +127,17 @@ class SpryCLI extends SpryTools {
 
         if(!$command)
         {
-            die("SpryApi -v ".Spry::get_version()."\n\e[91mERROR:\e[0m Spry - Command not Found. For help try 'spry --help'");
+            die("Spry -v ".Spry::get_version()."\n\e[91mERROR:\e[0m Spry - Command not Found. For help try 'spry --help'");
         }
 
         if($command === 'version')
         {
-            die("SpryApi -v ".Spry::get_version());
+            die("Spry -v ".Spry::get_version());
         }
 
         if($command === 'help')
         {
-            echo "SpryApi -v ".Spry::get_version()."\n".
+            echo "Spry -v ".Spry::get_version()."\n".
             "Usage: spry [command] [value] [--argument] [--argument]... \n\n".
             "List of Commands and arguments:\n\n".
             "\e[1mcomponent | c                 \e[0m- Generate a new Component and add it to your component directory.\n".
@@ -166,10 +165,10 @@ class SpryCLI extends SpryTools {
 
         if(!$config_file || !file_exists($config_file))
         {
-            die("\e[91mERROR:\e[0m No Config File Found. Run SpryCLI from the same folder that contains your 'config.php' file or specify the config file with --config");
+            die("\e[91mERROR:\e[0m No Config File Found. Run SpryCli from the same folder that contains your 'config.php' file or specify the config file with --config");
         }
         Spry::load_config($config_file);
-        spl_autoload_register(['SpryApi\\Spry', 'autoloader']);
+        spl_autoload_register(['Spry\\Spry', 'autoloader']);
 
         switch($command)
         {
@@ -355,4 +354,4 @@ class SpryCLI extends SpryTools {
     }
 }
 
-SpryCLI::run();
+SpryCli::run();
