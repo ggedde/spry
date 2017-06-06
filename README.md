@@ -202,9 +202,7 @@ Example:
 ```
 
 ## Adding Extensions
-You can overwrite the DB and VALIDATOR Extensions by adding your own classes to the project either by placing them in your controllers directory or another directory and add that directory path to $config->autoloader_directories array.
-You will need to make sure that the class names and file names match the existing names to be overwritten.
-
+# TODO
 
 ## Changelog
 
