@@ -1,4 +1,4 @@
-# SpryAPI
+# Spry
 A lightweight PHP API Framework
 
 Current Release: 2.0.0
@@ -15,7 +15,7 @@ Included Extensions:
 index.php
 ```
 require_once __DIR__ . '/../vendor/autoload.php';
-SpryApi::run(__DIR__.'/config.php');
+Spry::run(__DIR__.'/config.php');
 ```
 
 
