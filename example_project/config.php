@@ -107,17 +107,15 @@ $config->response_codes = [
 
 // Tests
 $config->tests = [
-	'Test 1' => [
-		'route' => '/auth/get',
-		'params' => [
-			'username' => 'usertest',
-			'password' => 'passwordtest'
-		],
+	'connection' => [
+		'title' => 'Connection Test with Empty Parameters',
+		'route' => '/testconnection',
+		'params' => [],
 		'expect' => [
-			'response' => 'success',
+			'response_code' => 5010,
 		]
 	],
-	'Test 2' => [
+	'test1' => [
 		'route' => '/account/get',
 		'params' => [
 			'access_key' => 'xxxxxxxxxxxxxxxxxxxxxxxx'

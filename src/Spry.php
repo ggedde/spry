@@ -38,8 +38,6 @@ class Spry {
 
 	public static function run($config_file='')
 	{
-		//$log = new SpryComponent\SpryLog;
-
 		if(empty($config_file) || !file_exists($config_file))
 		{
 			self::stop(5001, null, ['Error: Missing Config File']);
@@ -522,7 +520,7 @@ class Spry {
 	{
 		if($data = trim(file_get_contents('php://input')))
 		{
-			if(strpos($data, '{') !== false)
+			if(in_array(substr($data, 0, 1), ['[','{']))
 			{
 				$data = json_decode($data, true);
 			}

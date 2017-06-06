@@ -126,7 +126,7 @@ class SpryWebTools {
 
 		foreach (Spry::config()->tests as $path => $test)
 		{
-			$requests[$path] = json_encode($test['params']);
+			$requests[ $path . ($test['title'] ? ' - '.$test['title'] : '')] = json_encode($test['params']);
 		}
 
 		?>

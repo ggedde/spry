@@ -46,6 +46,7 @@ class SpryCLI extends SpryTools {
             'i' => 'init',
             'm' => 'migrate',
             't' => 'test',
+            'u' => 'up',
             'v' => 'version'
         ];
         $command = '';
@@ -127,7 +128,7 @@ class SpryCLI extends SpryTools {
 
         if(!$command)
         {
-            die('Error: Spry - Command not Found');
+            die("SpryApi -v ".Spry::get_version()."\n\e[91mERROR:\e[0m Spry - Command not Found. For help try 'spry --help'");
         }
 
         if($command === 'version')
@@ -140,20 +141,22 @@ class SpryCLI extends SpryTools {
             echo "SpryApi -v ".Spry::get_version()."\n".
             "Usage: spry [command] [value] [--argument] [--argument]... \n\n".
             "List of Commands and arguments:\n\n".
-            "hash | h                      - Hash a value that procedes it using the salt in the config file.\n".
+            "\e[1mcomponent | c                 \e[0m- Generate a new Component and add it to your component directory.\n".
+            "  ex.     spry component sales_reps    (component classes will follow psr-4 format. ie SalesReps)\n\n".
+            "\e[1mhash | h                      \e[0m- Hash a value that procedes it using the salt in the config file.\n".
             "  ex.     spry hash something_to_hash_123\n".
             "  ex.     spry hash \"hash with spaces 123\"\n\n".
-            "help | -h | --help            - Display Information about Spry-cli.\n\n".
-            "init | i                      - Initiate a Spry Setup and Configuration with default project.\n\n".
-            "migrate | m                   - Migrate the Database Schema.\n".
+            "\e[1mhelp | -h | --help            \e[0m- Display Information about Spry-cli.\n\n".
+            "\e[1minit | i                      \e[0m- Initiate a Spry Setup and Configuration with default project.\n\n".
+            "\e[1mmigrate | m                   \e[0m- Migrate the Database Schema.\n".
             "  --dryrun                    - Only check for what will be migrated and report back. No actions will be taken.\n".
             "  --destructive               - Delete Fields, Tables and other data that does not match the new Scheme.\n\n".
-            "test | t                      - Run a Test or all Tests if a Test name is not specified.\n".
+            "\e[1mtest | t                      \e[0m- Run a Test or all Tests if a Test name is not specified.\n".
             "  --verbose                   - List out full details of the Test(s).\n".
             "  ex.     spry test\n".
             "  ex.     spry test --verbose\n".
             "  ex.     spry test test_123 --verbose\n\n".
-            "version | v | -v | --version  - Display the Version of the Spry Instalation.\n\n";
+            "\e[1mversion | v | -v | --version  \e[0m- Display the Version of the Spry Instalation.\n\n";
         }
 
         if(!$config_file)
@@ -163,9 +166,8 @@ class SpryCLI extends SpryTools {
 
         if(!$config_file || !file_exists($config_file))
         {
-            die('Error: No Config File Found. Run SpryCLI from the same folder that contains your "config.php" file or specify the config file with --config');
+            die("\e[91mERROR:\e[0m No Config File Found. Run SpryCLI from the same folder that contains your 'config.php' file or specify the config file with --config");
         }
-
         Spry::load_config($config_file);
         spl_autoload_register(['SpryApi\\Spry', 'autoloader']);
 
@@ -178,7 +180,7 @@ class SpryCLI extends SpryTools {
 
                 if(!$component_name)
                 {
-                    die('Error: Missing Component Name.');
+                    die("\e[91mERROR:\e[0m Missing Component Name.");
                 }
 
                 $source_component = dirname(__DIR__).'/example_project/components/example.php';
@@ -186,27 +188,27 @@ class SpryCLI extends SpryTools {
 
                 if(!is_dir(Spry::config()->components_dir.'/'))
                 {
-                    die('Error: Component Directory is not configured in config.php or not found.');
+                    die("\e[91mERROR:\e[0m Component Directory is not configured in config.php or not found.");
                 }
 
                 if(!is_writable(Spry::config()->components_dir.'/'))
                 {
-                    die('Error: Component Directory Does not seem to be writable.');
+                    die("\e[91mERROR:\e[0m Component Directory Does not seem to be writable.");
                 }
 
                 if(file_exists($new_component))
                 {
-                    die('Error: Component with that name already exists.');
+                    die("\e[91mERROR:\e[0m Component with that name already exists.");
                 }
 
                 if(!file_exists($source_component))
                 {
-                    die('Error: Missing Source Component Template.');
+                    die("\e[91mERROR:\e[0m Missing Source Component Template.");
                 }
 
                 if(!copy($source_component, $new_component))
                 {
-                    die('Error: Component could not be created.');
+                    die("\e[91mERROR:\e[0m Component could not be created.");
                 }
 
                 // Replace Component config_content
@@ -215,7 +217,7 @@ class SpryCLI extends SpryTools {
                 $component_contents = str_replace('examples_table', strtolower($component_sanitized), $component_contents);
                 file_put_contents($new_component, $component_contents);
 
-                echo "Component Created Successfully!\n".
+                echo "\n\e[92mComponent Created Successfully!\e[0m\n".
                 $new_component."\n";
 
 
@@ -223,7 +225,7 @@ class SpryCLI extends SpryTools {
 
             case 'init':
 
-                echo "\nSpry init complete!\n";
+                echo "\n\e[96mSpry init complete!\e[0m\n";
                 echo "Folder 'spry' created.\n";
 
                 if(is_writable($config_file) && is_readable($config_file))
@@ -239,7 +241,7 @@ class SpryCLI extends SpryTools {
                         }
                         else
                         {
-                            echo "ERROR: Could not update config file salt value.\n";
+                            echo "\e[91mERROR:\e[0m Could not update config file salt value.\n";
                         }
 
                         echo "Update the rest of your config file accordingly: ".$config_file."\n";
@@ -254,7 +256,7 @@ class SpryCLI extends SpryTools {
 
                 if(!$hash)
                 {
-                    die('Missing Hash Value.  If hashing a value that has spaces then wrap with ""');
+                    die("\e[91mERROR:\e[0m Missing Hash Value.  If hashing a value that has spaces then wrap with \"\"");
                 }
 
                 die(parent::get_hash($hash));
@@ -274,7 +276,7 @@ class SpryCLI extends SpryTools {
                 {
                     if(!empty($response['messages']))
                     {
-                        echo "ERROR:\n";
+                        echo "\e[91mERROR:\e[0m\n";
                         echo implode("\n", $response['messages']);
                     }
                 }
@@ -282,7 +284,7 @@ class SpryCLI extends SpryTools {
                 {
                     if(!empty($response['body']))
                     {
-                        echo "Success!\n";
+                        echo "\e[92mSuccess!\e[0m\n";
                         echo implode("\n", $response['body']);
                     }
                 }
@@ -314,7 +316,7 @@ class SpryCLI extends SpryTools {
                         {
                             if(!empty($response['messages']))
                             {
-                                echo "ERROR:\n";
+                                echo "\e[91mERROR:\e[0m\n";
                                 echo implode("\n", $response['messages'])."\n";
                             }
                         }
@@ -322,7 +324,7 @@ class SpryCLI extends SpryTools {
                         {
                             if(!empty($response['body']))
                             {
-                                echo "Success!\n";
+                                echo "\e[92mSuccess!\e[0m\n";
                             }
                         }
 
@@ -334,6 +336,20 @@ class SpryCLI extends SpryTools {
                 }
 
 
+            break;
+
+            case 'up':
+                echo
+                "Spry Server Running:\n".
+                " API Endpoint --------- \e[96mhttp://localhost:8000\e[0m\n";
+
+                if(Spry::config()->webtools_enabled && Spry::config()->webtools_endpoint )
+                {
+                    echo " WebTools Url --------- \e[96mhttp://localhost:8001".Spry::config()->webtools_endpoint."\e[0m\n";
+                }
+
+                echo "\n";
+                echo "\e[37mPress Ctrl-C to quit....\e[0m";
             break;
         }
     }

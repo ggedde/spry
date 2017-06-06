@@ -14,6 +14,17 @@ do
         fi
         cp -r $SPRYDIR/example_project spry
     fi
+
+    if [ "$1" == "up" ] || [ "$1" == "u" ]
+    then
+        echo ''
+        php $DIR/cli.php "$@"
+        php -S localhost:8000 -t $2 &>/dev/null &
+        php -S localhost:8001 -t $2 &>/dev/null
+        echo ''
+        echo 'Spry Server Closed.'
+        exit
+    fi
 done
 
 php $DIR/cli.php "$@"
