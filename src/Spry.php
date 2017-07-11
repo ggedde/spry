@@ -77,7 +77,7 @@ class Spry {
 
 		if(!empty(self::$config->db))
 		{
-			self::$db = new SpryComponent\SpryDB(self::$config->db);
+			self::$db = new SpryProvider\SpryDB(self::$config->db);
 		}
 
 		// Database Filters
@@ -395,7 +395,7 @@ class Spry {
 
 		if(empty(self::$validator))
 		{
-			self::$validator = new SpryComponent\SpryValidator($params);
+			self::$validator = new SpryProvider\SpryValidator($params);
 		}
 		else
 		{

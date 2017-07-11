@@ -14,8 +14,7 @@
     ],
     "autoload": {
         "psr-4": {
-            "Spry\\": "src/",
-            "Spry\\SpryComponent\\": "src/components/"
+            "Spry\\": "src/"
         }
     }
 }
