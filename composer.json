@@ -3,7 +3,11 @@
     "description": "PHP API Framework",
     "type": "Framework",
     "require": {
-        "php": ">=5.4.0"
+        "php": ">=5.4.0",
+        "ggedde/spry-db": "dev-master",
+        "ggedde/spry-log": "dev-master",
+        "ggedde/spry-tools": "dev-master",
+        "ggedde/spry-validator": "dev-master"
     },
     "license": "MIT",
     "authors": [
