@@ -116,13 +116,16 @@ class Spry {
 
 	public static function load_config($config_file='')
 	{
-		$config = new stdClass();
-		$config->hooks = new stdClass();
-		$config->db = new stdClass();
-		require_once($config_file);
+		if(empty(self::$config))
+		{
+			$config = new stdClass();
+			$config->hooks = new stdClass();
+			$config->db = new stdClass();
+			require($config_file);
 
-		$config->response_codes = array_replace(self::get_core_response_codes(), (!empty($config->response_codes) ? $config->response_codes : []));
-		self::$config = $config;
+			$config->response_codes = array_replace(self::get_core_response_codes(), (!empty($config->response_codes) ? $config->response_codes : []));
+			self::$config = $config;
+		}
 	}
 
 	private static function get_core_response_codes()
@@ -161,7 +164,7 @@ class Spry {
 
 	private static function check_tools()
 	{
-		$controller = self::get_controller('SpryWebTools::display');
+		$controller = self::get_controller('SpryTools::displayWebTools');
 		$response = self::get_response($controller);
 	}
 
@@ -681,7 +684,14 @@ class Spry {
 		{
 			list($class, $method) = explode('::', $controller_name);
 
-			$class = 'Spry\\SpryComponent\\'.$class;
+			if(class_exists('Spry\\SpryProvider\\'.$class))
+			{
+				$class = 'Spry\\SpryProvider\\'.$class;
+			}
+			else if(class_exists('Spry\\SpryComponent\\'.$class))
+			{
+				$class = 'Spry\\SpryComponent\\'.$class;
+			}
 			$obj = new $class;
 
 			if($obj)
