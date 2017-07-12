@@ -6,9 +6,9 @@
         "php": ">=5.4.0",
         "ggedde/spry-db": "~0.9.0",
         "ggedde/spry-log": "~0.9.0",
-        "ggedde/spry-tools": "~0.9.0",
+        "ggedde/spry-tools": "~0.9.1",
         "ggedde/spry-validator": "~0.9.0",
-        "ggedde/spry-cli-connector": "~0.9.0"
+        "ggedde/spry-cli-connector": "~0.9.1"
     },
     "license": "MIT",
     "authors": [
