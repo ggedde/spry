@@ -4,11 +4,11 @@
     "type": "Framework",
     "require": {
         "php": ">=5.4.0",
-        "ggedde/spry-db": "~0.9.0@dev",
-        "ggedde/spry-log": "~0.9.0@dev",
-        "ggedde/spry-tools": "~0.9.1@dev",
-        "ggedde/spry-validator": "~0.9.0@dev",
-        "ggedde/spry-cli-connector": "~0.9.1@dev"
+        "ggedde/spry-db": "dev-master",
+        "ggedde/spry-log": "dev-master",
+        "ggedde/spry-tools": "dev-master",
+        "ggedde/spry-validator": "dev-master",
+        "ggedde/spry-cli-connector": "dev-master"
     },
     "license": "MIT",
     "authors": [
