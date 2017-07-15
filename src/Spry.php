@@ -8,7 +8,6 @@ use stdClass;
  *
  * Spry Framework
  * https://github.com/ggedde/spry
- * Version 2.0.0
  *
  * Copyright 2016, GGedde
  * Released under the MIT license
@@ -17,7 +16,7 @@ use stdClass;
 
 class Spry {
 
-	private static $version = "2.0.0";
+	private static $version = "0.9.2";
 	private static $routes = [];
 	private static $params = [];
 	private static $db = null;
@@ -39,7 +38,8 @@ class Spry {
 	{
 		if(empty($config_file) || !file_exists($config_file))
 		{
-			self::stop(5001, null, ['Error: Missing Config File']);
+			$response_codes = self::get_core_response_codes();
+			self::stop(5001, null, $response_codes[5001]['en']);
 		}
 
 		self::load_config($config_file);
@@ -60,9 +60,9 @@ class Spry {
 			}
 		}
 
-		self::check_tools();
-
 		self::$path = self::get_path();
+
+		self::check_tools();
 
 		self::$params = self::fetch_params();
 
@@ -70,20 +70,6 @@ class Spry {
 		if(!empty(self::$config->hooks->params) && is_array(self::$config->hooks->params))
 		{
 			foreach (self::$config->hooks->params as $filter)
-			{
-				self::get_response(self::get_controller($filter));
-			}
-		}
-
-		if(!empty(self::$config->db))
-		{
-			self::$db = new SpryProvider\SpryDB(self::$config->db);
-		}
-
-		// Database Filters
-		if(!empty(self::$config->hooks->database) && is_array(self::$config->hooks->database))
-		{
-			foreach (self::$config->hooks->database as $filter)
 			{
 				self::get_response(self::get_controller($filter));
 			}
@@ -138,10 +124,10 @@ class Spry {
 
 			5010 => ['en' => 'Error: No Parameters Found.'],
 			5011 => ['en' => 'Error: Request Not Found.'],
-			5012 => ['en' => 'Error: Controller Not Found.'],
-			5013 => ['en' => 'Error: Controllers Method Not Found.'],
+			5012 => ['en' => 'Error: Class Not Found.'],
+			5013 => ['en' => 'Error: Class Method Not Found.'],
 			5014 => ['en' => 'Error: Returned Data is not in JSON format.'],
-			5015 => ['en' => 'Error: Controller Method is not Callable. Make sure it is Public.'],
+			5015 => ['en' => 'Error: Class Method is not Callable. Make sure it is Public.'],
 
 			5020 => ['en' => 'Error: Field did not Validate.'],
 
@@ -150,6 +136,7 @@ class Spry {
 			5030 => ['en' => 'Error: Database Migrate had an Error'],
 			5031 => ['en' => 'Error: Database Connect Error.'],
 			5032 => ['en' => 'Error: Missing Database Credentials from config.'],
+			5033 => ['en' => 'Error: Database Provider not found.'],
 
 			/* Tests */
 			2050 => ['en' => 'All Tests Passed Successfully'],
@@ -164,8 +151,14 @@ class Spry {
 
 	private static function check_tools()
 	{
-		$controller = self::get_controller('SpryTools::displayWebTools');
-		$response = self::get_response($controller);
+		if(!empty(self::$config->webtools_enabled))
+		{
+			if(!empty(self::$config->webtools_endpoint) && self::$path === '/'.trim(self::$config->webtools_endpoint, '/').'/')
+			{
+				$controller = self::get_controller('Spry\\SpryProvider\\SpryTools::displayWebTools');
+				$response = self::get_response($controller);
+			}
+		}
 	}
 
 
@@ -377,6 +370,32 @@ class Spry {
 
 	public static function db()
 	{
+		if(!self::$db)
+		{
+			if(empty(self::$config->db['username']) || empty(self::$config->db['database_name']))
+			{
+				self::stop(5032);
+			}
+
+			if(empty(self::$config->db['provider']) || !class_exists(self::$config->db['provider']))
+			{
+				self::stop(5033);
+			}
+
+			$class = self::$config->db['provider'];
+
+			self::$db = new $class(self::$config->db);
+
+			// Database Filters
+			if(!empty(self::$config->hooks->database) && is_array(self::$config->hooks->database))
+			{
+				foreach (self::$config->hooks->database as $filter)
+				{
+					self::get_response(self::get_controller($filter));
+				}
+			}
+		}
+
 		return self::$db;
 	}
 
@@ -684,15 +703,20 @@ class Spry {
 		{
 			list($class, $method) = explode('::', $controller_name);
 
-			if(class_exists('Spry\\SpryProvider\\'.$class))
+			if(class_exists($class))
 			{
-				$class = 'Spry\\SpryProvider\\'.$class;
+				$obj = new $class;
 			}
 			else if(class_exists('Spry\\SpryComponent\\'.$class))
 			{
 				$class = 'Spry\\SpryComponent\\'.$class;
+				$obj = new $class;
 			}
-			$obj = new $class;
+			else
+			{
+				$response_codes = self::get_core_response_codes();
+				self::send_output(['response' => 'error', 'response_code' => 5012, 'messages' => [$response_codes[5012]['en'], $class]], false);
+			}
 
 			if($obj)
 			{
@@ -915,17 +939,19 @@ class Spry {
  	 * @return void
 	 */
 
-	private static function send_output($output=array())
+	private static function send_output($output=array(), $run_hooks=true)
 	{
-		$headers = [
+		$default_headers = [
 			'Access-Control-Allow-Origin: *',
 			'Access-Control-Allow-Methods: GET, POST, OPTIONS',
 			'Access-Control-Allow-Headers: X-Requested-With, content-type'
 		];
 
+		$headers = (isset(self::$config->headers) ? self::$config->headers : $default_headers);
+
 		$output = ['headers' => $headers, 'body' => json_encode($output)];
 
-		if(!empty(self::$config->hooks->send_output) && is_array(self::$config->hooks->send_output))
+		if($run_hooks && !empty(self::$config->hooks->send_output) && is_array(self::$config->hooks->send_output))
 		{
 			foreach (self::$config->hooks->send_output as $filter)
 			{
