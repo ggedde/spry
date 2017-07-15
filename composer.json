@@ -6,11 +6,11 @@
     "prefer-stable" : false,
     "require": {
         "php": ">=5.4.0",
-        "ggedde/spry-db": "dev-master",
-        "ggedde/spry-log": "dev-master",
-        "ggedde/spry-tools": "dev-master",
-        "ggedde/spry-validator": "dev-master",
-        "ggedde/spry-cli-connector": "dev-master"
+        "ggedde/spry-db": "@dev",
+        "ggedde/spry-log": "@dev",
+        "ggedde/spry-tools": "@dev",
+        "ggedde/spry-validator": "@dev",
+        "ggedde/spry-cli-connector": "@dev"
     },
     "license": "MIT",
     "authors": [
