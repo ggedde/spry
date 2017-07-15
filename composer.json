@@ -2,8 +2,6 @@
     "name": "ggedde/spry",
     "description": "PHP API Framework",
     "type": "Framework",
-    "minimum-stability": "dev",
-    "prefer-stable" : false,
     "require": {
         "php": ">=5.4.0",
         "ggedde/spry-db": "dev-master",
