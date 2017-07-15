@@ -10,6 +10,8 @@
         "ggedde/spry-validator": "dev-master",
         "ggedde/spry-cli-connector": "dev-master"
     },
+    "minimum-stability": "dev",
+    "prefer-stable" : true,
     "license": "MIT",
     "authors": [
         {
