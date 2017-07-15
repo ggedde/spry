@@ -139,8 +139,8 @@ class Spry {
 			5033 => ['en' => 'Error: Database Provider not found.'],
 
 			/* Tests */
-			2050 => ['en' => 'All Tests Passed Successfully'],
-			5050 => ['en' => 'Error: Some Tests Failed'],
+			2050 => ['en' => 'Test Passed Successfully'],
+			5050 => ['en' => 'Error: Test Failed'],
 			5051 => ['en' => 'Error: Retrieving Tests'],
 			5052 => ['en' => 'Error: No Tests Configured'],
 			5053 => ['en' => 'Error: No Test with that name Configured'],
@@ -219,7 +219,7 @@ class Spry {
  	 * @return array
 	 */
 
-	private static function response_codes($code='')
+	private static function response_codes(int $code=0)
 	{
 		$lang = 'en';
 		$type = 4;
@@ -264,7 +264,7 @@ class Spry {
 
 		if(!empty($response))
 		{
-			return ['response' => self::response_type($code), 'response_code' => $code, 'messages' => [$response]];
+			return ['response' => self::response_type($code), 'response_code' => (int) $code, 'messages' => [$response]];
 		}
 
 		return ['response' => 'unknown', 'response_code' => $code, 'messages' => ['Unkown Response Code']];
