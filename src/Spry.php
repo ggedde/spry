@@ -977,13 +977,13 @@ class Spry {
 
 	private static function send_output($output=array(), $run_hooks=true)
 	{
-		$default_headers = [
+		$default_response_headers = [
 			'Access-Control-Allow-Origin: *',
 			'Access-Control-Allow-Methods: GET, POST, OPTIONS',
 			'Access-Control-Allow-Headers: X-Requested-With, content-type'
 		];
 
-		$headers = (isset(self::$config->headers) ? self::$config->headers : $default_headers);
+		$headers = (isset(self::$config->default_response_headers) ? self::$config->default_response_headers : $default_response_headers);
 
 		$output = ['headers' => $headers, 'body' => json_encode($output)];
 
