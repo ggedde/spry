@@ -20,6 +20,7 @@ class Spry {
 	private static $routes = [];
 	private static $params = [];
 	private static $db = null;
+	private static $log = null;
 	private static $path;
 	private static $validator;
 	private static $auth;
@@ -123,7 +124,7 @@ class Spry {
 			5002 => ['en' => 'Error: Missing Salt in Config File'],
 
 			5010 => ['en' => 'Error: No Parameters Found.'],
-			5011 => ['en' => 'Error: Request Not Found.'],
+			5011 => ['en' => 'Error: Route Not Found.'],
 			5012 => ['en' => 'Error: Class Not Found.'],
 			5013 => ['en' => 'Error: Class Method Not Found.'],
 			5014 => ['en' => 'Error: Returned Data is not in JSON format.'],
@@ -362,7 +363,7 @@ class Spry {
 
 
 	/**
-	 * Returns DB Extension.
+	 * Returns DB Provider.
  	 *
  	 * @access 'public'
  	 * @return object
@@ -399,6 +400,41 @@ class Spry {
 		return self::$db;
 	}
 
+
+
+	/**
+	 * Returns Logger Provider.
+ 	 *
+ 	 * @access 'public'
+ 	 * @return object
+	 */
+
+	public static function log($message='')
+	{
+		if(!self::$log)
+		{
+			if(empty(self::$config->logger))
+			{
+				self::stop(5032);
+			}
+
+			if(!class_exists(self::$config->logger))
+			{
+				self::stop(5033);
+			}
+
+			$class = self::$config->logger;
+
+			self::$log = new $class();
+		}
+
+		if($message && method_exists(self::$log,'log'))
+		{
+			return self::$log->log($message);
+		}
+
+		return self::$log;
+	}
 
 
 	/**
@@ -801,7 +837,7 @@ class Spry {
  	 * @return array
 	 */
 
-	public static function results($response_code=0, $data=null, $messages=[])
+	public static function response($response_code=0, $data=null, $messages=[])
 	{
 		$response_code = strval($response_code);
 
