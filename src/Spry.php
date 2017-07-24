@@ -689,8 +689,17 @@ class Spry {
 
 	public static function get_path()
 	{
-		$path = explode('?', strtolower($_SERVER['REQUEST_URI']), 2);
-		$path = self::clean_path($path[0]);
+		$path = '';
+
+		if(isset($_SERVER['REQUEST_URI']))
+		{
+			$path = explode('?', strtolower($_SERVER['REQUEST_URI']), 2);
+			$path = self::clean_path($path[0]);
+		}
+		else if(isset($_SERVER['SCRIPT_FILENAME']) && strpos($_SERVER['SCRIPT_FILENAME'], 'SpryCli.php'))
+		{
+			$path = '::spry_cli';
+		}
 
 		if(!empty(self::$config->hooks->get_path) && is_array(self::$config->hooks->get_path))
 		{
