@@ -4,6 +4,7 @@
     "type": "Framework",
     "require": {
         "php": ">=5.4.0",
+        "ggedde/spry-core": "dev-master",
         "ggedde/spry-db": "dev-master",
         "ggedde/spry-log": "dev-master",
         "ggedde/spry-tools": "dev-master",
@@ -16,10 +17,5 @@
             "name": "ggedde",
             "email": "ggeddedev@gmail.com"
         }
-    ],
-    "autoload": {
-        "psr-4": {
-            "Spry\\": "src/"
-        }
-    }
+    ]
 }

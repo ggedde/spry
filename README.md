@@ -1,7 +1,7 @@
 # Spry
 A lightweight PHP API Framework
 
-Current Release: 2.0.0
+Current Release: x.x.x
 
 REQUIRES:
 * PHP 5.4
