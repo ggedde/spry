@@ -4,10 +4,10 @@
     "type": "Framework",
     "require": {
         "php": ">=5.4.0",
-        "ggedde/spry-core": "0.9.10",
+        "ggedde/spry-core": "0.9.11",
         "ggedde/spry-db": "0.9.6",
         "ggedde/spry-log": "0.9.8",
-        "ggedde/spry-tools": "0.9.11",
+        "ggedde/spry-tools": "0.9.12",
         "ggedde/spry-validator": "0.9.1",
         "ggedde/spry-cli-connector": "0.9.7",
         "ggedde/spry-background-process": "0.9.3"
