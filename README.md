@@ -62,14 +62,14 @@ An Example would be:
 	- response-codes.php
 	- tests.php
 
-### Salt
+## Salt
 This Variable contains the salt that is used with the "hash()" method to create hashes.
 
 	$config->salt = '1234567890abcdefghijklmnopqrstuvwxyz';
 	
 \* WARNING:  changing this after data is stored to your database will result in errors.  It is best NOT to change this after any data has been stored.
 
-### Logging
+## Logging
 Spry comes with a built in provider for Logging. https://github.com/ggedde/spry-log
 
 When using that Provider you can use these configuration settings:
@@ -89,19 +89,19 @@ When using that Provider you can use these configuration settings:
         'request' => 'Spry Request: '
     ];
 	
-### Endpoint
+## Endpoint
 This is to direct the local spry server and cli when doing various tests.
 
 	$config->endpoint = 'http://localhost:8000';
 	
 \* If you are using your own web server like nginx or apache and have a different url then change this accordingly.
 
-### Components Directory
+## Components Directory
 By default Spry comes with its own autoloader for SpryComponents which will look at any files in the this variable.
 
 	$config->components_dir = __DIR__.'/components';
 	
-### Database
+## Database
 Spry comes with its own Provider for a Database connection: https://github.com/ggedde/spry-db
 
 View the [SpryDB Configuration Settings](https://github.com/ggedde/spry-db) for full Documentation.
@@ -142,3 +142,34 @@ Using Spry CLI your can run
     spry m
     spry m --dryrun     (Show what changes will be made without running anything)
     spry m --force      (Run Destructively.  Will delete and change fields. You could loose precious data)
+
+
+## Routes
+An array of URL -> Compnent::Method
+
+You can use simple Routes like this
+
+    $config->routes = [
+	    '/auth/login' => 'Auth::login',
+        '/component/get' => 'Component::get'
+    ]
+    
+Or you can provide more details per route like this.
+
+    $config->routes = [
+        '/example/get' => [
+            'label' => 'Get Example',
+            'controller' => 'Example::get',
+            'public' => true,                   If Public then it will be available in Spry::get_routes()
+            'active' => true,                   If Not Active then routing to this Method will Fail.
+        ],
+        '/example/get_all' => [
+            'label' => 'Get All Examples',
+            'controller' => 'Example::get_all',
+            'public' => false,
+            'active' => false,
+        ]
+   ]
+   
+   
+   
