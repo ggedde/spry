@@ -220,20 +220,20 @@ Default Codes:
     
 #### Multi-Language Support
 
-    $config->response_codes = [
-        2000 => [
-            'en' => 'Success!',
-            'es' => '¡Éxito!'
-        ]
+    2000 => [
+        'en' => 'Success!',
+        'es' => '¡Éxito!'
+    ]
     
 #### Format - Success, Unknown and Error
 The first number in the code represents the code type.
-[2]000 - the 2 represents 'Success'
-[4]000 - the 4 represents 'Unkown' or 'Empty'
-[5]000 - the 5 represents 'Error'
+* [2]000 - the 2 represents 'Success'
+* [4]000 - the 4 represents 'Unkown' or 'Empty'
+* [5]000 - the 5 represents 'Error'
  
 When using Spry::response() you can pass just the last 3 digits as the code and the data parameter.
-  Ex.
+
+Ex.
     
     Spry::response('000', $data);
     
@@ -245,7 +245,7 @@ When using Spry::response() you can pass just the last 3 digits as the code and 
 ## Response Headers
 Configure the Response headers back to the client
 
-    $config->default_response_headers = [
+    $config->response_headers = [
         'Access-Control-Allow-Origin: *',
         'Access-Control-Allow-Methods: GET, POST, OPTIONS',
         'Access-Control-Allow-Headers: X-Requested-With, content-type'
@@ -304,33 +304,63 @@ This is very usefull when wanting to Run tests that will Insert, Update, then De
 Ex.  
 
     'item_insert' => [
-		'label' => 'Create Item',
-		'route' => '/items/insert',
-		'params' => [
-			'name' => 'Bob',
-		],
-		'expect' => [
-			'code' => 2102,
-		]
-	],
-	'item_update' => [
-		'label' => 'Update Item',
-		'route' => '/items/update',
-		'params' => [
-			'id' => '{body.id}',
-			'name' => 'Sammy',
-		],
-		'expect' => [
-			'code' => 2103,
-		]
-	],
-	'item_delete' => [
-		'label' => 'Delete Item',
-		'route' => '/items/delete',
-		'params' => [
-			'id' => '{body.id}',
-		],
-		'expect' => [
-			'code' => 2104,
-		]
-	]
+        'label' => 'Create Item',
+        'route' => '/items/insert',
+        'params' => [
+            'name' => 'Bob',
+        ],
+        'expect' => [
+            'code' => 2102,
+        ]
+    ],
+    'item_update' => [
+        'label' => 'Update Item',
+        'route' => '/items/update',
+        'params' => [
+            'id' => '{body.id}',
+            'name' => 'Sammy',
+        ],
+        'expect' => [
+            'code' => 2103,
+        ]
+    ],
+    'item_delete' => [
+        'label' => 'Delete Item',
+        'route' => '/items/delete',
+        'params' => [
+            'id' => '{body.id}',
+        ],
+        'expect' => [
+            'code' => 2104,
+        ]
+    ]
+
+## Hooks and Filters
+There are number of hooks and filters you can use to customize or manage the connection flow.  Each Hook and filter is an array of methods to call.
+
+Ex.
+
+    $config->hooks->configure = [
+        'Spry\\SpryProvider\\SpryLog::setup_php_logs',
+        'Spry\\SpryComponent\\SomeComponent::dosomething',
+        'SomeOtherNameSpace\\SomeClass::someMethod'
+    ];
+    
+Your components and methods will fire in order they are in the array.
+
+#### Hooks
+* $config->hooks->configure - Ran when Spry is done loading the Configuration
+* $config->hooks->set_params - Ran when Spry is done setting the Params
+* $config->hooks->set_routes - Ran when Spry is done setting the Routes
+* $config->hooks->database - Ran when Spry is done connecting to the Database
+* $config->hooks->stop - Ran when Spry is fires a Stop command.
+
+#### Filters
+Filters are like hooks but they require a return value.
+
+* $config->filters->build_response - Ran when Spry creates the Response. Must return $response.
+* $config->filters->response - Ran when Spry Sends the Response. Must return $response
+* $config->filters->get_path - Ran when Spry retrieves a Path. Must return $path
+* $config->filters->get_route - Ran when Spry retrieves a Route. Must return $route
+* $config->filters->params - Ran when Spry retrieves the Params. Must return $params
+* $config->filters->output - Ran when Spry Sends the Output. Must return $output
