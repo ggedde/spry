@@ -33,6 +33,61 @@ Then open another termal and run some tests
 
 	spry test
 
+## Running Spry
+
+	include dirname(__DIR__).'/vendor/autoload.php';
+	include dirname(__DIR__).'/spry/init.php';
+	
+Change the directory structure accordingly.
+
+When setting up spry through the CLI the above code will be automatically created for you in a "public" folder.
+
+#### Contents of spry/init.php
+
+    namespace Spry;
+    
+    define('SPRY_DIR', __DIR__);
+    Spry::run(SPRY_DIR.'/config.php');
+
+## Creating a Component
+The easiest way is to use the CLI
+
+    spry component NewComponent
+
+OR
+
+    spry c NewComponent
+    
+The above will create a new component file in your "components" folder from a spry example component template.
+
+## Example Spry Component
+
+    <?php
+    namespace Spry\SpryComponent;
+
+    use Spry\Spry;
+
+    class Items
+    {
+        private static $table = 'items';
+
+        public static function get()
+        {
+            // Validate and require 'id' from the Spry Params
+            $id = Spry::validator()->required()->validate('id');
+            
+            // Set the DB WHERE Clause
+            $where = ['id' => $id];
+            
+            // Retrieve the DB results
+            $results = Spry::db()->get(self::$table, '*', $where);
+            
+            // Return the Response
+            return Spry::response(000, $results);
+        }
+    }
+    
+	
 ## Folder Structure
 
 	spry                   (Main Folder containing all Spry Files and components)
@@ -299,7 +354,7 @@ So if you wanted to use the last response
     
 then you would use '{body.id}'
 
-This is very usefull when wanting to Run tests that will Insert, Update, then Delete the item form the database.
+This is very usefull when wanting to Run tests that will Insert, Update, then Delete the item form the database that way you don't have any residual data after the tests.
 
 Ex.  
 
