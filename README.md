@@ -32,3 +32,25 @@ To Start the Spry server run
 Then open another termal and run some tests
 
 	spry test
+
+## Folder Structure
+
+	spry                   (Main Folder containing all Spry Files and components)
+	 - components          (Folder containing all Component Files)
+	   - Component1.php
+	   - Component2.php
+	   ...
+	 - config.php          (Main Configuration File)
+	 - init.php            (Main Loading File)
+	 
+
+## Configuration
+spry/config.pnp
+
+This file contains all the configuration for Spry
+
+#### Salt
+This Variable contains the salt that is used with the "hash()" method to create hashes.
+	$config->salt = '1234567890abcdefghijklmnopqrstuvwxyz';
+\* WARNING:  changing this after data is stored to your database will result in errors.  It is best NOT to change this after any data has been stored.
+
