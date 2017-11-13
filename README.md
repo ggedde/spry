@@ -40,7 +40,7 @@ Then open another termal and run some tests
 	
 Change the directory structure accordingly.
 
-When setting up spry through the CLI the above code will be automatically created for you in a "public" folder.
+\* When setting up spry through the CLI the above code will be automatically created for you in a "public" folder.
 
 #### Contents of spry/init.php
 
