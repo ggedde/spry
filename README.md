@@ -12,4 +12,23 @@ Included Packages:
 * Background Processes - https://github.com/cocur/background-process
 
 
-More Details coming soon...
+# Installation
+
+The best way to install Spry and use it is through the CLI.
+https://github.com/ggedde/spry-cli
+
+Please reference the [Installation Process](https://github.com/ggedde/spry-cli#installation) on the CLI Page.
+
+
+## Create a project through the CLI
+
+	spry new [project_name]
+	cd [project_name]
+
+To Start the Spry server run
+
+	spry up
+
+Then open another termal and run some tests
+
+	spry test
