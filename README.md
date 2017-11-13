@@ -169,7 +169,168 @@ Or you can provide more details per route like this.
             'public' => false,
             'active' => false,
         ]
-   ]
+    ]
    
    
-   
+## Response Codes
+Here you can configure your response codes.
+
+Default Codes:
+
+    $config->response_codes = [
+        2000 => ['en' => 'Success!'],
+        4000 => ['en' => 'No Results'],
+        5000 => ['en' => 'Error: Unknown Error'],
+        5001 => ['en' => 'Error: Missing Config File'],
+        5002 => ['en' => 'Error: Missing Salt in Config File'],
+        5003 => ['en' => 'Error: Unknown configuration error on run'],
+
+        5010 => ['en' => 'Error: No Parameters Found.'],
+        5011 => ['en' => 'Error: Route Not Found.'],
+        5012 => ['en' => 'Error: Class Not Found.'],
+        5013 => ['en' => 'Error: Class Method Not Found.'],
+        5014 => ['en' => 'Error: Returned Data is not in JSON format.'],
+        5015 => ['en' => 'Error: Class Method is not Callable. Make sure it is Public.'],
+        5016 => ['en' => 'Error: Controller Not Found.'],
+
+        5020 => ['en' => 'Error: Field did not Validate.'],
+
+        /* DB */
+        2030 => ['en' => 'Database Migrate Ran Successfully'],
+        5030 => ['en' => 'Error: Database Migrate had an Error'],
+        5031 => ['en' => 'Error: Database Connect Error.'],
+        5032 => ['en' => 'Error: Missing Database Credentials from config.'],
+        5033 => ['en' => 'Error: Database Provider not found.'],
+
+        /* Log */
+        5040 => ['en' => 'Error: Log Provider not found.'],
+
+        /* Tests */
+        2050 => ['en' => 'Test Passed Successfully'],
+        5050 => ['en' => 'Error: Test Failed'],
+        5051 => ['en' => 'Error: Retrieving Tests'],
+        5052 => ['en' => 'Error: No Tests Configured'],
+        5053 => ['en' => 'Error: No Test with that name Configured'],
+
+        /* Background Process */
+        5060 => ['en' => 'Error: Background Process did not return Process ID'],
+        5061 => ['en' => 'Error: Background Process could not find autoload'],
+        5062 => ['en' => 'Error: Unknown response from Background Process'],
+    ]
+    
+#### Multi-Language Support
+
+    $config->response_codes = [
+        2000 => [
+            'en' => 'Success!',
+            'es' => '¡Éxito!'
+        ]
+    
+#### Format - Success, Unknown and Error
+The first number in the code represents the code type.
+[2]000 - the 2 represents 'Success'
+[4]000 - the 4 represents 'Unkown' or 'Empty'
+[5]000 - the 5 represents 'Error'
+ 
+When using Spry::response() you can pass just the last 3 digits as the code and the data parameter.
+  Ex.
+    
+    Spry::response('000', $data);
+    
+* If $data has a value and is not empty then the response will automatically Prepend the code with a 2.
+* If $data is an array but empty then the response will automatically Prepend the code with a 4.
+* If $data is empty or null and not '0' then the response will automatically Prepend the code with a 5.
+
+
+## Response Headers
+Configure the Response headers back to the client
+
+    $config->default_response_headers = [
+        'Access-Control-Allow-Origin: *',
+        'Access-Control-Allow-Methods: GET, POST, OPTIONS',
+        'Access-Control-Allow-Headers: X-Requested-With, content-type'
+    ];
+
+## Tests
+Spry comes with a built in Test module.
+
+Here is how you can configure your own Tests:
+
+    $config->tests = [
+        'connection' => [
+            'title' => 'Connection Test with Empty Parameters',
+            'route' => '/testconnection',
+            'params' => [],
+            'expect' => [
+                'response_code' => 5010,
+            ]
+        ],
+        'connection2' => [
+            'title' => 'Connection Test with Parameters',
+            'route' => '/testconnection',
+            'params' => [
+                'test' => 123
+            ],
+            'expect' => [
+                'response_code' => 5011,
+            ]
+        ],
+    ];
+
+
+Run the Tests through the CLI
+
+    spry test
+    spry test --verbose
+    spry test connection --verbose --repeat 4
+    spry test '{"route":"/example/add", "params":{"name":"test"}, "expect":{"response_code": 2000}}'
+    
+    
+#### Using Values from the previous Test
+You can use this format {\*.\*.\*.\*} while replacing the '\*' with the response keys. 
+
+So if you wanted to use the last response 
+
+    {
+        body: {
+            id: 123
+        }
+    } 
+    
+then you would use '{body.id}'
+
+This is very usefull when wanting to Run tests that will Insert, Update, then Delete the item form the database.
+
+Ex.  
+
+    'item_insert' => [
+		'label' => 'Create Item',
+		'route' => '/items/insert',
+		'params' => [
+			'name' => 'Bob',
+		],
+		'expect' => [
+			'code' => 2102,
+		]
+	],
+	'item_update' => [
+		'label' => 'Update Item',
+		'route' => '/items/update',
+		'params' => [
+			'id' => '{body.id}',
+			'name' => 'Sammy',
+		],
+		'expect' => [
+			'code' => 2103,
+		]
+	],
+	'item_delete' => [
+		'label' => 'Delete Item',
+		'route' => '/items/delete',
+		'params' => [
+			'id' => '{body.id}',
+		],
+		'expect' => [
+			'code' => 2104,
+		]
+	]
