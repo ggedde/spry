@@ -1,7 +1,7 @@
 # Spry
 A lightweight PHP API Framework
 
-BETA Release: 0.9.28
+BETA Release: 0.9.29
 
 REQUIRES:
 * PHP 5.4
@@ -37,7 +37,7 @@ Then open another termal and run some tests
 
 	include dirname(__DIR__).'/vendor/autoload.php';
 	include dirname(__DIR__).'/spry/init.php';
-	
+
 Change the directory structure accordingly.
 
 \* When setting up spry through the CLI the above code will be automatically created for you in a "public" folder.
@@ -45,7 +45,7 @@ Change the directory structure accordingly.
 #### Contents of spry/init.php
 
     namespace Spry;
-    
+
     define('SPRY_DIR', __DIR__);
     Spry::run(SPRY_DIR.'/config.php');
 
@@ -57,7 +57,7 @@ The easiest way is to use the CLI
 OR
 
     spry c NewComponent
-    
+
 The above will create a new component file in your "components" folder from a spry example component template.
 
 ## Example Spry Component
@@ -75,19 +75,19 @@ The above will create a new component file in your "components" folder from a sp
         {
             // Validate and require 'id' from the Spry Params
             $id = Spry::validator()->required()->validate('id');
-            
+
             // Set the DB WHERE Clause
             $where = ['id' => $id];
-            
+
             // Retrieve the DB results
             $results = Spry::db()->get(self::$table, '*', $where);
-            
+
             // Return the Response
             return Spry::response(000, $results);
         }
     }
-    
-	
+
+
 ## Folder Structure
 
 	spry                   (Main Folder containing all Spry Files and components)
@@ -97,12 +97,12 @@ The above will create a new component file in your "components" folder from a sp
 	   ...
 	 - config.php          (Main Configuration File)
 	 - init.php            (Main Loading File)
-	 
+
 
 ## Configuration
 spry/config.pnp
 
-This file contains all the configuration for Spry. 
+This file contains all the configuration for Spry.
 
 You can split up the file if you like and just include the separate parts into the config.php if you find that better.
 
@@ -121,7 +121,7 @@ An Example would be:
 This Variable contains the salt that is used with the "hash()" method to create hashes.
 
 	$config->salt = '1234567890abcdefghijklmnopqrstuvwxyz';
-	
+
 \* WARNING:  changing this after data is stored to your database will result in errors.  It is best NOT to change this after any data has been stored.
 
 ## Logging
@@ -143,19 +143,19 @@ When using that Provider you can use these configuration settings:
         'response' => 'Spry Response: ',
         'request' => 'Spry Request: '
     ];
-	
+
 ## Endpoint
 This is to direct the local spry server and cli when doing various tests.
 
 	$config->endpoint = 'http://localhost:8000';
-	
+
 \* If you are using your own web server like nginx or apache and have a different url then change this accordingly.
 
 ## Components Directory
 By default Spry comes with its own autoloader for SpryComponents which will look at any files in the this variable.
 
 	$config->components_dir = __DIR__.'/components';
-	
+
 ## Database
 Spry comes with its own Provider for a Database connection: https://github.com/ggedde/spry-db
 
@@ -208,7 +208,7 @@ You can use simple Routes like this
 	    '/auth/login' => 'Auth::login',
         '/component/get' => 'Component::get'
     ]
-    
+
 Or you can provide more details per route like this.
 
     $config->routes = [
@@ -225,8 +225,8 @@ Or you can provide more details per route like this.
             'active' => false,
         ]
     ]
-   
-   
+
+
 ## Response Codes
 Here you can configure your response codes.
 
@@ -272,26 +272,26 @@ Default Codes:
         5061 => ['en' => 'Error: Background Process could not find autoload'],
         5062 => ['en' => 'Error: Unknown response from Background Process'],
     ]
-    
+
 #### Multi-Language Support
 
     2000 => [
         'en' => 'Success!',
         'es' => '¡Éxito!'
     ]
-    
+
 #### Format - Success, Unknown and Error
 The first number in the code represents the code type.
 * [2]000 - the 2 represents 'Success'
 * [4]000 - the 4 represents 'Unkown' or 'Empty'
 * [5]000 - the 5 represents 'Error'
- 
+
 When using Spry::response() you can pass just the last 3 digits as the code and the data parameter.
 
 Ex.
-    
+
     Spry::response('000', $data);
-    
+
 * If $data has a value and is not empty then the response will automatically Prepend the code with a 2.
 * If $data is an array but empty then the response will automatically Prepend the code with a 4.
 * If $data is empty or null and not '0' then the response will automatically Prepend the code with a 5.
@@ -317,7 +317,7 @@ Here is how you can configure your own Tests:
             'route' => '/testconnection',
             'params' => [],
             'expect' => [
-                'response_code' => 5010,
+                'code' => 5010,
             ]
         ],
         'connection2' => [
@@ -327,7 +327,7 @@ Here is how you can configure your own Tests:
                 'test' => 123
             ],
             'expect' => [
-                'response_code' => 5011,
+                'code' => 5011,
             ]
         ],
     ];
@@ -339,19 +339,19 @@ Run the Tests through the CLI
     spry test --verbose
     spry test connection --verbose --repeat 4
     spry test '{"route":"/example/add", "params":{"name":"test"}, "expect":{"response_code": 2000}}'
-    
-    
-#### Using Values from the previous Test
-You can use this format {\*.\*.\*.\*} while replacing the '\*' with the response keys. 
 
-So if you wanted to use the last response 
+
+#### Using Values from the previous Test
+You can use this format {\*.\*.\*.\*} while replacing the '\*' with the response keys.
+
+So if you wanted to use the last response
 
     {
         body: {
             id: 123
         }
-    } 
-    
+    }
+
 then you would use '{body.id}'
 
 This is very usefull when wanting to Run tests that will Insert, Update, then Delete the item form the database that way you don't have any residual data after the tests.
@@ -400,7 +400,7 @@ Ex.
         'Spry\\SpryComponent\\SomeComponent::dosomething',
         'SomeOtherNameSpace\\SomeClass::someMethod'
     ];
-    
+
 Your components and methods will fire in order they are in the array.
 
 #### Hooks
