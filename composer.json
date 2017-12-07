@@ -4,12 +4,13 @@
     "type": "Framework",
     "require": {
         "php": ">=5.4.0",
-        "ggedde/spry-core": "~0.9.25",
-        "ggedde/spry-db": "~0.9.7",
+        "ggedde/spry-core": "~0.9.26",
+        "ggedde/spry-db": "~0.9.13",
         "ggedde/spry-log": "~0.9.9",
-        "ggedde/spry-tools": "~0.9.15",
+        "ggedde/spry-webtools": "~0.9.18",
+        "ggedde/spry-utilities": "~0.9.4",
         "ggedde/spry-validator": "~0.9.2",
-        "ggedde/spry-cli-connector": "~0.9.13",
+        "ggedde/spry-cli-connector": "~0.9.14",
         "ggedde/spry-background-process": "~0.9.5"
     },
     "license": "MIT",
