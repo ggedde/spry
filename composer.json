@@ -4,7 +4,7 @@
     "type": "Framework",
     "require": {
         "php": ">=5.4.0",
-        "ggedde/spry-core": "~0.9.28",
+        "ggedde/spry-core": "~0.9.32",
         "ggedde/spry-db": "~0.9.13",
         "ggedde/spry-log": "~0.9.9",
         "ggedde/spry-webtools": "~0.9.21",
