@@ -117,8 +117,8 @@ $config->componentsDir = __DIR__.'/components';
 Setting | Type | Default | Description
 -------|--------|-------------|-----------
 componentsDir | String| \_\_DIR\_\_.'/components' | Directory where Components are stored. Component Filenames must match the Class name of the Component.
-db | Array | [] |Database Object <br>[See Database documentation](#db)
-dbProvider | String | 'Spry\\\\SpryProvider\\\\SpryDB' | Database Provider Class <br>[See Database documentation](#db)
+db | Array | [] |Database Object <br>[See Database documentation](#Database)
+dbProvider | String | 'Spry\\\\SpryProvider\\\\SpryDB' | Database Provider Class <br>[See Database documentation](#Database)
 endpoint | String | 'http://localhost:8000' | Spry Server Endpoint url. Used for internal requests only.
 logger | Array | [] | Logger Object <br>[See Logger documentation](#Logger)
 loggerProvider | Array | 'Spry\\\\SpryProvider\\\\SpryLogger' | Logger Provider Class <br>[See Logger documentation](#Logger)
