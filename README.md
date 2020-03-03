@@ -13,10 +13,13 @@ Included Packages:
 
 * [Installation](#Installation)
 * [Quick Start](#QuickStart)
-* [Configuration](#Config)
+* [Configuration](#Configuration)
 * [Components](#Components)
+* [Routes](#Routes)
 * [Database](#Database)
 * [Logger](#Logger)
+* [Response Codes](#ResponseCodes)
+* [Tests](#Tests)
 * [Hooks](#Hooks)
 * [Filters](#Filters)
 
@@ -97,7 +100,7 @@ Spry\Spry::run('../config.php');
 
 	spry test
 
-# Config
+# Configuration
 
 Spry requires a config file or a config object.
 
@@ -119,13 +122,13 @@ db | Array | [] |Database Object <br>[See Database documentation](#db)
 dbProvider | String | 'Spry\\\\SpryProvider\\\\SpryDB' | Database Provider Class <br>[See Database documentation](#db)
 endpoint | String | 'http://localhost:8000' | Spry Server Endpoint url. Used for internal requests only.
 logger | Array | [] | Logger Object <br>[See Logger documentation](#Logger)
-loggerProvider | Array | 'Spry\\SpryProvider\\SpryLogger' | Logger Provider Class <br>[See Logger documentation](#Logger)
+loggerProvider | Array | 'Spry\\\\SpryProvider\\\\SpryLogger' | Logger Provider Class <br>[See Logger documentation](#Logger)
 projectPath | String | \_\_DIR\_\_ | Path to Spry Project. Default is to use the same directory the config.php file is in. 
-responseCodes | Array | [] | Array of Response Codes <br>[See Response Codes documentation](#codes)
+responseCodes | Array | [] | Array of Response Codes <br>[See Response Codes documentation](#ResponseCodes)
 responseHeaders | Array | [] | Default Response Codes
-routes | Array | [] | Array of Routes <br>[See Routes documentation](#routes)
+routes | Array | [] | Array of Routes <br>[See Routes documentation](#Routes)
 salt | String | '' | Salt for Security. Change this to be Unique for each one of your API's. You should use a long and Strong key. DO NOT CHANGE IT ONCE YOU HAVE CREATED DATA. Otherwise things like logins may no longer work.
-tests | Array | [] | Array of Tests <br>[See Tests documentation](#tests)
+tests | Array | [] | Array of Tests <br>[See Tests documentation](#Tests)
 
 ## Accessing Config Settings
 You can access any setting by calling the config() object from Spry
@@ -245,6 +248,96 @@ class MyComponent
 }
 ```
 
+# Routes
+
+When using single file components you can set the routes in the Components by returning the routes in the `getRoutes()` method.
+
+Example:
+```php
+public static function getRoutes() {
+    return [
+        '/items/{id}' => [
+            'label' => 'Get Item',
+            'controller' => 'MyComponent::get',
+            'access' => 'public',
+            'methods' => 'GET',
+            'params' => [
+                'id' => [
+                    'required' => true,
+                    'type' => 'int',
+                ],
+            ],
+        ],
+    ];
+}
+```
+
+### Or within the Config Settings
+```php
+$config->routes[
+    '/items/{id}' => [
+        'label' => 'Get Item',
+        'controller' => 'MyComponent::get',
+        'access' => 'public',
+        'methods' => 'GET',
+        'params' => [
+            'id' => [
+                'required' => true,
+                'type' => 'int',
+            ],
+        ],
+    ],
+    ...
+];
+```
+
+## Route Options
+
+Setting | Type | Default | Description
+-------|--------|-------------|-----------
+label | String | Path Sanitized | Name used to Label Route
+controller | String | '' | Path to Component Method.  Ex. `MyComponent::method` or `NameSpace\\Framework\\Class::someMethod`
+access | String | public | Spry has a getRoutes method which will return all public routes. You can remove the route from that method by setting the access to `private` 
+methods | String\|Array | POST | Method allowed for route. POST\|GET\|DELETE\|PUT
+params | Array | [] | Allowed Parameters for the Route. Any Parameters passed that do not match will get ignored. You can specify Validation for each Parameter.
+params_trim | Boolean | false | Trim all Params for surrounding whitespace. This can be overwritten per param.
+
+## Param Options
+
+Setting | Type | Default | Description
+-------|--------|-------------|-----------
+type | String | string | Types: integer \| number \| float \| array \| cardNumber \| date \| email \| url \| ip \| domain \| string \| boolean \| password
+between         | Array[min,max] | [] | Validates Param is between 2 values
+betweenLength   | Array[min,max] | [] | Validates Param length is between 2 values
+callback        | Callback |  | Custom Callback function to return `true` for valid. Can be array for array(CLASS, METHOD) or closure.
+endsWith        | String | '' | Validates Param ends with a substr.
+filter          | Callback |  | Closure to filter value. Closure accepts one argument of the value and must return filtered value.
+has             | String | '' | Checks if Param is array and contains value. 
+hasLetters      | Integer | 1 | Validates Param contains x number of letters [a-zA-Z]
+hasLowercase    | Integer | 1 | Validates Param contains x number of lower case letters [a-z]
+hasNumbers      | Integer | 1 | Validates Param contains x number of numbers [0-9]
+hasSymbols      | Integer | 1 | Validates Param contains x number of Symbols
+hasUppercase    | Integer | 1 | Validates Param contains x number of upper case letters [A-Z]
+in              | Array | [] | Validates Param is within Array
+length          | Interger |  | Length of Param must match value. Accepts Length of Array or String
+matches         | String | '' | Validates Param matches Value. Strict Type comparison is enabled.
+max             | Integer |  | Maximum count of Array or length of String
+maxDate         | Integer \| String | 0 | If Integer then maximum days from today or String of Date formatted
+maxLength       | Integer |  | Maximum length of String for Parameter.  Strings only.
+min             | Integer |  | Minimum count of Array or length of String
+minDate         | Integer \| String | 0 | If Integer then minimum days from today or String of Date formatted
+minLength       | Integer |  | Maximum length of String for Parameter.  Strings only.
+notEndsWith     | String | '' | Validates Param does not end with a substr.
+notMatches      | String | '' | Validates Param does not match Value. Strict Type comparison is enabled.
+notStartsWith   | String | '' | Validates Param does not start with a substr.
+numbersOnly     | Boolean | true | Validates Param only contains numbers.
+required        | Boolean \| Array | true | Validates Param has a Value. if Array then Only requires if params within required array have value (conditional checking).
+startsWith      | String | '' | Validates Param starts with a substr.
+trim            | Boolean | true | Trims Param for surrounding whitespace
+validateOnly    | Boolean | true | Validates the param, but does not send the value back to the controller.  Ex.  good for 'confirm_password' which doesn't need to be returned to the controller, but present for 'password' to match it.
+unique          | Boolean | true | If Param is Array then duplicate values within array will be removed.
+
+
 # Database
 
 Spry's default Database Provider is SpryDB based on Medoo
@@ -285,6 +378,205 @@ Spry::log()->error("Error");
 $config->loggerProvider = 'Spry\\SpryProvider\\SpryLogger';
 $config->logger = [... ];
 ```
+
+
+# Tests
+
+Spry comes with its own pre-built testing solution. You can still use other like PHPUnit, but Spry's Tests utilize's Spry's config for rapid testing. When using single file components you can set the routes in the Components by returning the routes in the `getTests()` method.
+
+Example:
+```php
+public static function getTests() {
+    return [
+        'items_insert' => [
+            'label' => 'Insert Item',
+            'route' => '/items/insert',
+            'method' => 'POST',
+            'params' => [
+                'name' => 'TestData',
+            ],
+            'expect' => [
+                'status' => 'success',
+            ],
+        ],
+        'items_get' => [
+            'label' => 'Get Item',
+            'route' => '/items/{items_insert.body.id}',
+            'method' => 'GET',
+            'params' => [],
+            'expect' => [
+                'status' => 'success',
+            ],
+        ],
+        'items_delete' => [
+            'label' => 'Delete Item',
+            'route' => '/items/delete/',
+            'method' => 'POST',
+            'params' => [
+                'id' => '{items_insert.body.id}'
+            ],
+            'expect' => [
+                'status' => 'success',
+            ],
+        ],
+    ];
+}
+```
+
+### Or within the Config Settings
+```php
+$config->tests[
+    'items_get' => [
+        'label' => 'Get Example',
+        'route' => '/items/123',
+        'params' => [],
+        'expect' => [
+            'code' => '1-200',
+        ],
+    ],
+    'items_get' => [
+        'label' => 'Get Example',
+        'route' => '/items/123',
+        'params' => [],
+        'expect' => [
+            'body.id[>]' => 12,
+        ],
+    ],
+    ...
+];
+```
+
+# ResponseCodes
+
+Example:
+```php
+public static function getCodes()
+{
+    return [
+        self::$id => [
+            201 => ['en' => 'Successfully Retrieved Item'],
+            401 => ['en' => 'No Item with that ID Found'],
+            501 => ['en' => 'Error: Retrieving Item'],
+
+            202 => ['en' => 'Successfully Retrieved Items'],
+            402 => ['en' => 'No Results Found'],
+            502 => ['en' => 'Error: Retrieving Items'],
+
+            203 => ['en' => 'Successfully Created Item'],
+            503 => ['en' => 'Error: Creating Item'],
+
+            204 => ['en' => 'Successfully Updated Item'],
+            404 => ['en' => 'No Item with that ID Found'],
+            504 => ['en' => 'Error: Updating Item'],
+
+            205 => ['en' => 'Successfully Deleted Item'],
+            505 => ['en' => 'Error: Deleting Item'],
+        ],
+    ];
+}
+```
+
+### Or within the Config Settings
+```php
+$config->tests[
+    1 => [
+        201 => ['en' => 'Successfully Retrieved Item'],
+        401 => ['en' => 'No Item with that ID Found'],
+        501 => ['en' => 'Error: Retrieving Item'],
+
+        202 => ['en' => 'Successfully Retrieved Items'],
+        402 => ['en' => 'No Results Found'],
+        502 => ['en' => 'Error: Retrieving Items'],
+
+        203 => ['en' => 'Successfully Created Item'],
+        503 => ['en' => 'Error: Creating Item'],
+
+        204 => ['en' => 'Successfully Updated Item'],
+        404 => ['en' => 'No Item with that ID Found'],
+        504 => ['en' => 'Error: Updating Item'],
+
+        205 => ['en' => 'Successfully Deleted Item'],
+        505 => ['en' => 'Error: Deleting Item'],
+    ],
+    2 => [
+        201 => ['en' => 'Successfully Retrieved Other Item'],
+        401 => ['en' => 'No Other Item with that ID Found'],
+        501 => ['en' => 'Error: Retrieving Other Item'],
+
+        202 => ['en' => 'Successfully Retrieved Other Items'],
+        402 => ['en' => 'No Results Found'],
+        502 => ['en' => 'Error: Retrieving Other Items'],
+
+        203 => ['en' => 'Successfully Created Other Item'],
+        503 => ['en' => 'Error: Creating Other Item'],
+
+        204 => ['en' => 'Successfully Updated Other Item'],
+        404 => ['en' => 'No Other Item with that ID Found'],
+        504 => ['en' => 'Error: Updating Other Item'],
+
+        205 => ['en' => 'Successfully Deleted Other Item'],
+        505 => ['en' => 'Error: Deleting Other Item'],
+    ],
+    ...
+];
+```
+
+## Component Group Number
+The first number is to separate the Components codes by ID
+Ex.
+
+    1-200   # Success For Component A 
+    2-200   # Success For Component B 
+
+## Multi-Language Support
+
+    1 => [
+        200 => [
+            'en' => 'Success!',
+            'es' => '¡Éxito!'
+        ]
+    ]
+
+### Format - Info, Success, Client Error and Server Error
+The first number in the code represents the code type.
+
+[1]000 - the 1 represents 'Info'  
+[2]000 - the 2 represents 'Success'  
+[4]000 - the 4 represents 'Client Error', Unkown' or 'Empty'  
+[5]000 - the 5 represents 'Server Error'  
+When using Spry::response() you can pass just the last 2 digits as the code and the data parameter.
+
+Ex.
+
+    Spry::response(1, '00', $data); 
+If $data has a value and is not empty then the response will automatically Prepend the code with a 2.
+If $data is an array but empty then the response will automatically Prepend the code with a 4.
+If $data is empty or null and not '0' then the response will automatically Prepend the code with a 5.
+
+## Test Options
+
+Setting | Type | Default | Description
+-------|--------|-------------|-----------
+label | String | '' | Name used to Label Test
+route | String | '' | Route that is enabled in Spry Routes
+method | String | GET | Route that is enabled in Spry Routes
+params | Array | [] | Params passed in Route
+expect | Array | [] | Key and Value of what is expected valid from the Response. Keys accept dot notation and [>], [>=], [<], [<=], [!=], [===], [!==] comparison checks. See above.
+
+
+## Running Tests with Spry CLI
+All Tests
+
+    spry test
+
+Specific Test
+
+    spry test items_get
+
+More Options
+
+    spry test --verbose --repeat 10
+
 # Hooks
 
 Hooks allow you to run your own code at specific times and life cycles. 
