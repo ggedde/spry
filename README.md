@@ -11,6 +11,26 @@ Included Packages:
 * Field Validation Class - https://github.com/blackbelt/php-validation
 * Background Processes - https://github.com/cocur/background-process
 
+# Installation
+
+The best way to install Spry and use it is through the CLI.
+https://github.com/ggedde/spry-cli
+
+Please reference the [Installation Process](https://github.com/ggedde/spry-cli#installation) on the CLI Page.
+
+
+## Create a project through the CLI
+
+	spry new [project_name]
+	cd [project_name]
+
+To Start the Spry server run
+
+	spry up
+
+Then open another termal and run some tests
+
+	spry test
 
 # Initialize
 To initialize Spry just include the init.php located in the spry folder. You will also need to add the composer autoloader if it has not already been added.
@@ -28,6 +48,9 @@ Example:
 include_once '/vendor/autoload.php';
 Spry::run('../config.php');
 ```
+
+\* Running `spry new [projectName]` will automatically create a public folder with the includes already added for you.
+
 <br>
 
 # Config
