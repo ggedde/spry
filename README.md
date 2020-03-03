@@ -113,6 +113,8 @@ namespace Spry\SpryComponent;
 
 class MyComponent
 {
+    private static $id = 2; // Component ID
+
     public static function setup() {
         Spry::addFilter('configure', 'MyComponent::stuff');
     }
@@ -140,9 +142,11 @@ class MyComponent
     }
     public static function getCodes() {
         return [
-            2100 => 'Successfully Retrieved Item',
-            4100 => 'No Item with that ID Found',
-            5100 => 'Error: Retrieving Item',
+            self::$id => [
+                201 => ['en' => 'Successfully Retrieved Item'],
+                401 => ['en' => 'No Item with that ID Found'],
+                501 => ['en' => 'Error: Retrieving Item'],
+            ],
         ];
     }
     public static function getSchema() {
@@ -172,7 +176,7 @@ class MyComponent
     public static function get($params = [])
     {
         $response = Spry::db()->get('items', '*', $params)
-        return Spry::response(100, $response);
+        return Spry::response(self::$id, 01, $response);
     }
 }
 ```
