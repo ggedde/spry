@@ -11,6 +11,18 @@ Included Packages:
 * Field Validation Class - https://github.com/blackbelt/php-validation
 * Background Processes - https://github.com/cocur/background-process
 
+
+## Documentation
+
+* [Installation](#Installation)
+* [Quick Start](#QuickStart)
+* [Configuration](#Config)
+* [Components](#Components)
+* [Database](#Database)
+* [Logger](#Logger)
+* [Hooks](#Hooks)
+* [Filters](#Filters)
+
 # Installation
 
 The best way to install Spry and use it is through the CLI.
@@ -21,18 +33,8 @@ https://github.com/ggedde/spry-cli
 Please reference the [Installation Process](https://github.com/ggedde/spry-cli#installation) on the CLI Page.
 
 
-## Create a project through the CLI
-
 	spry new [project_name]
 	cd [project_name]
-
-To Start the Spry server run
-
-	spry up
-
-Then open another termal and run some tests
-
-	spry test
 
 To initialize Spry just include the `init.php` file located in the spry folder.  
 You will need to add the composer autoloader if it has not already been added.  
@@ -61,6 +63,47 @@ Spry\Spry::run('../config.php');
 
 <br>
 
+# QuickStart
+
+### Create a project through the CLI
+    spry new [project_name]
+	cd [project_name]
+
+### Folder Structure
+
+    - public/
+        index.php
+    - spry/
+        - components/
+        - logs/
+            - api.log
+            - php.log
+        - config.php
+        - init.php
+
+### To Start the Spry test server run
+
+	spry up
+
+### Then open a separate termal and run some tests
+
+	spry test
+
+### Create a Component
+
+	spry component MyComponent
+##### *view/edit `spry/components/MyComponent.php`*
+
+### Update Database Scheme from New Component to Database
+
+	spry migrate
+
+### Run Tests again with new Component
+
+	spry test
+
+<br> 
+
 # Config
 
 Spry requires a config file or a config object.
@@ -84,7 +127,8 @@ dbProvider | String | 'Spry\\\\SpryProvider\\\\SpryDB' | Database Provider Class
 endpoint | String | 'http://localhost:8000' | Spry Server Endpoint url. Used for internal requests only.
 logger | Array | [] | Logger Object <br>[See Logger documentation](#Logger)
 loggerProvider | Array | 'Spry\\SpryProvider\\SpryLogger' | Logger Provider Class <br>[See Logger documentation](#Logger)
-responseCodes | Array | [] |Array of Response Codes <br>[See Response Codes documentation](#codes)
+projectPath | String | \_\_DIR\_\_ | Path to Spry Project. Default is to use the same directory the config.php file is in. 
+responseCodes | Array | [] | Array of Response Codes <br>[See Response Codes documentation](#codes)
 responseHeaders | Array | [] | Default Response Codes
 routes | Array | [] | Array of Routes <br>[See Routes documentation](#routes)
 salt | String | '' | Salt for Security. Change this to be Unique for each one of your API's. You should use a long and Strong key. DO NOT CHANGE IT ONCE YOU HAVE CREATED DATA. Otherwise things like logins may no longer work.
