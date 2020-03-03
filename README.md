@@ -1,17 +1,15 @@
 # Spry
 A lightweight PHP API Framework
 
-![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/ggedde/spry?include_prereleases) &nbsp; ![GitHub](https://img.shields.io/github/license/ggedde/spry?label=license)
+![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/ggedde/spry?include_prereleases) &nbsp; ![GitHub](https://img.shields.io/github/license/ggedde/spry?label=license) &nbsp; ![PHP from Packagist](https://img.shields.io/packagist/php-v/ggedde/spry)
 
-REQUIRES:
-* PHP 5.5+
 
 Included Packages:
 * Medoo Database Class - http://medoo.in/
 * Field Validation Class - https://github.com/blackbelt/php-validation
 * Background Processes - https://github.com/cocur/background-process
 
-## Documentation
+# Documentation
 
 * [Installation](#Installation)
 * [Quick Start](#QuickStart)
