@@ -1,7 +1,7 @@
 # Spry
 A lightweight PHP API Framework
 
-Release: 1.0.1
+![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/ggedde/spry?include_prereleases) &nbsp; ![GitHub](https://img.shields.io/github/license/ggedde/spry?label=license)
 
 REQUIRES:
 * PHP 5.5+
@@ -10,7 +10,6 @@ Included Packages:
 * Medoo Database Class - http://medoo.in/
 * Field Validation Class - https://github.com/blackbelt/php-validation
 * Background Processes - https://github.com/cocur/background-process
-
 
 ## Documentation
 
@@ -61,8 +60,6 @@ include_once '/vendor/autoload.php';
 Spry\Spry::run('../config.php');
 ```
 
-<br>
-
 # QuickStart
 
 ### Create a project through the CLI
@@ -92,7 +89,7 @@ Spry\Spry::run('../config.php');
 ### Create a Component
 
 	spry component MyComponent
-##### *view/edit `spry/components/MyComponent.php`*
+<small>*view/edit `spry/components/MyComponent.php`*</small>
 
 ### Update Database Scheme from New Component to Database
 
@@ -101,8 +98,6 @@ Spry\Spry::run('../config.php');
 ### Run Tests again with new Component
 
 	spry test
-
-<br> 
 
 # Config
 
@@ -134,10 +129,7 @@ routes | Array | [] | Array of Routes <br>[See Routes documentation](#routes)
 salt | String | '' | Salt for Security. Change this to be Unique for each one of your API's. You should use a long and Strong key. DO NOT CHANGE IT ONCE YOU HAVE CREATED DATA. Otherwise things like logins may no longer work.
 tests | Array | [] | Array of Tests <br>[See Tests documentation](#tests)
 
-<br>
-
 ## Accessing Config Settings
----
 You can access any setting by calling the config() object from Spry
 
 Example: 
@@ -145,7 +137,6 @@ Example:
 echo Spry::config()->salt;
 echo Spry::config()->db['database_name']
 ```
-<br>
 
 ## Extending Config Settings
 ---
@@ -256,28 +247,6 @@ class MyComponent
 }
 ```
 
-
-# Logger
-
-Spry's default Log Provider is SpryLogger
- <br>[See SpryLogger's full documentation](https://github.com/ggedde/spry-log)
-
-This allows you to swap out the Provider later on without having to change your project code.
-
-```php
-Spry::log()->message("My Message");
-Spry::log()->warning("Warning");
-Spry::log()->error("Error");
-```
-
-
-## Spry Configuration
-
-```php
-$config->loggerProvider = 'Spry\\SpryProvider\\SpryLogger';
-$config->logger = [... ];
-```
-
 # Database
 
 Spry's default Database Provider is SpryDB based on Medoo
@@ -299,6 +268,25 @@ $config->dbProvider = 'Spry\\SpryProvider\\SpryDB';
 $config->db = [... ];
 ```
   
+# Logger
+
+Spry's default Log Provider is SpryLogger
+ <br>[See SpryLogger's full documentation](https://github.com/ggedde/spry-log)
+
+This allows you to swap out the Provider later on without having to change your project code.
+
+```php
+Spry::log()->message("My Message");
+Spry::log()->warning("Warning");
+Spry::log()->error("Error");
+```
+
+## Spry Configuration
+
+```php
+$config->loggerProvider = 'Spry\\SpryProvider\\SpryLogger';
+$config->logger = [... ];
+```
 # Hooks
 
 Hooks allow you to run your own code at specific times and life cycles. 

@@ -2,8 +2,9 @@
     "name": "ggedde/spry",
     "description": "PHP API Framework",
     "type": "framework",
+    "keywords": ["lightweight", "API", "PHP framework"],
     "require": {
-        "php": ">=5.4.0",
+        "php": ">=5.5.0",
         "ggedde/spry-core": "~1.0.0",
         "ggedde/spry-db": "~1.0.0",
         "ggedde/spry-log": "~1.0.0",
