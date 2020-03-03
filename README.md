@@ -34,27 +34,30 @@ Then open another termal and run some tests
 
 	spry test
 
-## Manual Installation
-
-    composer require ggedde/spry
-
-To initialize Spry just include the init.php located in the spry folder. You will also need to add the composer autoloader if it has not already been added.
+To initialize Spry just include the `init.php` file located in the spry folder.  
+You will need to add the composer autoloader if it has not already been added.  
 
 Example:
 ```php
 include_once '/vendor/autoload.php';
 include_once '/spry/init.php';
 ```
+\* Running `spry new [projectName]` will automatically create a `public` folder with the includes already added for you.
 
-Or use the `run` method and include a path to your config file or include a config object.
+<br>
+
+## Manual Installation
+
+    composer require ggedde/spry
+
+You will need to add the composer autoloader if it has not already been added.
+Then use the `run` method and include a path to your config file or include a config object.
 
 Example:
 ```php
 include_once '/vendor/autoload.php';
-Spry::run('../config.php');
+Spry\Spry::run('../config.php');
 ```
-
-\* Running `spry new [projectName]` will automatically create a public folder with the includes already added for you.
 
 <br>
 
