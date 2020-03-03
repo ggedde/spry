@@ -579,7 +579,7 @@ More Options
 
 # Hooks
 
-Hooks allow you to run your own code at specific times and life cycles. 
+Hooks allow you to run your own code at specific times and life cycles. This is how you can run middleware and other life cycle aware code. 
 
 ### Adding Hooks
 ```php
