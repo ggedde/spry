@@ -539,18 +539,18 @@ Ex.
 ### Format - Info, Success, Client Error and Server Error
 The first number in the code represents the code type.
 
-[1]000 - the 1 represents 'Info'  
-[2]000 - the 2 represents 'Success'  
-[4]000 - the 4 represents 'Client Error', Unkown' or 'Empty'  
-[5]000 - the 5 represents 'Server Error'  
+1-[1]00 - the 1 represents 'Info'  
+1-[2]00 - the 2 represents 'Success'  
+1-[4]00 - the 4 represents 'Client Error', Unkown' or 'Empty'  
+1-[5]00 - the 5 represents 'Server Error'  
 When using Spry::response() you can pass just the last 2 digits as the code and the data parameter.
 
 Ex.
 
     Spry::response(1, '00', $data); 
-If $data has a value and is not empty then the response will automatically Prepend the code with a 2.
-If $data is an array but empty then the response will automatically Prepend the code with a 4.
-If $data is empty or null and not '0' then the response will automatically Prepend the code with a 5.
+If $data `has` a value and is `not empty` then the response will automatically Prepend the code with a `2` and return `1-200`.
+If $data is an array but `empty` then the response will automatically Prepend the code with a `4` and return `1-400`.
+If $data is `empty` or `null` and not '0' then the response will automatically Prepend the code with a `5` and return `1-500`.
 
 ## Test Options
 
