@@ -32,7 +32,6 @@ https://github.com/ggedde/spry-cli
 
 Please reference the [Installation Process](https://github.com/ggedde/spry-cli#installation) on the CLI Page.
 
-
 	spry new [project_name]
 	cd [project_name]
 
