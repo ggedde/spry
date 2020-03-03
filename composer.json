@@ -1,17 +1,17 @@
 {
     "name": "ggedde/spry",
     "description": "PHP API Framework",
-    "type": "Framework",
+    "type": "framework",
     "require": {
         "php": ">=5.4.0",
-        "ggedde/spry-core": "~0.9.40",
-        "ggedde/spry-db": "~0.9.23",
-        "ggedde/spry-log": "~0.9.9",
-        "ggedde/spry-webtools": "~0.9.26",
-        "ggedde/spry-utilities": "~0.9.13",
-        "ggedde/spry-validator": "~0.9.4",
-        "ggedde/spry-cli-connector": "~0.9.35",
-        "ggedde/spry-background-process": "~0.9.5"
+        "ggedde/spry-core": "~1.0.0",
+        "ggedde/spry-db": "~1.0.0",
+        "ggedde/spry-log": "~1.0.0",
+        "ggedde/spry-webtools": "~1.0.0",
+        "ggedde/spry-utilities": "~1.0.0",
+        "ggedde/spry-validator": "~1.0.0",
+        "ggedde/spry-cli-connector": "~1.0.0",
+        "ggedde/spry-background-process": "~1.0.0"
     },
     "license": "MIT",
     "authors": [
