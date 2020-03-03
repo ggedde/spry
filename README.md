@@ -216,7 +216,7 @@ class MyComponent
 # Logger
 
 Spry's default Log Provider is SpryLogger
- <br>[See SpryLogger's full documentation](https://github.com/ggedde/spry-logger)
+ <br>[See SpryLogger's full documentation](https://github.com/ggedde/spry-log)
 
 This allows you to swap out the Provider later on without having to change your project code.
 
