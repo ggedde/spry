@@ -548,9 +548,10 @@ When using Spry::response() you can pass just the last 2 digits as the code and 
 Ex.
 
     Spry::response(1, '00', $data); 
-If $data `has` a value and is `not empty` then the response will automatically Prepend the code with a `2` and return `1-200`.
-If $data is an array but `empty` then the response will automatically Prepend the code with a `4` and return `1-400`.
-If $data is `empty` or `null` and not '0' then the response will automatically Prepend the code with a `5` and return `1-500`.
+
+If $data **has** a value and is **not empty** then the response will automatically Prepend the code with a **2** and return **1-200**.  
+If $data is an array but **empty** then the response will automatically Prepend the code with a **4** and return **1-400**.  
+If $data is **empty** or **null** and not '0' then the response will automatically Prepend the code with a **5** and return **1-500**.
 
 ## Test Options
 
