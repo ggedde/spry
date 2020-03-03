@@ -93,7 +93,8 @@ Components are classes within the SpryComponent Namespace.
 <br>Components can set their own Routes, Response Codes, DB Schema and Tests by using built in methods. Or you can configure everything through the config.php
 
 These built in Methods are Optional:
-Method    |  Description
+
+Method | Description
 ----------|------------------------------------
 setup     |  *Hook on initial Spry setup*
 getCodes  |  *Returns Array of Codes and adds them to the Config*
