@@ -16,9 +16,8 @@ Included Packages:
 The best way to install Spry and use it is through the CLI.
 https://github.com/ggedde/spry-cli
 
-`composer global require ggedde/spry-cli`
+```composer global require ggedde/spry-cli```
 
-<br>
 Please reference the [Installation Process](https://github.com/ggedde/spry-cli#installation) on the CLI Page.
 
 
@@ -37,9 +36,8 @@ Then open another termal and run some tests
 
 ## Manual Installation
 
-`composer require ggedde/spry`
+```composer require ggedde/spry```
 
-<br>
 To initialize Spry just include the init.php located in the spry folder. You will also need to add the composer autoloader if it has not already been added.
 
 Example:
