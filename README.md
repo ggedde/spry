@@ -1,10 +1,10 @@
 # Spry
 A lightweight PHP API Framework
 
-Release: 1.0.0
+Release: 1.0.1
 
 REQUIRES:
-* PHP 5.4
+* PHP 5.5+
 
 Included Packages:
 * Medoo Database Class - http://medoo.in/
