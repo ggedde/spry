@@ -315,7 +315,7 @@ matches         | String | '' | Validates Param matches Value. Strict Type compa
 max             | Integer |  | Maximum count of Array or length of String
 maxDate         | Integer \| String | 0 | If Integer then maximum days from today or String of Date formatted
 maxLength       | Integer |  | Maximum length of String for Parameter.  Strings only.
-meta            | Boolean | false | If true then the parameter will not be passed back to the controller as a Param, but as a Meta Value instead. Useful for route settings like pagination page, etc
+meta            | Boolean | false | If true then the parameter will not be passed back to the controller as a Param, but as a Meta Value instead and returned back to the Controller in the second argument. Useful for route settings like pagination page, etc
 min             | Integer |  | Minimum count of Array or length of String
 minDate         | Integer \| String | 0 | If Integer then minimum days from today or String of Date formatted
 minLength       | Integer |  | Maximum length of String for Parameter.  Strings only.
