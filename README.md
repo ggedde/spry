@@ -83,7 +83,7 @@ Spry\Spry::run('../config.php');
 	spry component MyComponent
 <small>*view/edit `spry/components/MyComponent.php`*</small>
 
-### Update Database Scheme from New Component to Database
+### Update Database Schema from New Component to Database
 
 	spry migrate
 
