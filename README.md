@@ -315,6 +315,7 @@ matches         | String | '' | Validates Param matches Value. Strict Type compa
 max             | Integer |  | Maximum count of Array or length of String
 maxDate         | Integer \| String | 0 | If Integer then maximum days from today or String of Date formatted
 maxLength       | Integer |  | Maximum length of String for Parameter.  Strings only.
+meta            | Boolean | false | If true then the parameter will not be passed back to the controller as a Param, but as a Meta Value instead. Useful for route settings like pagination page, etc
 min             | Integer |  | Minimum count of Array or length of String
 minDate         | Integer \| String | 0 | If Integer then minimum days from today or String of Date formatted
 minLength       | Integer |  | Maximum length of String for Parameter.  Strings only.
@@ -437,6 +438,30 @@ $config->tests[
 ];
 ```
 
+## Test Options
+
+Setting | Type | Default | Description
+-------|--------|-------------|-----------
+label | String | '' | Name used to Label Test
+route | String | '' | Route that is enabled in Spry Routes
+method | String | GET | Route that is enabled in Spry Routes
+params | Array | [] | Params passed in Route
+expect | Array | [] | Key and Value of what is expected valid from the Response. Keys accept dot notation and [>], [>=], [<], [<=], [!=], [===], [!==] comparison checks. See above.
+
+
+## Running Tests with Spry CLI
+All Tests
+
+    spry test
+
+Specific Test
+
+    spry test items_get
+
+More Options
+
+    spry test --verbose --repeat 10
+
 # ResponseCodes
 
 #### Single File Component Example:
@@ -546,29 +571,7 @@ If $data **has** a value and is **not empty** then the response will automatical
 If $data is an array but not **null** then the response will automatically Prepend the code with a **4** and return **1-401**.  
 If $data is **false** or **null** then the response will automatically Prepend the code with a **5** and return **1-501**.
 
-## Test Options
-
-Setting | Type | Default | Description
--------|--------|-------------|-----------
-label | String | '' | Name used to Label Test
-route | String | '' | Route that is enabled in Spry Routes
-method | String | GET | Route that is enabled in Spry Routes
-params | Array | [] | Params passed in Route
-expect | Array | [] | Key and Value of what is expected valid from the Response. Keys accept dot notation and [>], [>=], [<], [<=], [!=], [===], [!==] comparison checks. See above.
-
-
-## Running Tests with Spry CLI
-All Tests
-
-    spry test
-
-Specific Test
-
-    spry test items_get
-
-More Options
-
-    spry test --verbose --repeat 10
+<br>
 
 # Hooks
 
