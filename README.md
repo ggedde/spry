@@ -439,35 +439,34 @@ $config->tests[
 
 # ResponseCodes
 
-Example:
+#### Single File Component Example:
 ```php
 public static function getCodes()
 {
     return [
-        self::$id => [
-            201 => ['en' => 'Successfully Retrieved Item'],
-            401 => ['en' => 'No Item with that ID Found'],
-            501 => ['en' => 'Error: Retrieving Item'],
+        201 => ['en' => 'Successfully Retrieved Item'],
+        401 => ['en' => 'No Item with that ID Found'],
+        501 => ['en' => 'Error: Retrieving Item'],
 
-            202 => ['en' => 'Successfully Retrieved Items'],
-            402 => ['en' => 'No Results Found'],
-            502 => ['en' => 'Error: Retrieving Items'],
+        102 => ['en' => 'No Results Found'],
+        202 => ['en' => 'Successfully Retrieved Items'],
+        502 => ['en' => 'Error: Retrieving Items'],
 
-            203 => ['en' => 'Successfully Created Item'],
-            503 => ['en' => 'Error: Creating Item'],
+        203 => ['en' => 'Successfully Created Item'],
+        503 => ['en' => 'Error: Creating Item'],
 
-            204 => ['en' => 'Successfully Updated Item'],
-            404 => ['en' => 'No Item with that ID Found'],
-            504 => ['en' => 'Error: Updating Item'],
+        204 => ['en' => 'Successfully Updated Item'],
+        404 => ['en' => 'No Item with that ID Found'],
+        504 => ['en' => 'Error: Updating Item'],
 
-            205 => ['en' => 'Successfully Deleted Item'],
-            505 => ['en' => 'Error: Deleting Item'],
-        ],
+        205 => ['en' => 'Successfully Deleted Item'],
+        505 => ['en' => 'Error: Deleting Item'],
     ];
 }
 ```
 
-### Or within the Config Settings
+#### Config File Example
+Notice you will need to add a Group Group Number for the component codes. This is not needed in the Single File Component setup
 ```php
 $config->tests[
     1 => [
@@ -535,15 +534,17 @@ The first number in the code represents the code type.
 1-[2]00 - the 2 represents 'Success'  
 1-[4]00 - the 4 represents 'Client Error', Unkown' or 'Empty'  
 1-[5]00 - the 5 represents 'Server Error'  
+
 When using Spry::response() you can pass just the last 2 digits as the code and the data parameter.
 
 Ex.
 
-    Spry::response(1, '00', $data); 
+    Spry::response([1, 1], '00', $data); 
 
-If $data **has** a value and is **not empty** then the response will automatically Prepend the code with a **2** and return **1-200**.  
-If $data is an array but **empty** then the response will automatically Prepend the code with a **4** and return **1-400**.  
-If $data is **empty** or **null** and not '0' then the response will automatically Prepend the code with a **5** and return **1-500**.
+If $data is an array but **empty** then the response will automatically Prepend the code with a **1** and return **1-101**.  
+If $data **has** a value and is **not empty** then the response will automatically Prepend the code with a **2** and return **1-201**.  
+If $data is an array but not **null** then the response will automatically Prepend the code with a **4** and return **1-401**.  
+If $data is **false** or **null** then the response will automatically Prepend the code with a **5** and return **1-501**.
 
 ## Test Options
 
