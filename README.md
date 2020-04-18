@@ -70,24 +70,24 @@ Spry\Spry::run('../config.php');
         - config.php
         - init.php
 
-### To Start the Spry test server run
+#### To Start the Spry test server run
 
 	spry up
 
-### Then open a separate termal and run some tests
+#### Then open a separate termal and run some tests
 
 	spry test
 
-### Create a Component
+#### Create a Component
 
 	spry component MyComponent
 <small>*view/edit `spry/components/MyComponent.php`*</small>
 
-### Update Database Schema from New Component to Database
+#### Update Database Schema from New Component to Database
 
 	spry migrate
 
-### Run Tests again with new Component
+#### Run Tests again with new Component
 
 	spry test
 
