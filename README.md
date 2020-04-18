@@ -3,12 +3,6 @@ A lightweight PHP API Framework
 
 ![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/ggedde/spry?include_prereleases) &nbsp; ![GitHub](https://img.shields.io/github/license/ggedde/spry?label=license) &nbsp; ![PHP from Packagist](https://img.shields.io/packagist/php-v/ggedde/spry)
 
-
-Included Packages:
-* Medoo Database Class - http://medoo.in/
-* Field Validation Class - https://github.com/blackbelt/php-validation
-* Background Processes - https://github.com/cocur/background-process
-
 # Documentation
 
 * [Installation](#Installation)
@@ -35,15 +29,13 @@ Please reference the [Installation Process](https://github.com/ggedde/spry-cli#i
 	spry new [project_name]
 	cd [project_name]
 
-To initialize Spry just include the `init.php` file located in the spry folder.  
-You will need to add the composer autoloader if it has not already been added.  
+An enpoint is automatically created for you
 
-Example:
+public/index.php
 ```php
-include_once '/vendor/autoload.php';
-include_once '/spry/init.php';
+include dirname(__DIR__).'/vendor/autoload.php';
+include dirname(__DIR__).'/spry/init.php';
 ```
-\* Running `spry new [projectName]` will automatically create a `public` folder with the includes already added for you.
 
 <br>
 
