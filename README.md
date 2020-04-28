@@ -12,10 +12,11 @@ A lightweight PHP API Framework
 * [Routes](#Routes)
 * [Database](#Database)
 * [Logger](#Logger)
+* [Response](#Response)
 * [Response Codes](#ResponseCodes)
 * [Tests](#Tests)
-* [Hooks](#Hooks)
-* [Filters](#Filters)
+* [Lifecycle Hooks & Filters](#Lifecycle)
+* [Todos](#Todos)
 
 # Installation
 
@@ -24,7 +25,8 @@ https://github.com/ggedde/spry-cli
 
     composer global require ggedde/spry-cli
 
-Please reference the [Installation Process](https://github.com/ggedde/spry-cli#installation) on the CLI Page.
+Please reference the [Installation Process](https://github.com/ggedde/spry-cli#installation) on the CLI Page.  
+Then from the command line:
 
 	spry new [project_name]
 	cd [project_name]
@@ -45,6 +47,7 @@ include dirname(__DIR__).'/spry/init.php';
 
 You will need to add the composer autoloader if it has not already been added.
 Then use the `run` method and include a path to your config file or include a config object.
+See [configuration](#Configuration)
 
 Example:
 ```php
@@ -74,14 +77,14 @@ Spry\Spry::run('../config.php');
 
 	spry up
 
-#### Then open a separate termal and run some tests
+#### Then open a *<ins>separate</ins>* termal and run some tests
 
 	spry test
 
-#### Create a Component
+#### Create a Single FIle Component
 
 	spry component MyComponent
-<small>*view/edit `spry/components/MyComponent.php`*</small>
+*Now View and Edit `spry/components/MyComponent.php`*
 
 #### Update Database Schema from New Component to Database
 
@@ -90,6 +93,13 @@ Spry\Spry::run('../config.php');
 #### Run Tests again with new Component
 
 	spry test
+
+Thats It!  
+Happy Coding  
+
+Well, I guess you might need more info. Most of all your coding will be in the components files you create and the rest will most likely be in the configuration file. See more details below :)
+
+<br>
 
 # Configuration
 
@@ -200,10 +210,15 @@ class MyComponent
     }
     public static function getCodes() {
         return [
-            self::$id => [
-                201 => ['en' => 'Successfully Retrieved Item'],
-                401 => ['en' => 'No Item with that ID Found'],
-                501 => ['en' => 'Error: Retrieving Item'],
+            0 => [
+                'success' => ['en' => 'Successfully Retrieved Item'],
+                'warning' => ['en' => 'No Item with that ID Found'],
+                'error' => ['en' => 'Error: Retrieving Item'],
+            ],
+            1 => [
+                'info' => ['en' => 'Empty Results'],
+                'success' => ['en' => 'Successfully Retrieved All Items'],
+                'error' => ['en' => 'Error: Retrieving All Items'],
             ],
         ];
     }
@@ -223,6 +238,7 @@ class MyComponent
             'items_get' => [
                 'label' => 'Get Example',
                 'route' => '/items/123',
+                'method' => 'GET',
                 'params' => [],
                 'expect' => [
                     'status' => 'success',
@@ -462,6 +478,45 @@ More Options
 
     spry test --verbose --repeat 10
 
+# Response
+
+Spry has 2 built in functions for building the response (`response` and `stop`). 
+
+## response
+```php
+Spry::response($data = null, $responseCode = 0, $responseStatus = null, $meta = null, $additionalMessages = []);
+```
+
+You can use this to build the response data and return it from the Controller.
+
+$responseCode: This is the Response code id from the Component.
+$responseStatus: This can be either `null` | `info` | `success` | `warning` | `error`  
+If `null` then the function will auto detect the status based on the value of `$data`  
+
+Example: 
+
+```php
+$data = ['id' => 123, 'name' => 'John'];
+return Spry::response($data, 0);
+```
+
+## stop
+
+```php
+Spry::stop($responseCode = 0, $responseStatus = null, $data = null, $additionalMessages = [], $privateData = null);
+```
+This will immediately kill the application and return the response
+
+Example: 
+
+```php
+if ($error) {
+    Spry::stop(0);
+}
+```
+
+\* See Response Codes Below to see how this works
+
 # ResponseCodes
 
 #### Single File Component Example:
@@ -469,23 +524,28 @@ More Options
 public static function getCodes()
 {
     return [
-        201 => ['en' => 'Successfully Retrieved Item'],
-        401 => ['en' => 'No Item with that ID Found'],
-        501 => ['en' => 'Error: Retrieving Item'],
-
-        102 => ['en' => 'No Results Found'],
-        202 => ['en' => 'Successfully Retrieved Items'],
-        502 => ['en' => 'Error: Retrieving Items'],
-
-        203 => ['en' => 'Successfully Created Item'],
-        503 => ['en' => 'Error: Creating Item'],
-
-        204 => ['en' => 'Successfully Updated Item'],
-        404 => ['en' => 'No Item with that ID Found'],
-        504 => ['en' => 'Error: Updating Item'],
-
-        205 => ['en' => 'Successfully Deleted Item'],
-        505 => ['en' => 'Error: Deleting Item'],
+        0 => [ // Get Single
+            'success' => ['en' => 'Successfully Retrieved Item'],
+            'warning' => ['en' => 'No Item with that ID Found'],
+            'error' => ['en' => 'Error: Retrieving Item'],
+        ],
+        1 => [ // Get Multiple
+            'info' => ['en' => 'No Results Found'],
+            'success' => ['en' => 'Successfully Retrieved Items'],
+            'error' => ['en' => 'Error: Retrieving Items'],
+        ],
+        2 => [ // Insert
+            'success' => ['en' => 'Successfully Created Item'],
+            'error' => ['en' => 'Error: Creating Item'],
+        ],
+        3 => [ // Update
+            'success' => ['en' => 'Successfully Updated Item'],
+            'error' => ['en' => 'Error: Updating Item'],
+        ],
+        4 => [ // Delete
+            'success' => ['en' => 'Successfully Deleted Item'],
+            'error' => ['en' => 'Error: Deleting Item'],
+        ],
     ];
 }
 ```
@@ -495,42 +555,55 @@ Notice you will need to add a Group Group Number for the component codes. This i
 ```php
 $config->tests[
     1 => [
-        201 => ['en' => 'Successfully Retrieved Item'],
-        401 => ['en' => 'No Item with that ID Found'],
-        501 => ['en' => 'Error: Retrieving Item'],
-
-        202 => ['en' => 'Successfully Retrieved Items'],
-        402 => ['en' => 'No Results Found'],
-        502 => ['en' => 'Error: Retrieving Items'],
-
-        203 => ['en' => 'Successfully Created Item'],
-        503 => ['en' => 'Error: Creating Item'],
-
-        204 => ['en' => 'Successfully Updated Item'],
-        404 => ['en' => 'No Item with that ID Found'],
-        504 => ['en' => 'Error: Updating Item'],
-
-        205 => ['en' => 'Successfully Deleted Item'],
-        505 => ['en' => 'Error: Deleting Item'],
+        0 => [ // Get Single
+            'success' => ['en' => 'Successfully Retrieved Item'],
+            'warning' => ['en' => 'No Item with that ID Found'],
+            'error' => ['en' => 'Error: Retrieving Item'],
+        ],
+        1 => [ // Get Multiple
+            'info' => ['en' => 'No Results Found'],
+            'success' => ['en' => 'Successfully Retrieved Items'],
+            'error' => ['en' => 'Error: Retrieving Items'],
+        ],
+        2 => [ // Insert
+            'success' => ['en' => 'Successfully Created Item'],
+            'error' => ['en' => 'Error: Creating Item'],
+        ],
+        3 => [ // Update
+            'success' => ['en' => 'Successfully Updated Item'],
+            'error' => ['en' => 'Error: Updating Item'],
+        ],
+        4 => [ // Delete
+            'success' => ['en' => 'Successfully Deleted Item'],
+            'error' => ['en' => 'Error: Deleting Item'],
+        ],
     ],
     2 => [
-        201 => ['en' => 'Successfully Retrieved Other Item'],
-        401 => ['en' => 'No Other Item with that ID Found'],
-        501 => ['en' => 'Error: Retrieving Other Item'],
-
-        202 => ['en' => 'Successfully Retrieved Other Items'],
-        402 => ['en' => 'No Results Found'],
-        502 => ['en' => 'Error: Retrieving Other Items'],
-
-        203 => ['en' => 'Successfully Created Other Item'],
-        503 => ['en' => 'Error: Creating Other Item'],
-
-        204 => ['en' => 'Successfully Updated Other Item'],
-        404 => ['en' => 'No Other Item with that ID Found'],
-        504 => ['en' => 'Error: Updating Other Item'],
-
-        205 => ['en' => 'Successfully Deleted Other Item'],
-        505 => ['en' => 'Error: Deleting Other Item'],
+        0 => [ // Get Single
+            'success' => ['en' => 'Successfully Retrieved Other Item'],
+            'warning' => ['en' => 'No Other Item with that ID Found'],
+            'error' => ['en' => 'Error: Retrieving Other Item'],
+        ],
+        1 => [ // Get Multiple
+            'info' => ['en' => 'No Results Found'],
+            'success' => ['en' => 'Successfully Retrieved Other Items'],
+            'error' => ['en' => 'Error: Retrieving Other Items'],
+        ],
+        2 => [ // Insert
+            'success' => ['en' => 'Successfully Created Other Item'],
+            'error' => ['en' => 'Error: Creating Other Item'],
+        ],
+        3 => [ // Update
+            'success' => ['en' => 'Successfully Updated Other Item'],
+            'error' => ['en' => 'Error: Updating Other Item'],
+        ],
+        4 => [ // Delete
+            'success' => ['en' => 'Successfully Deleted Other Item'],
+            'error' => ['en' => 'Error: Deleting Other Item'],
+        ],
+        5 => ['error' = ['en' => 'Error: Custom Error Message']],
+        6 => ['error' = ['en' => 'Error: Another Custom Error Message']],
+        7 => ['error' = ['en' => 'Error: And Another Custom Error Message']],
     ],
     ...
 ];
@@ -546,7 +619,7 @@ Ex.
 ## Multi-Language Support
 
     1 => [
-        200 => [
+        'success' => [
             'en' => 'Success!',
             'es' => '¡Éxito!'
         ]
@@ -555,16 +628,17 @@ Ex.
 ### Format - Info, Success, Client Error and Server Error
 The first number in the code represents the code type.
 
-1-[1]00 - the 1 represents 'Info'  
-1-[2]00 - the 2 represents 'Success'  
-1-[4]00 - the 4 represents 'Client Error', Unkown' or 'Empty'  
-1-[5]00 - the 5 represents 'Server Error'  
+[group_id]-[1]xx - the 1 represents 'Info' or 'Empty'  
+[group_id]-[2]xx - the 2 represents 'Success'   
+[group_id]-[3]xx - the 3 represents 'Redirect' or 'Depricated'   
+[group_id]-[4]xx - the 4 represents 'Client Error', or 'Unkown'  
+[group_id]-[5]xx - the 5 represents 'Server Error'  
 
 When using Spry::response() you can pass just the last 2 digits as the code and the data parameter.
 
 Ex.
 
-    Spry::response([1, 1], '00', $data); 
+    Spry::response($data, 1); 
 
 If $data is an array but **empty** then the response will automatically Prepend the code with a **1** and return **1-101**.  
 If $data **has** a value and is **not empty** then the response will automatically Prepend the code with a **2** and return **1-201**.  
@@ -573,6 +647,46 @@ If $data is **false** or **null** then the response will automatically Prepend t
 
 <br>
 
+# Lifecycle
+
+Hooks & Filters Lifecycle in order of completion:  
+Name | Type | Details
+-----------------|--------|-----------------------
+`initialized`    | hook   | Has access to the initial config, but before any filters or components  
+`configure`      | filter | Runs after all Components and Plugins have been loaded  
+`configure`      | hook   | Runs after the configure filter and after the OPTIONS pre-flight response  
+`getPath`        | filter | Runs after route path has been recieved  
+`setPath`        | hook   | Runs after route path has been set  
+`setRoutes`      | hook   | Runs after routes has been set  
+`params`         | filter | Runs after the Params have been fetched  
+`setParams`      | hook   | Runs after the Params have been set  
+`getRoute`       | hook   | Runs after the Route has been set    
+`validateParams` | filter | Runs after Params Validation.  
+`response`       | filter | Runs after the response has been built.  
+`output`         | filter | Runs right before the Output is returned.
+
+### Non Lifecycle Hooks & Filters
+Name | Type | Details
+-----------------|--------|-----------------------
+`stop`           | hook   | This may run at anytime when their is an error or Spry needs to stop  
+`database`       | hook   | Called after the Database connection has been made or accessing the DatabaseProvider for the first time  
+`dbJoin`         | filter | Called right before the query is ran. Allows to filter the `JOIN` statement and will include $meta on the query details 
+`dbColumns`      | filter | Called right before the query is ran. Allows to filter the `FROM` statement and will include $meta on the query details 
+`dbWhere`        | filter | Called right before the query is ran. Allows to filter the `WHERE` statement and will include $meta on the query details 
+`dbData`         | filter | Called right before the query is ran. Allows to filter the `data` for INSERT, UPDATE, REPLACE statement and will include $meta on the query details 
+`dbGet`          | filter | Called right before the `get` query is ran and includes entire statement object 
+`dbSelect`       | filter | Called right before the `select` query is ran and includes entire statement object
+`dbInsert`       | filter | Called right before the `insert` query is ran and includes entire statement object
+`dbUpdate`       | filter | Called right before the `update` query is ran and includes entire statement object
+`dbReplace`      | filter | Called right before the `replace` query is ran and includes entire statement object
+`dbDelete`       | filter | Called right before the `delete` query is ran and includes entire statement object
+`dbHas`          | filter | Called right before the `has` query is ran and includes entire statement object
+`dbRand`         | filter | Called right before the `rand` query is ran and includes entire statement object
+`dbCount`        | filter | Called right before the `count` query is ran and includes entire statement object
+`dbAvg`          | filter | Called right before the `avg` query is ran and includes entire statement object
+`dbMax`          | filter | Called right before the `max` query is ran and includes entire statement object
+`dbMin`          | filter | Called right before the `min` query is ran and includes entire statement object
+`dbSum`          | filter | Called right before the `sum` query is ran and includes entire statement object
 # Hooks
 
 Hooks allow you to run your own code at specific times and life cycles. This is how you can run middleware and other life cycle aware code. 
@@ -595,28 +709,19 @@ Spry::runHook(string $hookName, [ mixed $data ] ) : void
 Example:
 
 ```php
-Spry::runHook('configure',['foo' => 123]);
+Spry::runHook('configure',['foo' => 123] [[ mixed $data = null ], mixed $meta = null ] );
 ```
 Your Controller 
 ```php
 class MyComponent
 
-public static function myMethod($data = null, $extraData = null) {
+public static function myMethod($data = null, $meta = null, $extraData = null) {
     $data // [foo => 123]
+    $meta // null
     $extraData // [bar => 345]
     // Do Stuff
 }
 ```
-
-### Available Hooks
-- configure
-- database
-- setParams
-- setPath
-- setRoutes
-- stop
-
-<br>
 
 # Filters
 Filters allow you to filter data at specific times and life cycles. A filter typically requires a return value. 
@@ -634,31 +739,26 @@ Spry::addFilter('configure', 'Spry\\SpryComponent\\MyComponent::myMethod', ['bar
 
 ### Running Filters
 ```php
-Spry::runFilter(string $filterName, [ mixed $data ] ) : void
+Spry::runFilter(string $filterName, [[ mixed $data = null ], mixed $meta = null ] ) : void
 ```
 Example:
 
 ```php
-$config = Spry::runFilter('configure', $config);
+$config = Spry::runFilter('configure', $config, ['component' => 'someComponent', 'var' => 'abc']);
 ```
 Your Controller 
 ```php
 class MyComponent
 
-public static function myMethod($config = null, $extraData = null) {
+public static function myMethod($config = null, $meta = null, $extraData = null) {
     $config // $config
+    $meta // ['component' => 'someComponent', 'var' => 'abc']
     $extraData // [bar => 345]
     // Do Stuff
     return $config;
 }
 ```
-
-### Available Filters
-- buildResponse
-- configure
-- getPath
-- getRoute
-- output
-- params
-- response
-- validateParams
+# Todos
+- Add Types and Interfaces to everything
+- Review and optimize Performance
+- Drink a Beer!
