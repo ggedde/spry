@@ -612,8 +612,8 @@ $config->tests[
 ```
 
 ## Component Group Number
-The first number is to separate the Components codes by ID
-Ex.
+The first number is to separate the Components codes by ID  
+Ex.  
 
     1-200   # Success For Component A 
     2-200   # Success For Component B 
