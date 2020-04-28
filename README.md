@@ -179,6 +179,8 @@ Basic Example:
 
 namespace Spry\SpryComponent;
 
+use Spry\Spry;
+
 class MyComponent
 {
     private static $id = 2; // Component ID
