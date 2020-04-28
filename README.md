@@ -603,9 +603,10 @@ $config->tests[
             'success' => ['en' => 'Successfully Deleted Other Item'],
             'error' => ['en' => 'Error: Deleting Other Item'],
         ],
-        5 => ['error' = ['en' => 'Error: Custom Error Message']],
-        6 => ['error' = ['en' => 'Error: Another Custom Error Message']],
-        7 => ['error' = ['en' => 'Error: And Another Custom Error Message']],
+        5 => ['redirect' = ['en' => 'Depricated: This route is depricated']],
+        6 => ['error' = ['en' => 'Error: Custom Error Message']],
+        7 => ['error' = ['en' => 'Error: Another Custom Error Message']],
+        8 => ['error' = ['en' => 'Error: And Another Custom Error Message']],
     ],
     ...
 ];
@@ -646,6 +647,13 @@ If $data is an array but **empty** then the response will automatically Prepend 
 If $data **has** a value and is **not empty** then the response will automatically Prepend the code with a **2** and return **1-201**.  
 If $data is an array but not **null** then the response will automatically Prepend the code with a **4** and return **1-401**.  
 If $data is **false** or **null** then the response will automatically Prepend the code with a **5** and return **1-501**.
+
+## Response Status
+In the response there will be a key of `status`  
+The possible values for this will only be `success`, `error`, or `unknown`
+
+`info`, `success`, and `redirect` all represent a successfully response and will return `success`  
+`warning` and `error` represent a failed response and will return `error`
 
 <br>
 
