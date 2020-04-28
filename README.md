@@ -627,7 +627,7 @@ Ex.
         ]
     ]
 
-### Format - Info, Success, Client Error and Server Error
+### Format - Info, Success, Redirect or Depricated, Client Error and Server Error
 The first number in the code represents the code type.
 
 [group_id]-[1]xx - the 1 represents 'Info' or 'Empty'  
