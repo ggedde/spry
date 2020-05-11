@@ -1,6 +1,6 @@
 # Spry
 A lightweight PHP API Framework  
-Great fpr CRUD applications
+Great for CRUD applications
 
 ![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/ggedde/spry?include_prereleases) &nbsp; ![GitHub](https://img.shields.io/github/license/ggedde/spry?label=license) &nbsp; ![PHP from Packagist](https://img.shields.io/packagist/php-v/ggedde/spry)
 
