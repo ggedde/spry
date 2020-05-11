@@ -18,7 +18,7 @@ Great for CRUD applications
 * [Response](#Response)
 * [Response Codes](#ResponseCodes)
 * [Tests](#Tests)
-* [Lifecycle Hooks & Filters](#Lifecycle)
+* [Lifecycle Hooks & Filters (Middleware)](#Lifecycle)
 * [Todos](#Todos)
 
 # Installation
