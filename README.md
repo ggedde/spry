@@ -3,6 +3,8 @@ A lightweight PHP API Framework
 
 ![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/ggedde/spry?include_prereleases) &nbsp; ![GitHub](https://img.shields.io/github/license/ggedde/spry?label=license) &nbsp; ![PHP from Packagist](https://img.shields.io/packagist/php-v/ggedde/spry)
 
+@PSR2 and @Symfony Compliant
+
 # Documentation
 
 * [Installation](#Installation)
@@ -771,4 +773,5 @@ public static function myMethod($config = null, $meta = null, $extraData = null)
 # Todos
 - Add Types and Interfaces to everything
 - Review and optimize Performance
+- Review PSR-7 for response
 - Drink a Beer!
