@@ -772,7 +772,8 @@ public static function myMethod($config = null, $meta = null, $extraData = null)
 }
 ```
 # Todos
-- Add Types and Interfaces to everything
+- Add PHPUnit Tests
+- Add Types and Interfaces
 - Review and optimize Performance
 - Review PSR-7 for response
 - Drink a Beer!
