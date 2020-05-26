@@ -5,15 +5,15 @@
     "keywords": ["lightweight", "API", "PHP framework"],
     "require": {
         "php": ">=5.5.0",
-        "ggedde/spry-core": "~1.0.18",
+        "ggedde/spry-core": "~1.1.0",
         "ggedde/spry-db": "~1.0.9",
         "ggedde/spry-log": "~1.0.4",
         "ggedde/spry-webtools": "~1.0.3",
         "ggedde/spry-utilities": "~1.0.9",
         "ggedde/spry-validator": "~1.0.1",
         "ggedde/spry-rate-limits": "~1.0.2",
-        "ggedde/spry-cli-connector": "~1.0.4",
-        "ggedde/spry-background-process": "~1.0.2"
+        "ggedde/spry-cli-connector": "~1.1.0",
+        "ggedde/spry-background-process": "~1.0.3"
     },
     "license": "MIT",
     "authors": [
