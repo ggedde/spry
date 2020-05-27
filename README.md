@@ -18,6 +18,7 @@ Great for CRUD applications
 * [Response](#Response)
 * [Response Codes](#ResponseCodes)
 * [Tests](#Tests)
+* [Rate Limits](#RateLimits)
 * [Lifecycle Hooks & Filters (Middleware)](#Lifecycle)
 * [Todos](#Todos)
 
@@ -392,97 +393,6 @@ $config->loggerProvider = 'Spry\\SpryProvider\\SpryLogger';
 $config->logger = [... ];
 ```
 
-
-# Tests
-
-Spry comes with its own pre-built testing solution. You can still use other like PHPUnit, but Spry's Tests utilize's Spry's config for rapid testing. When using single file components you can set the routes in the Components by returning the routes in the `getTests()` method.
-
-Example:
-```php
-public static function getTests() {
-    return [
-        'items_insert' => [
-            'label' => 'Insert Item',
-            'route' => '/items/insert',
-            'method' => 'POST',
-            'params' => [
-                'name' => 'TestData',
-            ],
-            'expect' => [
-                'status' => 'success',
-            ],
-        ],
-        'items_get' => [
-            'label' => 'Get Item',
-            'route' => '/items/{items_insert.body.id}',
-            'method' => 'GET',
-            'params' => [],
-            'expect' => [
-                'status' => 'success',
-            ],
-        ],
-        'items_delete' => [
-            'label' => 'Delete Item',
-            'route' => '/items/delete/',
-            'method' => 'POST',
-            'params' => [
-                'id' => '{items_insert.body.id}'
-            ],
-            'expect' => [
-                'status' => 'success',
-            ],
-        ],
-    ];
-}
-```
-
-### Or within the Config Settings
-```php
-$config->tests[
-    'items_get' => [
-        'label' => 'Get Example',
-        'route' => '/items/123',
-        'params' => [],
-        'expect' => [
-            'code' => '1-200',
-        ],
-    ],
-    'items_get' => [
-        'label' => 'Get Example',
-        'route' => '/items/123',
-        'params' => [],
-        'expect' => [
-            'body.id[>]' => 12,
-        ],
-    ],
-    ...
-];
-```
-
-## Test Options
-
-Setting | Type | Default | Description
--------|--------|-------------|-----------
-label | String | '' | Name used to Label Test
-route | String | '' | Route that is enabled in Spry Routes
-method | String | GET | Route that is enabled in Spry Routes
-params | Array | [] | Params passed in Route
-expect | Array | [] | Key and Value of what is expected valid from the Response. Keys accept dot notation and [>], [>=], [<], [<=], [!=], [===], [!==] comparison checks. See above.
-
-
-## Running Tests with Spry CLI
-All Tests
-
-    spry test
-
-Specific Test
-
-    spry test items_get
-
-More Options
-
-    spry test --verbose --repeat 10
-
 # Response
 
 Spry has 2 built in functions for building the response (`response` and `stop`). 
@@ -657,6 +567,153 @@ The possible values for this will only be `success`, `error`, or `unknown`
 
 `info`, `success`, and `redirect` all represent a successfully response and will return `success`  
 `warning` and `error` represent a failed response and will return `error`
+
+<br>
+
+# Tests
+
+Spry comes with its own pre-built testing solution. You can still use other like PHPUnit, but Spry's Tests utilize's Spry's config for rapid testing. When using single file components you can set the routes in the Components by returning the routes in the `getTests()` method.
+
+Example:
+```php
+public static function getTests() {
+    return [
+        'items_insert' => [
+            'label' => 'Insert Item',
+            'route' => '/items/insert',
+            'method' => 'POST',
+            'params' => [
+                'name' => 'TestData',
+            ],
+            'expect' => [
+                'status' => 'success',
+            ],
+        ],
+        'items_get' => [
+            'label' => 'Get Item',
+            'route' => '/items/{items_insert.body.id}',
+            'method' => 'GET',
+            'params' => [],
+            'expect' => [
+                'status' => 'success',
+            ],
+        ],
+        'items_delete' => [
+            'label' => 'Delete Item',
+            'route' => '/items/delete/',
+            'method' => 'POST',
+            'params' => [
+                'id' => '{items_insert.body.id}'
+            ],
+            'expect' => [
+                'status' => 'success',
+            ],
+        ],
+    ];
+}
+```
+
+### Or within the Config Settings
+```php
+$config->tests[
+    'items_get' => [
+        'label' => 'Get Example',
+        'route' => '/items/123',
+        'params' => [],
+        'expect' => [
+            'code' => '1-200',
+        ],
+    ],
+    'items_get' => [
+        'label' => 'Get Example',
+        'route' => '/items/123',
+        'params' => [],
+        'expect' => [
+            'body.id[>]' => 12,
+        ],
+    ],
+    ...
+];
+```
+
+## Test Options
+
+Setting | Type | Default | Description
+-------|--------|-------------|-----------
+label | String | '' | Name used to Label Test
+route | String | '' | Route that is enabled in Spry Routes
+method | String | GET | Route that is enabled in Spry Routes
+params | Array | [] | Params passed in Route
+expect | Array | [] | Key and Value of what is expected valid from the Response. Keys accept dot notation and [>], [>=], [<], [<=], [!=], [===], [!==] comparison checks. See above.
+
+
+## Running Tests with Spry CLI
+All Tests
+
+    spry test
+
+Specific Test
+
+    spry test items_get
+
+More Options
+
+    spry test --verbose --repeat 10
+    
+<br>
+
+# RateLimits
+
+Spry's default Rates Limits is SpryRateLimits
+ <br>[See SpryRateLimits's full documentation](https://github.com/ggedde/spry-rate-limits)
+
+This allows you to swap out the Provider later on without having to change your project code.
+
+### Add a Global Rate Limit
+
+```php
+$config->rateLimits = [
+  'driver' => 'file',
+  'fileDirectory' => __DIR__.'/rate_limits',
+  'excludeTests' => false,
+  'default' => [
+      'by' => 'ip',
+      'limit' => 10,
+      'within' => 1,
+      'hook' => 'configure',
+      'excludeTests' => false
+  ]
+];
+```
+
+### Adding Limits per route  
+```php
+$config->routes = [
+    '/auth/login' => [
+        'label' => 'Auth Login',
+        'controller' => 'Auth::login',
+        'access' => 'public',
+        'methods' => 'POST',
+        'limits' => [
+            'by' => 'ip',
+            'limit' => 1,
+            'within' => 3,
+            'excludeTests' => false
+        ],
+        'params' => [
+            'email' => [
+                'required' => true,
+                'type' => 'string',
+            ],
+            'password' => [
+                'required' => true,
+                'type' => 'string',
+            ],
+        ],
+    ],
+];
+``` 
+[See full documentation](https://github.com/ggedde/spry-rate-limits)
 
 <br>
 
