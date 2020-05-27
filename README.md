@@ -393,6 +393,8 @@ $config->loggerProvider = 'Spry\\SpryProvider\\SpryLogger';
 $config->logger = [... ];
 ```
 
+<br>
+
 # Response
 
 Spry has 2 built in functions for building the response (`response` and `stop`). 
@@ -431,6 +433,8 @@ if ($error) {
 ```
 
 \* See Response Codes Below to see how this works
+
+<br>
 
 # ResponseCodes
 
@@ -665,7 +669,7 @@ More Options
 # RateLimits
 
 Spry's default Rates Limits is SpryRateLimits
- <br>[See SpryRateLimits's full documentation](https://github.com/ggedde/spry-rate-limits)
+ <br>[See full documentation](https://github.com/ggedde/spry-rate-limits)
 
 This allows you to swap out the Provider later on without having to change your project code.
 
