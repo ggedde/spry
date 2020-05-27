@@ -311,6 +311,7 @@ Setting | Type | Default | Description
 label | String | Path Sanitized | Name used to Label Route
 controller | String | '' | Path to Component Method.  Ex. `MyComponent::method` or `NameSpace\\Framework\\Class::someMethod`
 access | String | public | Spry has a getRoutes method which will return all public routes. You can remove the route from that method by setting the access to `private` 
+limits | array | [] | If you have [SpryRateLimits](https://github.com/ggedde/spry-rate-limits) added and activated then this will allow for adding rate limits to the Route. See [Rate Limits](#RateLimits) section for more details. This can either be a single rate limit array or a multi array of limits by different keys.
 methods | String\|Array | POST | Method allowed for route. POST\|GET\|DELETE\|PUT
 params | Array | [] | Allowed Parameters for the Route. Any Parameters passed that do not match will get ignored. You can specify Validation for each Parameter.
 params_trim | Boolean | false | Trim all Params for surrounding whitespace. This can be overwritten per param.
