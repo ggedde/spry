@@ -5,7 +5,7 @@
     "keywords": ["lightweight", "API", "PHP framework"],
     "require": {
         "php": ">=5.5.0",
-        "ggedde/spry-core": "~1.1.9",
+        "ggedde/spry-core": "~1.1.11",
         "ggedde/spry-db": "~1.0.9",
         "ggedde/spry-log": "~1.0.4",
         "ggedde/spry-webtools": "~1.0.3",

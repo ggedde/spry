@@ -726,19 +726,21 @@ $config->routes = [
 
 Hooks & Filters Lifecycle in order of completion:  
 Name | Type | Details
------------------|--------|-----------------------
-`initialized`    | hook   | Has access to the initial config, but before any filters or components  
-`configure`      | filter | Runs after all Components and Plugins have been loaded  
-`configure`      | hook   | Runs after the configure filter and after the OPTIONS pre-flight response  
-`getPath`        | filter | Runs after route path has been recieved  
-`setPath`        | hook   | Runs after route path has been set  
-`setRoutes`      | hook   | Runs after routes has been set  
-`params`         | filter | Runs after the Params have been fetched  
-`setParams`      | hook   | Runs after the Params have been set  
-`getRoute`       | hook   | Runs after the Route has been set    
-`validateParams` | filter | Runs after Params Validation.  
-`response`       | filter | Runs after the response has been built.  
-`output`         | filter | Runs right before the Output is returned.
+------------------------|--------|-----------------------
+`initialized`           | hook   | Has access to the initial config, but before any filters or components  
+`configureInitialized`  | filter | Runs after initial config has been loaded, but before setup and components have been loaded
+`setup`                 | hook   | Runs after all component setup methods have ran  
+`configure`             | filter | Runs after all Components and Plugins have been loaded  
+`configure`             | hook   | Runs after the configure filter and after the OPTIONS pre-flight response  
+`getPath`               | filter | Runs after route path has been recieved  
+`setPath`               | hook   | Runs after route path has been set  
+`setRoutes`             | hook   | Runs after routes has been set  
+`params`                | filter | Runs after the Params have been fetched  
+`setParams`             | hook   | Runs after the Params have been set  
+`getRoute`              | hook   | Runs after the Route has been set    
+`validateParams`        | filter | Runs after Params Validation.  
+`response`              | filter | Runs after the response has been built.  
+`output`                | filter | Runs right before the Output is returned.
 
 ### Non Lifecycle Hooks & Filters
 Name | Type | Details
